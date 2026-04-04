@@ -1,0 +1,7 @@
+{
+    "oxc.enable": false,
+    "css.validate": false,
+    "less.validate": false,
+    "scss.validate": false,
+    "oxc.lint.run": "onType",
+}

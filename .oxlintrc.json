@@ -1,0 +1,47 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["vue", "typescript", "unicorn", "oxc"],
+    "categories": {
+        "correctness": "error",
+        "suspicious": "warn",
+        "perf": "error",
+        "style": "off",
+        "restriction": "warn"
+    },
+    "rules": {
+        "no-console": [
+            "warn",
+            {
+                "allow": ["warn", "error"]
+            }
+        ],
+        "no-debugger": "error",
+        "vue/multi-word-component-names": "off",
+        "unicorn/prefer-node-protocol": "off",
+        "typescript/no-explicit-any": "warn",
+        "typescript/no-unused-vars": "warn"
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "es2022": true
+    },
+    "globals": {
+        "defineNuxtConfig": "readonly",
+        "defineNuxtPlugin": "readonly",
+        "defineEventHandler": "readonly",
+        "useRuntimeConfig": "readonly",
+        "useHead": "readonly",
+        "ref": "readonly",
+        "reactive": "readonly",
+        "computed": "readonly"
+    },
+    "ignorePatterns": [
+        "dist",
+        ".nuxt",
+        ".output",
+        "node_modules",
+        "*.min.js",
+        "coverage"
+    ]
+}

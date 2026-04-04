@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-primary: var(--primary);
+    --color-on-primary: var(--on-primary);
+    --color-primary-container: var(--primary-container);
+    --color-primary-muted: var(--primary-muted);
+    --color-secondary: var(--secondary);
+    --color-tertiary: var(--tertiary);
+    --color-background: var(--background);
+    --color-on-background: var(--on-background);
+    --color-surface: var(--surface);
+    --color-on-surface: var(--on-surface);
+    --color-surface-container: var(--surface-container);
+}
+
+@layer base {
+    :root {
+        --primary: #ff8fa3;
+        --on-primary: #ffffff;
+        --primary-container: #ffe4e6;
+        --secondary: #74d2fc;
+        --tertiary: #ffe179;
+        --background: #ffffff;
+        --on-background: #333333;
+        --surface: #fcfcfc;
+        --on-surface: #333333;
+
+        --primary-muted: color-mix(in srgb, var(--primary) 8%, var(--surface));
+        --surface-container: color-mix(
+            in srgb,
+            var(--surface) 96%,
+            var(--on-surface)
+        );
+    }
+
+    .dark {
+        --primary: #d94b68;
+        --on-primary: #ffffff;
+        --primary-container: #5c1a26;
+        --secondary: #3898c6;
+        --tertiary: #cdae3d;
+        --background: #1c1a1b;
+        --on-background: #f4f0f1;
+        --surface: #262325;
+        --on-surface: #f4f0f1;
+
+        --primary-muted: color-mix(in srgb, var(--primary) 12%, var(--surface));
+        --surface-container: color-mix(
+            in srgb,
+            var(--surface) 94%,
+            var(--on-surface)
+        );
+    }
+
+    body {
+        @apply bg-background text-on-background transition-colors duration-300;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-md;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+}
