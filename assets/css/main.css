@@ -28,11 +28,9 @@
         --on-surface: #333333;
 
         --primary-muted: color-mix(in srgb, var(--primary) 8%, var(--surface));
-        --surface-container: color-mix(
-            in srgb,
-            var(--surface) 96%,
-            var(--on-surface)
-        );
+        --surface-container: color-mix(in srgb,
+                var(--surface) 96%,
+                var(--on-surface));
     }
 
     .dark {
@@ -47,15 +45,14 @@
         --on-surface: #f4f0f1;
 
         --primary-muted: color-mix(in srgb, var(--primary) 12%, var(--surface));
-        --surface-container: color-mix(
-            in srgb,
-            var(--surface) 94%,
-            var(--on-surface)
-        );
+        --surface-container: color-mix(in srgb,
+                var(--surface) 94%,
+                var(--on-surface));
     }
 
     body {
         @apply bg-background text-on-background transition-colors duration-300;
+        font-family: '荆南波波黑-Bold';
     }
 }
 
@@ -74,4 +71,21 @@
 
 ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/50;
+}
+
+
+@font-face {
+    font-family: '荆南波波黑-Bold';
+    src: url('~/assets/font/荆南波波黑-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'ChillRoundF';
+    src: url('~/assets/font/ChillRoundF.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }

@@ -8,6 +8,31 @@
                 <span class="font-bold text-primary">糖糖毬</span> All Rights
                 Reserved.
             </p>
+            <div
+                class="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-sm"
+            >
+                <a
+                    href="https://beian.miit.gov.cn/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="transition-colors hover:text-primary"
+                >
+                    赣ICP备2025067513号-1
+                </a>
+                <a
+                    href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=36073102000182"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-1 transition-colors hover:text-primary"
+                >
+                    <img
+                        src="~/assets/images/备案图标.png"
+                        class="h-4 w-4"
+                        alt="公安备案图标"
+                    />
+                    <span>赣公网安备36073102000182号</span>
+                </a>
+            </div>
         </div>
     </footer>
 </template>
