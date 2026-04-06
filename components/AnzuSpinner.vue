@@ -1,6 +1,6 @@
 <template>
     <div
-        class="inline-block animate-spin rounded-full border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+        class="inline-block shrink-0 animate-spin rounded-full border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
         :class="[sizeClass, colorClass]"
         role="status"
     >
@@ -45,6 +45,7 @@ const sizeClass = computed(() => {
 });
 
 const colorClass = computed(() => {
+    if (props.color === "current") return "text-current";
     if (props.color === "primary") return "text-primary";
     if (props.color === "secondary") return "text-secondary";
     if (props.color === "white") return "text-white";

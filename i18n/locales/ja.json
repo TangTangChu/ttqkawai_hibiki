@@ -6,6 +6,7 @@
     "common": {
         "action": {
             "more": "もっと",
+            "loadMore": "もっと読み込む",
             "switchLanguage": "言語切り替え",
             "prevContent": "前の記事",
             "nextContent": "次の記事",
@@ -28,18 +29,28 @@
             "prevNextNav": "前後記事ナビゲーション",
             "plainText": "プレーンテキスト",
             "top": "トップ",
-            "notFoundTitle": "あれれ...迷子になっちゃった！",
-            "notFoundDesc": "お探しのページはここにはないみたい〜。隠されちゃったか、お引越ししたかも！",
-            "backToHome": "おうちへ帰る"
+            "errorPageTitle": "禁則事項です",
+            "errorPageDesc": "なーんてね",
+            "backToHome": "おうちへ帰る",
+            "noMore": "もうないよ〜"
         }
     },
     "menu": {
         "home": "ホーム",
         "archive": "アーカイブ",
         "links": "リンク",
-        "about": "私について"
+        "about": "私について",
+        "favorites": "私のお気に入り"
     },
     "pages": {
+        "about": {
+            "tabs": {
+                "music": "音楽",
+                "anime": "アニメ",
+                "galgame": "ギャルゲー",
+                "novel": "ライトノベル"
+            }
+        },
         "archive": {
             "fallback": "現在の言語に対応するコンテンツがありません。代わりに {lang} バージョンを表示します。"
         }

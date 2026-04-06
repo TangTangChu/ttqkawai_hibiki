@@ -7,18 +7,19 @@
             sizeClasses[props.size],
             variantClasses[props.variant],
             props.block ? 'w-full' : 'w-auto',
-            props.disabled
+            props.disabled || props.loading
                 ? 'pointer-events-none opacity-60'
                 : 'cursor-pointer',
         ]"
     >
         <span
-            v-if="hasIcon && props.iconPlacement === 'start'"
+            v-if="(hasIcon || props.loading) && props.iconPlacement === 'start'"
             class="flex shrink-0 items-center justify-center"
             :class="iconBoxClasses[props.size]"
             aria-hidden="true"
         >
-            <slot name="icon" :class="iconClasses[props.size]" />
+            <AnzuSpinner v-if="props.loading" size="sm" color="current" />
+            <slot v-else name="icon" :class="iconClasses[props.size]" />
         </span>
 
         <span class="min-w-0 leading-none">
@@ -26,12 +27,13 @@
         </span>
 
         <span
-            v-if="hasIcon && props.iconPlacement === 'end'"
+            v-if="(hasIcon || props.loading) && props.iconPlacement === 'end'"
             class="flex shrink-0 items-center justify-center"
             :class="iconBoxClasses[props.size]"
             aria-hidden="true"
         >
-            <slot name="icon" :class="iconClasses[props.size]" />
+            <AnzuSpinner v-if="props.loading" size="sm" color="current" />
+            <slot v-else name="icon" :class="iconClasses[props.size]" />
         </span>
     </component>
 </template>
@@ -39,6 +41,7 @@
 <script setup lang="ts">
 import { computed, useSlots } from "vue";
 import type { RouteLocationRaw } from "vue-router";
+import AnzuSpinner from "./AnzuSpinner.vue";
 
 type AnzuButtonVariant = "primary" | "soft" | "outline" | "ghost";
 type AnzuButtonSize = "sm" | "md" | "lg";
@@ -56,6 +59,7 @@ const props = withDefaults(
         size?: AnzuButtonSize;
         iconPlacement?: AnzuButtonIconPlacement;
         disabled?: boolean;
+        loading?: boolean;
         block?: boolean;
     }>(),
     {
@@ -64,6 +68,7 @@ const props = withDefaults(
         size: "md",
         iconPlacement: "start",
         disabled: false,
+        loading: false,
         block: false,
     },
 );
@@ -112,24 +117,24 @@ const rootProps = computed(() => {
     if (props.to) {
         return {
             to: props.to,
-            "aria-disabled": props.disabled || undefined,
-            tabindex: props.disabled ? -1 : undefined,
+            "aria-disabled": props.disabled || props.loading || undefined,
+            tabindex: props.disabled || props.loading ? -1 : undefined,
         };
     }
 
     if (props.href) {
         return {
-            href: props.disabled ? undefined : props.href,
+            href: props.disabled || props.loading ? undefined : props.href,
             target: props.target,
             rel: props.rel,
-            "aria-disabled": props.disabled || undefined,
-            tabindex: props.disabled ? -1 : undefined,
+            "aria-disabled": props.disabled || props.loading || undefined,
+            tabindex: props.disabled || props.loading ? -1 : undefined,
         };
     }
 
     return {
         type: props.type,
-        disabled: props.disabled,
+        disabled: props.disabled || props.loading,
     };
 });
 </script>

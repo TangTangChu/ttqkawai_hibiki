@@ -6,6 +6,7 @@
     "common": {
         "action": {
             "more": "更多",
+            "loadMore": "加载更多",
             "switchLanguage": "切换语言",
             "prevContent": "上一篇",
             "nextContent": "下一篇",
@@ -28,18 +29,28 @@
             "prevNextNav": "上下篇导航",
             "plainText": "纯文本",
             "top": "置顶",
-            "notFoundTitle": "呜哇...迷路了！",
-            "notFoundDesc": "你要找的页面不在这里喔~ 可能被藏起来或者搬走啦！",
-            "backToHome": "回到温馨的家"
+            "errorPageTitle": "这是禁止事项",
+            "errorPageDesc": "才怪的说",
+            "backToHome": "回到温馨的家",
+            "noMore": "没有更多啦~"
         }
     },
     "menu": {
         "home": "首页",
         "archive": "归档",
         "links": "友链",
-        "about": "关于"
+        "about": "关于",
+        "favorites": "我的喜欢"
     },
     "pages": {
+        "about": {
+            "tabs": {
+                "music": "音乐",
+                "anime": "番剧",
+                "galgame": "Galgame",
+                "novel": "轻小说"
+            }
+        },
         "archive": {
             "fallback": "当前内容暂无对应语言，已自动为您展示 {lang} 版本。"
         }
