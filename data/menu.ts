@@ -21,7 +21,7 @@ export const menu: MenuItem[] = [
     },
     {
         label: "menu.archive",
-        route: "/archive",
+        route: "/archives",
         icon: DocumentTextIcon,
     },
     {

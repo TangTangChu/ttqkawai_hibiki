@@ -6,7 +6,7 @@
             <h1
                 class="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl"
             >
-                {{ t("pages.about.title") }}
+                {{ t("menu.about") }}
             </h1>
         </header>
         <div>有缘再写</div>
@@ -21,6 +21,6 @@ const { reset: resetNavTitle } = useNavTitle();
 resetNavTitle();
 
 useHead(() => ({
-    title: t("pages.about.meta.title"),
+    title: t("menu.about"),
 }));
 </script>

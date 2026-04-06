@@ -6,7 +6,7 @@
             <h1
                 class="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl"
             >
-                {{ t("pages.links.title") }}
+                {{ t("menu.links") }}
             </h1>
         </header>
 
@@ -60,6 +60,6 @@ const { reset: resetNavTitle } = useNavTitle();
 resetNavTitle();
 
 useHead(() => ({
-    title: t("pages.links.meta.title"),
+    title: t("menu.links"),
 }));
 </script>

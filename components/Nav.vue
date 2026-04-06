@@ -72,7 +72,7 @@
                                         <EllipsisHorizontalIcon
                                             class="mr-1.5 h-4 w-4"
                                         />
-                                        {{ $t("common.actions.more") }}
+                                        {{ $t("common.action.more") }}
                                     </span>
                                 </div>
                             </div>
@@ -131,7 +131,7 @@
                                         <EllipsisHorizontalIcon
                                             class="mr-1.5 h-4 w-4"
                                         />
-                                        {{ $t("common.actions.more") }}
+                                        {{ $t("common.action.more") }}
                                     </span>
                                 </button>
 
@@ -308,8 +308,10 @@ const updateLayoutMode = (): void => {
 
 const isMenuItemActive = (item: MenuItem): boolean => {
     if (item.route === "/") return route.path === "/";
-    if (item.route === "/archive") {
-        return route.path === "/archive" || route.path.startsWith("/archives/");
+    if (item.route === "/archives") {
+        return (
+            route.path === "/archives" || route.path.startsWith("/archives/")
+        );
     }
     return route.path === item.route || route.path.startsWith(`${item.route}/`);
 };

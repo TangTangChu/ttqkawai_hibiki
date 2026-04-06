@@ -89,11 +89,11 @@
                     v-if="tocItems.length > 0 && !isMobileTocOpen"
                     type="button"
                     class="fixed right-4 bottom-6 z-70 inline-flex items-center gap-2 rounded-xl border border-on-surface/10 bg-background px-4 py-2 text-sm font-semibold text-on-surface/80 transition-colors duration-200 hover:border-primary/30 hover:text-primary lg:hidden"
-                    :aria-label="t('common.items.toc')"
+                    :aria-label="t('common.label.toc')"
                     @click="openMobileToc"
                 >
                     <Bars3BottomLeftIcon class="h-4 w-4" aria-hidden="true" />
-                    {{ t("common.items.toc") }}
+                    {{ t("common.label.toc") }}
                 </button>
                 <Transition
                     enter-active-class="transition-opacity duration-200"
@@ -108,7 +108,7 @@
                         <button
                             type="button"
                             class="absolute inset-0 bg-black/30"
-                            :aria-label="t('common.items.toc')"
+                            :aria-label="t('common.label.toc')"
                             @click="closeMobileToc"
                         />
 
@@ -120,7 +120,7 @@
                                 <button
                                     type="button"
                                     class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-on-surface/10 text-on-surface/70 transition-colors hover:border-primary/30 hover:text-primary"
-                                    :aria-label="t('common.items.toc')"
+                                    :aria-label="t('common.label.toc')"
                                     @click="closeMobileToc"
                                 >
                                     <XMarkIcon
@@ -187,8 +187,10 @@ const i18nFallback = computed(() => {
 
 const getLangName = (code?: string): string => {
     if (!code) return "";
-    const localeObj = locales.value.find((l) => l.code === code || l.iso === code);
-    return localeObj ? (localeObj.name || code) : code;
+    const localeObj = locales.value.find(
+        (l) => l.code === code || l.iso === code,
+    );
+    return localeObj ? localeObj.name || code : code;
 };
 
 const publisherText = computed(() => {
@@ -207,11 +209,8 @@ const pageTitle = computed(() => {
             ? archiveValue.data.title || archiveValue.title
             : "";
 
-    if (!title) return t("pages.archive.meta.loadingTitle");
-    return t("pages.archive.meta.titleTemplate", {
-        title,
-        site: t("site.title"),
-    });
+    if (!title) return t("common.label.loading");
+    return title;
 });
 
 useHead(() => ({

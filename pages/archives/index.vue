@@ -6,7 +6,7 @@
             <h1
                 class="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl"
             >
-                {{ t("pages.archive.title") }}
+                {{ t("menu.archive") }}
             </h1>
         </header>
         <div
@@ -59,7 +59,7 @@
                 class="py-12 text-center"
             >
                 <p class="text-on-background/60">
-                    {{ t("common.status.empty") }}
+                    {{ t("common.label.empty") }}
                 </p>
             </div>
         </div>
@@ -93,7 +93,7 @@ const { reset: resetNavTitle } = useNavTitle();
 resetNavTitle();
 
 useHead(() => ({
-    title: t("pages.archive.meta.title"),
+    title: t("menu.archive"),
 }));
 
 const {

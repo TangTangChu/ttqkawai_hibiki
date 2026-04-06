@@ -9,11 +9,11 @@
         </div>
 
         <h3 class="mt-4 text-lg font-bold text-on-background">
-            {{ title || t("common.feedback.errorTitle") }}
+            {{ title || t("common.label.error") }}
         </h3>
 
         <p class="mt-2 text-sm leading-6 text-on-background/65">
-            {{ message || t("common.feedback.loadFailed") }}
+            {{ message || t("common.label.loadFailed") }}
         </p>
 
         <p

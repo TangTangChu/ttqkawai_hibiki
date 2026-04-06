@@ -4,37 +4,30 @@
         "slogan": "愿我们终能与我们所憧憬的美好相遇"
     },
     "common": {
-        "actions": {
+        "action": {
             "more": "更多",
             "switchLanguage": "切换语言",
             "prevContent": "上一篇",
-            "nextContent": "下一篇"
+            "nextContent": "下一篇",
+            "copy": "复制代码"
         },
-        "feedback": {
-            "errorTitle": "出错了",
+        "label": {
+            "error": "出错了",
             "loadFailed": "加载失败，请稍后重试。",
             "renderFailed": "Markdown 渲染出错，请稍后重试。",
             "copyFailed": "复制失败",
-            "updateFailed": "Markdown 更新失败"
-        },
-        "status": {
+            "updateFailed": "Markdown 更新失败",
             "loading": "加载中...",
-            "empty": "暂无数据"
-        },
-        "pagination": {
-            "navigation": "分页导航",
-            "previous": "上一页",
-            "next": "下一页",
-            "page": "第 {page} 页"
-        },
-        "items": {
+            "empty": "暂无数据",
+            "pagination": "分页导航",
+            "prevPage": "上一页",
+            "nextPage": "下一页",
+            "page": "第 {page} 页",
             "toc": "目录",
             "emptyToc": "暂无目录",
-            "prevNextNav": "上下篇导航"
-        },
-        "code": {
-            "copy": "复制代码",
-            "fallbackLang": "纯文本"
+            "prevNextNav": "上下篇导航",
+            "plainText": "纯文本",
+            "top": "置顶"
         }
     },
     "menu": {
@@ -45,32 +38,7 @@
     },
     "pages": {
         "archive": {
-            "title": "归档",
-            "meta": {
-                "title": "归档 | 糖糖毬的个人站",
-                "titleTemplate": "{title} | {site}",
-                "loadingTitle": "加载中..."
-            },
-            "badges": {
-                "top": "置顶"
-            },
-            "navigation": {
-                "prev": "上一篇",
-                "next": "下一篇"
-            },
             "fallback": "当前内容暂无对应语言，已自动为您展示 {lang} 版本。"
-        },
-        "links": {
-            "title": "友情链接",
-            "meta": {
-                "title": "友链 | 糖糖毬的个人站"
-            }
-        },
-        "about":{
-            "title":"关于",
-            "meta":{
-                "title":"关于 | 糖糖毬的个人站"
-            }
         }
     }
 }

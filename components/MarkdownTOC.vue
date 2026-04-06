@@ -8,7 +8,7 @@
         >
             <div v-if="items.length" class="mb-2 flex items-center">
                 <h2 id="toc-title" class="text-lg font-bold">
-                    {{ t("common.items.toc") }}
+                    {{ t("common.label.toc") }}
                 </h2>
             </div>
 
@@ -37,7 +37,7 @@
                 v-if="items.length === 0"
                 class="mt-2 text-sm text-on-surface/60 italic"
             >
-                {{ t("common.items.emptyToc") }}
+                {{ t("common.label.emptyToc") }}
             </div>
         </div>
     </div>

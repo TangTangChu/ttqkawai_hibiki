@@ -5,7 +5,7 @@
                 @click="toggle"
                 class="p-2 rounded-lg text-on-background/70 hover:bg-primary/5 hover:text-primary transition-colors flex items-center justify-center gap-1"
                 :class="{ 'bg-primary/5 text-primary': isOpen }"
-                :title="$t('common.actions.switchLanguage')"
+                :title="$t('common.action.switchLanguage')"
             >
                 <LanguageIcon class="w-5 h-5" />
                 <span v-if="showText" class="text-sm font-medium">{{

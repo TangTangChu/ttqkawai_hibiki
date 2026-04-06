@@ -11,7 +11,7 @@
                         v-if="istop"
                         class="mt-1 inline-flex shrink-0 items-center justify-center rounded bg-tertiary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-background"
                     >
-                        {{ t("pages.archive.badges.top") }}
+                        {{ t("common.label.top") }}
                     </span>
                     <h3
                         class="text-lg font-bold leading-snug tracking-tight text-on-background sm:text-xl wrap-break-word"

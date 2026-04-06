@@ -4,37 +4,30 @@
         "slogan": "Any Word Shows Love"
     },
     "common": {
-        "actions": {
+        "action": {
             "more": "More",
             "switchLanguage": "Switch Language",
             "prevContent": "Previous Article",
-            "nextContent": "Next Article"
+            "nextContent": "Next Article",
+            "copy": "Copy code"
         },
-        "feedback": {
-            "errorTitle": "Error",
+        "label": {
+            "error": "Error",
             "loadFailed": "Failed to load, please try again later.",
             "renderFailed": "Failed to render Markdown, please try again later.",
             "copyFailed": "Failed to copy",
-            "updateFailed": "Failed to update Markdown"
-        },
-        "status": {
+            "updateFailed": "Failed to update Markdown",
             "loading": "Loading...",
-            "empty": "No data"
-        },
-        "pagination": {
-            "navigation": "Pagination",
-            "previous": "Previous Page",
-            "next": "Next Page",
-            "page": "Page {page}"
-        },
-        "items": {
+            "empty": "No data",
+            "pagination": "Pagination",
+            "prevPage": "Previous Page",
+            "nextPage": "Next Page",
+            "page": "Page {page}",
             "toc": "Table of Contents",
             "emptyToc": "Empty TOC",
-            "prevNextNav": "Previous and Next Navigation"
-        },
-        "code": {
-            "copy": "Copy code",
-            "fallbackLang": "Plain Text"
+            "prevNextNav": "Previous and Next Navigation",
+            "plainText": "Plain Text",
+            "top": "TOP"
         }
     },
     "menu": {
@@ -45,26 +38,7 @@
     },
     "pages": {
         "archive": {
-            "title": "Archive",
-            "meta": {
-                "title": "Archive | Tantanchu's Site",
-                "titleTemplate": "{title} | {site}",
-                "loadingTitle": "Loading..."
-            },
-            "badges": {
-                "top": "TOP"
-            },
-            "navigation": {
-                "prev": "Previous Article",
-                "next": "Next Article"
-            },
             "fallback": "This content is not available in your language. Displaying the {lang} version instead."
-        },
-        "links": {
-            "title": "Links",
-            "meta": {
-                "title": "Links | Tantanchu's Site"
-            }
         }
     }
 }

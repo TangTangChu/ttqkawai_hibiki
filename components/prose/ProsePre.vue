@@ -8,7 +8,7 @@
             <button
                 class="code-copy-btn"
                 type="button"
-                :title="t('common.code.copy')"
+                :title="t('common.action.copy')"
                 :data-code="encodedCode"
                 data-code-encoding="uri"
             >
@@ -109,7 +109,7 @@ const showLineNumbers = computed(() => {
 });
 
 const languageDisplay = computed(
-    () => props.language || props.filename || t("common.code.fallbackLang"),
+    () => props.language || props.filename || t("common.label.plainText"),
 );
 const encodedCode = computed(() => encodeURIComponent(props.code || ""));
 const preClasses = computed(() => {

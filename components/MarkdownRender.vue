@@ -107,11 +107,11 @@ const updateParsedContent = (content: string): Promise<void> => {
             emit("toc-updated", tocItems.value);
         })
         .catch((error) => {
-            console.error(t("common.feedback.renderFailed"), error);
+            console.error(t("common.label.renderFailed"), error);
             parsedContent.value = null;
             tocItems.value = [];
             emit("toc-updated", []);
-            errorMessage.value = t("common.feedback.renderFailed");
+            errorMessage.value = t("common.label.renderFailed");
         });
 };
 
@@ -145,7 +145,7 @@ const handleCopyClick = (event: Event): void => {
             }, 2000);
         })
         .catch((error) => {
-            console.error(t("common.feedback.copyFailed"), error);
+            console.error(t("common.label.copyFailed"), error);
         });
 };
 
@@ -153,7 +153,7 @@ watch(
     () => props.content,
     (content) => {
         updateParsedContent(content).catch((error) => {
-            console.error(t("common.feedback.updateFailed"), error);
+            console.error(t("common.label.updateFailed"), error);
         });
     },
     { immediate: true },

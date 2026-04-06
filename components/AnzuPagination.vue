@@ -1,13 +1,13 @@
 <template>
     <nav
         class="my-8 flex items-center justify-center gap-2"
-        :aria-label="t('common.pagination.navigation')"
+        :aria-label="t('common.label.pagination')"
     >
         <AnzuButton
             variant="soft"
             size="sm"
             :disabled="currentPage <= 1"
-            :aria-label="t('common.pagination.previous')"
+            :aria-label="t('common.label.prevPage')"
             @click="onPageChange(currentPage - 1)"
         >
             <template #icon>
@@ -32,7 +32,7 @@
                     :variant="page === currentPage ? 'primary' : 'ghost'"
                     size="sm"
                     :aria-current="page === currentPage ? 'page' : undefined"
-                    :aria-label="t('common.pagination.page', { page })"
+                    :aria-label="t('common.label.page', { page })"
                     @click="onPageChange(page)"
                 >
                     {{ page }}
@@ -45,7 +45,7 @@
             size="sm"
             iconPlacement="end"
             :disabled="currentPage >= totalPages"
-            :aria-label="t('common.pagination.next')"
+            :aria-label="t('common.label.nextPage')"
             @click="onPageChange(currentPage + 1)"
         >
             <template #icon>
