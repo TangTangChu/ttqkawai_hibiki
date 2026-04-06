@@ -27,7 +27,10 @@
             "emptyToc": "Empty TOC",
             "prevNextNav": "Previous and Next Navigation",
             "plainText": "Plain Text",
-            "top": "TOP"
+            "top": "TOP",
+            "notFoundTitle": "Oops... Lost in Space!",
+            "notFoundDesc": "The page you are looking for is not here~ It might be hidden or moved!",
+            "backToHome": "Back to Home"
         }
     },
     "menu": {

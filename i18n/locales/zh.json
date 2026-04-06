@@ -27,7 +27,10 @@
             "emptyToc": "暂无目录",
             "prevNextNav": "上下篇导航",
             "plainText": "纯文本",
-            "top": "置顶"
+            "top": "置顶",
+            "notFoundTitle": "呜哇...迷路了！",
+            "notFoundDesc": "你要找的页面不在这里喔~ 可能被藏起来或者搬走啦！",
+            "backToHome": "回到温馨的家"
         }
     },
     "menu": {

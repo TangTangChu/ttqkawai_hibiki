@@ -27,7 +27,10 @@
             "emptyToc": "目次はありません",
             "prevNextNav": "前後記事ナビゲーション",
             "plainText": "プレーンテキスト",
-            "top": "トップ"
+            "top": "トップ",
+            "notFoundTitle": "あれれ...迷子になっちゃった！",
+            "notFoundDesc": "お探しのページはここにはないみたい〜。隠されちゃったか、お引越ししたかも！",
+            "backToHome": "おうちへ帰る"
         }
     },
     "menu": {
