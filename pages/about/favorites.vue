@@ -31,7 +31,7 @@
                         <a
                             v-for="item in accumulatedData"
                             :key="item.id"
-                            :href="(item.record as BaseRecord).link"
+                            :href="item.record.link"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="relative flex flex-col gap-2 cursor-pointer rounded-xl p-3 transition-colors duration-200 ease-out hover:bg-on-background/5 group"
@@ -41,14 +41,12 @@
                                 :class="
                                     activeTab === 'fav_music'
                                         ? 'aspect-square'
-                                        : activeTab === 'fav_novel'
-                                          ? 'aspect-105/148'
-                                          : 'aspect-3/4'
+                                        : 'aspect-105/148'
                                 "
                             >
                                 <img
-                                    :src="(item.record as BaseRecord).cover"
-                                    :alt="(item.record as BaseRecord).title"
+                                    :src="item.record.cover"
+                                    :alt="item.record.title"
                                     class="w-full h-full object-cover"
                                     loading="lazy"
                                 />
@@ -57,19 +55,13 @@
                                 <h3
                                     class="text-sm font-bold text-on-background line-clamp-2 transition-colors duration-200 group-hover:text-primary"
                                 >
-                                    {{ (item.record as BaseRecord).title }}
+                                    {{ item.record.title }}
                                 </h3>
                                 <p
-                                    v-if="
-                                        (activeTab === 'fav_galgame' ||
-                                            activeTab === 'fav_novel') &&
-                                        (item.record as GalgameRecord).raw_name
-                                    "
+                                    v-if="item.record.raw_name"
                                     class="text-xs text-on-background/60 line-clamp-1 mt-1"
                                 >
-                                    {{
-                                        (item.record as GalgameRecord).raw_name
-                                    }}
+                                    {{ item.record.raw_name }}
                                 </p>
                             </div>
                         </a>
@@ -101,7 +93,7 @@ import { useNavTitle } from "~/composables/useNavTitle";
 import { useApi } from "~/composables/useApi";
 import AnzuSelector from "~/components/AnzuSelector.vue";
 import AnzuLoadMore from "~/components/AnzuLoadMore.vue";
-
+import type { FavItem } from "~/types/record";
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
 
@@ -116,30 +108,14 @@ const tabs = computed(() => [
     { value: "fav_anime", label: t("pages.about.tabs.anime") },
     { value: "fav_galgame", label: t("pages.about.tabs.galgame") },
     { value: "fav_novel", label: t("pages.about.tabs.novel") },
+    { value: "fav_comic", label: t("pages.about.tabs.comic") },
 ]);
 
 const activeTab = ref("fav_music");
 
-interface BaseRecord {
-    cover: string;
-    link: string;
-    title: string;
-    is_container: boolean;
-}
-
-interface GalgameRecord extends BaseRecord {
-    raw_name?: string;
-}
-
-interface DatasetItem<T = Record<string, any>> {
-    id: string;
-    slug: string;
-    record: T;
-}
-
-const { data, loading, error, meta, get } = useApi<DatasetItem[]>();
+const { data, loading, error, meta, get } = useApi<FavItem[]>();
 const currentPage = ref(1);
-const accumulatedData = ref<DatasetItem[]>([]);
+const accumulatedData = ref<FavItem[]>([]);
 
 const fetchData = (page: number) => {
     currentPage.value = page;

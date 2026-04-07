@@ -48,7 +48,8 @@
                 "music": "Music",
                 "anime": "Anime",
                 "galgame": "Galgame",
-                "novel": "Light Novel"
+                "novel": "Light Novel",
+                "comic": "Comic"
             }
         },
         "archive": {
