@@ -20,7 +20,7 @@
     --base-text-weight-medium: 500;
     --base-text-weight-semibold: 600;
     --fontStack-monospace:
-        "Consolas",ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono,
+        "Consolas", ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono,
         monospace;
     --border-radius-base: 6px;
     --heading-min-size: 1rem;
@@ -45,13 +45,11 @@
     --focus-outlineColor: var(--primary);
 
     /* Semantic Colors */
-    --fgColor-accent: var(--primary);
-    --fgColor-success: var(--secondary);
-    /* Distinct from primary */
+    --fgColor-accent: #8250df;
+    --fgColor-success: #1a7f37;
     --fgColor-attention: var(--tertiary);
-    --fgColor-danger: var(--primary);
-    --fgColor-done: var(--tertiary);
-    /* Distinct from primary */
+    --fgColor-danger: #cf222e;
+    --fgColor-done: #8250df;
 
     /* Backgrounds */
     --bgColor-default: var(--background);
@@ -146,11 +144,11 @@
     --focus-outlineColor: var(--primary);
 
     /* Semantic Colors */
-    --fgColor-accent: var(--primary);
-    --fgColor-success: var(--secondary);
+    --fgColor-accent: #a371f7;
+    --fgColor-success: #3fb950;
     --fgColor-attention: var(--tertiary);
-    --fgColor-danger: var(--primary);
-    --fgColor-done: var(--tertiary);
+    --fgColor-danger: #f85149;
+    --fgColor-done: #a371f7;
 
     /* Backgrounds */
     --bgColor-default: var(--background);
@@ -609,6 +607,19 @@
 
 .markdown-wrapper .markdown-alert.alert-error .markdown-alert-content {
     color: color-mix(in srgb, var(--fgColor-danger) 90%, var(--fgColor-default) 10%);
+}
+
+.markdown-wrapper .markdown-alert.alert-important {
+    background-color: color-mix(in srgb, var(--fgColor-accent) var(--alert-bg-opacity), transparent);
+}
+
+.markdown-wrapper .markdown-alert.alert-important .alert-icon,
+.markdown-wrapper .markdown-alert.alert-important .markdown-alert-title {
+    color: var(--fgColor-accent);
+}
+
+.markdown-wrapper .markdown-alert.alert-important .markdown-alert-content {
+    color: color-mix(in srgb, var(--fgColor-accent) 90%, var(--fgColor-default) 10%);
 }
 
 .markdown-wrapper .markdown-alert.alert-plain {

@@ -3,7 +3,7 @@ import { transformOutsideFencedBlocks } from "~/utils/markdown-preprocess";
 const alertTypeMap = {
     NOTE: { type: "info", title: "Note" },
     TIP: { type: "succ", title: "Tip" },
-    IMPORTANT: { type: "warn", title: "Important" },
+    IMPORTANT: { type: "important", title: "Important" },
     WARNING: { type: "warn", title: "Warning" },
     CAUTION: { type: "error", title: "Caution" },
 } as const;

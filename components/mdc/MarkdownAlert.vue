@@ -27,7 +27,7 @@ import {
 } from "@heroicons/vue/24/outline";
 
 const props = defineProps<{
-    type?: "info" | "succ" | "warn" | "error" | "plain";
+    type?: "info" | "succ" | "warn" | "error" | "plain" | "important";
     title?: string;
 }>();
 
@@ -37,6 +37,7 @@ const icons = {
     warn: ExclamationTriangleIcon,
     error: XCircleIcon,
     plain: InformationCircleIcon,
+    important: ExclamationCircleIcon,
 } as const;
 
 const labelIcons = {
