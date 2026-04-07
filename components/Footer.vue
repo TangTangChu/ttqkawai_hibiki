@@ -5,7 +5,7 @@
         >
             <p>
                 © {{ copyrightYears }}
-                <span class="font-bold text-primary">糖糖毬</span> All Rights
+                <span class="font-bold text-primary">糖糖毬</span> Some Rights
                 Reserved.
             </p>
             <div
