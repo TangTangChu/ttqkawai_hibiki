@@ -87,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, onMounted, computed, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
 import { useApi } from "~/composables/useApi";
@@ -144,9 +144,12 @@ const fetchData = async (page: number) => {
     await get(`/v1/datasets/${activeTab.value}?page=${page}&page_size=20`);
 };
 
-const onPageChange = (page: number) => {
-    fetchData(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+const onPageChange = async (page: number) => {
+    await fetchData(page);
+    await nextTick();
+    requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
 };
 
 watch(data, (newData) => {
