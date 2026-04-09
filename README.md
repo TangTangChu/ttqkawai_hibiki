@@ -10,3 +10,7 @@
 基于 https://github.com/JUFEWPST/JXUFE-CSG-Website 设计思想爆改而来，多多少少也能见到一些影子，这两个项目在未来应该会互相影响的说
 
 背景灵感来源于Galgame **「恋慕之心的交织方式」**，更多可参见[又是更新了UX](https://tantanchugasuki.cn/archives/%E5%8F%88%E6%98%AF%E6%9B%B4%E6%96%B0%E4%BA%86UX)
+
+## hibiki是什么意思呢？
+
+響き、仅此而已，`ttqkawai` -> `ttqkawai_re` -> `ttqkawai_hibiki`
