@@ -4,9 +4,10 @@
         :aria-label="t('common.label.pagination')"
     >
         <AnzuButton
-            variant="soft"
+            variant="ghost"
             size="sm"
             :disabled="currentPage <= 1"
+            :loading="loading"
             :aria-label="t('common.label.prevPage')"
             @click="onPageChange(currentPage - 1)"
         >
@@ -31,6 +32,7 @@
                     v-else
                     :variant="page === currentPage ? 'primary' : 'ghost'"
                     size="sm"
+                    :disabled="loading"
                     :aria-current="page === currentPage ? 'page' : undefined"
                     :aria-label="t('common.label.page', { page })"
                     @click="onPageChange(page)"
@@ -41,10 +43,11 @@
         </div>
 
         <AnzuButton
-            variant="soft"
+            variant="ghost"
             size="sm"
             iconPlacement="end"
             :disabled="currentPage >= totalPages"
+            :loading="loading"
             :aria-label="t('common.label.nextPage')"
             @click="onPageChange(currentPage + 1)"
         >
@@ -67,9 +70,11 @@ const props = withDefaults(
         currentPage: number;
         totalPages: number;
         maxVisiblePages?: number;
+        loading?: boolean;
     }>(),
     {
         maxVisiblePages: 5,
+        loading: false,
     },
 );
 

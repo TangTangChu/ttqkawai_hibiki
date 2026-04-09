@@ -4,9 +4,11 @@
         v-bind="rootProps"
         :class="[
             baseClass,
-            sizeClasses[props.size],
+            hasDefault
+                ? sizeClasses[props.size]
+                : iconOnlySizeClasses[props.size],
             variantClasses[props.variant],
-            props.block ? 'w-full' : 'w-auto',
+            props.block ? 'w-full' : '',
             props.disabled || props.loading
                 ? 'pointer-events-none opacity-60'
                 : 'cursor-pointer',
@@ -22,7 +24,7 @@
             <slot v-else name="icon" :class="iconClasses[props.size]" />
         </span>
 
-        <span class="min-w-0 leading-none">
+        <span v-if="hasDefault" class="min-w-0 leading-none">
             <slot />
         </span>
 
@@ -84,6 +86,12 @@ const sizeClasses: Record<AnzuButtonSize, string> = {
     lg: "min-h-12 gap-3 px-6 text-base",
 };
 
+const iconOnlySizeClasses: Record<AnzuButtonSize, string> = {
+    sm: "h-9 w-9 p-0 text-sm",
+    md: "h-11 w-11 p-0 text-sm",
+    lg: "h-12 w-12 p-0 text-base",
+};
+
 const variantClasses: Record<AnzuButtonVariant, string> = {
     primary:
         "border-primary/70 bg-primary text-on-primary hover:bg-primary/90 active:bg-primary/80",
@@ -106,6 +114,7 @@ const iconClasses: Record<AnzuButtonSize, string> = {
 };
 
 const hasIcon = computed(() => Boolean(slots.icon));
+const hasDefault = computed(() => Boolean(slots.default));
 
 const tagName = computed(() => {
     if (props.to) return "NuxtLink";

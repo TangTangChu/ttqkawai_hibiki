@@ -16,7 +16,7 @@
             </div>
             <div class="min-h-100">
                 <div
-                    v-if="loading && currentPage === 1"
+                    v-if="loading && currentData.length === 0"
                     class="flex justify-center py-12"
                 >
                     <AnzuSpinner class="w-8 h-8 text-primary" />
@@ -24,12 +24,12 @@
 
                 <ErrorDisplay v-else-if="error" :error="error" />
 
-                <div v-else-if="accumulatedData.length > 0">
+                <div v-else-if="currentData.length > 0">
                     <div
                         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
                     >
                         <a
-                            v-for="item in accumulatedData"
+                            v-for="item in currentData"
                             :key="item.id"
                             :href="item.record.link"
                             target="_blank"
@@ -68,12 +68,12 @@
                     </div>
 
                     <div class="mt-8">
-                        <AnzuLoadMore
-                            :has-more="
-                                meta ? currentPage < meta.total_pages : false
-                            "
+                        <AnzuPagination
+                            v-if="currentMeta && currentMeta.total_pages > 1"
+                            :current-page="tabPages[activeTab] || 1"
+                            :total-pages="currentMeta.total_pages"
                             :loading="loading"
-                            @load-more="onLoadMore"
+                            @page-change="onPageChange"
                         />
                     </div>
                 </div>
@@ -92,7 +92,8 @@ import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
 import { useApi } from "~/composables/useApi";
 import AnzuSelector from "~/components/AnzuSelector.vue";
-import AnzuLoadMore from "~/components/AnzuLoadMore.vue";
+import AnzuPagination from "~/components/AnzuPagination.vue";
+import AnzuSpinner from "~/components/AnzuSpinner.vue";
 import type { FavItem } from "~/types/record";
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
@@ -114,39 +115,77 @@ const tabs = computed(() => [
 const activeTab = ref("fav_music");
 
 const { data, loading, error, meta, get } = useApi<FavItem[]>();
-const currentPage = ref(1);
-const accumulatedData = ref<FavItem[]>([]);
 
-const fetchData = (page: number) => {
-    currentPage.value = page;
-    get(`/v1/datasets/${activeTab.value}?page=${page}&page_size=20`);
+const tabPages = ref<Record<string, number>>({
+    fav_music: 1,
+    fav_anime: 1,
+    fav_galgame: 1,
+    fav_novel: 1,
+    fav_comic: 1,
+});
+
+const currentData = ref<FavItem[]>([]);
+const currentMeta = ref<any>(undefined);
+const tabDataCache = ref<Record<string, Record<number, FavItem[]>>>({});
+const tabMetaCache = ref<Record<string, Record<number, any>>>({});
+
+const fetchData = async (page: number) => {
+    tabPages.value[activeTab.value] = page;
+    const cachedData = tabDataCache.value[activeTab.value]?.[page];
+    if (cachedData) {
+        currentData.value = cachedData;
+        const cachedMeta = tabMetaCache.value[activeTab.value]?.[page];
+        if (cachedMeta) {
+            currentMeta.value = cachedMeta;
+        }
+        return;
+    }
+
+    await get(`/v1/datasets/${activeTab.value}?page=${page}&page_size=20`);
 };
 
-const onLoadMore = () => {
-    if (meta.value && currentPage.value < meta.value.total_pages) {
-        fetchData(currentPage.value + 1);
-    }
+const onPageChange = (page: number) => {
+    fetchData(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 watch(data, (newData) => {
     if (newData) {
-        if (currentPage.value === 1) {
-            accumulatedData.value = [...newData];
-        } else {
-            const existingIds = new Set(
-                accumulatedData.value.map((item) => item.id),
-            );
-            const freshData = newData.filter(
-                (item) => !existingIds.has(item.id),
-            );
-            accumulatedData.value.push(...freshData);
+        currentData.value = [...newData];
+        currentMeta.value = meta.value;
+        const tab = activeTab.value;
+        const page = tabPages.value[tab];
+
+        if (!tabDataCache.value[tab]) tabDataCache.value[tab] = {};
+        if (!tabMetaCache.value[tab]) tabMetaCache.value[tab] = {};
+
+        const tabData = tabDataCache.value[tab];
+        const tabMeta = tabMetaCache.value[tab];
+
+        if (tabData && tabMeta && page !== undefined) {
+            tabData[page] = currentData.value;
+            if (currentMeta.value) {
+                tabMeta[page] = currentMeta.value;
+            }
         }
     }
 });
 
-watch(activeTab, () => {
-    accumulatedData.value = [];
-    fetchData(1);
+watch(activeTab, (newTab) => {
+    const savedPage = tabPages.value[newTab] || 1;
+    const cachedData = tabDataCache.value[newTab]?.[savedPage];
+    if (cachedData) {
+        currentData.value = cachedData;
+        const cachedMeta = tabMetaCache.value[newTab]?.[savedPage];
+        if (cachedMeta) {
+            currentMeta.value = cachedMeta;
+        }
+    } else {
+        currentData.value = [];
+        currentMeta.value = undefined;
+    }
+
+    fetchData(savedPage);
 });
 
 onMounted(() => {
