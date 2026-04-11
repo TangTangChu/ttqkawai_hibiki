@@ -231,7 +231,7 @@
 
 .markdown-wrapper a {
     background-color: transparent;
-    color: var(--fgColor-accent);
+    color: var(--color-primary);
     text-decoration: none;
     transition: color 0.2s;
 }
@@ -363,7 +363,7 @@
 }
 
 .markdown-wrapper a:hover {
-    text-decoration: wavy underline var(--fgColor-accent);
+    text-decoration: wavy underline var(--color-primary);
 }
 
 .markdown-wrapper ::placeholder {
