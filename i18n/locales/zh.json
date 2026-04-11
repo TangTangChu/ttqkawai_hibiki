@@ -44,6 +44,7 @@
     },
     "pages": {
         "about": {
+            "timeline": "时间线",
             "tabs": {
                 "music": "音乐",
                 "anime": "番剧",

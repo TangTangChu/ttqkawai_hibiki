@@ -1,17 +1,25 @@
 <template>
-    <main class="w-full mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 xl:max-w-5xl">
+    <main
+        class="w-full mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 xl:max-w-5xl"
+    >
         <header class="text-center mb-12">
-            <h1 class="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">
+            <h1
+                class="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl"
+            >
                 {{ t("menu.about") }}
             </h1>
         </header>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-            <NuxtLink 
-                to="/about/favorites" 
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8"
+        >
+            <NuxtLink
+                to="/about/favorites"
                 class="flex items-center gap-4 p-4 rounded-xl bg-surface/50"
             >
-                <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <div
+                    class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary"
+                >
                     <HeartIcon class="w-6 h-6" />
                 </div>
                 <div class="flex-1 min-w-0">
@@ -22,14 +30,33 @@
             </NuxtLink>
         </div>
 
-        <div>有缘再写</div>
+        <section class="mt-16">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                    <ClockIcon class="w-6 h-6" />
+                </div>
+                <h2 class="text-2xl font-bold text-on-background">
+                    {{ t("pages.about.timeline") }}
+                </h2>
+            </div>
+
+            <div class="mt-4 flex flex-col">
+                <TimelineCard
+                    v-for="(item, index) in timelineData"
+                    :key="index"
+                    :item="item"
+                />
+            </div>
+        </section>
     </main>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
-import { HeartIcon } from "@heroicons/vue/24/outline";
+import { HeartIcon, ClockIcon } from "@heroicons/vue/24/outline";
+import { timelineData } from "~/data/timeline";
+import TimelineCard from "~/components/TimelineCard.vue";
 
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();

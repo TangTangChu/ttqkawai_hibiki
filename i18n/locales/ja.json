@@ -44,6 +44,7 @@
     },
     "pages": {
         "about": {
+            "timeline": "タイムライン",
             "tabs": {
                 "music": "音楽",
                 "anime": "アニメ",
