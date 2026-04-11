@@ -30,7 +30,7 @@
                             />
                             <time :datetime="archive.data?.publish_time">
                                 {{
-                                    formatDate(
+                                    formatDateTime(
                                         archive.data?.publish_time || "",
                                         locale,
                                     )
