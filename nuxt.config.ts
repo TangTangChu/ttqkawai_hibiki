@@ -51,6 +51,17 @@ export default defineNuxtConfig({
                 "vue",
                 "html",
                 "css",
+                "go",
+                "java",
+                "cpp",
+                "csharp",
+                "php",
+                "ruby",
+                "rust",
+                "sql",
+                "dockerfile",
+                "powershell",
+                "c"
             ],
         },
         headings: {
