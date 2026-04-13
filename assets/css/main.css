@@ -50,27 +50,32 @@
                 var(--on-surface));
     }
 
-    body {
+    html {
         @apply bg-background text-on-background transition-colors duration-300;
         font-family: '荆南波波黑-Bold';
+        scrollbar-gutter: stable;
+        scrollbar-width: thin;
+        scrollbar-color: color-mix(in srgb, var(--primary) 90%, transparent) transparent;
     }
 }
 
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
+@supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
 
-::-webkit-scrollbar-track {
-    background: transparent;
-}
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
 
-::-webkit-scrollbar-thumb {
-    @apply bg-primary/30 rounded-md;
-}
+    ::-webkit-scrollbar-thumb {
+        @apply bg-primary/30 rounded-md;
+    }
 
-::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary/50;
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-primary/50;
+    }
 }
 
 
