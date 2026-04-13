@@ -62,15 +62,15 @@
             var(--background));
 
     /* Code Block Colors */
-    --codeBlock-bg: color-mix(in srgb, var(--surface) 90%, var(--on-surface) 10%);
+    --codeBlock-bg: color-mix(in srgb, var(--surface) 96%, var(--on-surface) 4%);
     --codeBlock-inline-bg: color-mix(in srgb,
-            var(--surface) 92%,
-            var(--on-surface) 8%);
+            var(--surface) 96%,
+            var(--on-surface) 4%);
     --codeBlock-line-highlight-bg: color-mix(in srgb,
             var(--primary) 8%,
             transparent);
     --codeBlock-copy-hover-bg: color-mix(in srgb,
-            var(--on-surface) 6%,
+            var(--primary) 10%,
             transparent);
 
     /* Borders */
@@ -161,15 +161,15 @@
             var(--surface));
 
     /* Code Block Colors */
-    --codeBlock-bg: color-mix(in srgb, var(--surface) 88%, var(--on-surface) 12%);
+    --codeBlock-bg: color-mix(in srgb, var(--surface) 90%, var(--on-surface) 10%);
     --codeBlock-inline-bg: color-mix(in srgb,
-            var(--surface) 84%,
-            var(--on-surface) 16%);
+            var(--surface) 86%,
+            var(--on-surface) 14%);
     --codeBlock-line-highlight-bg: color-mix(in srgb,
-            var(--primary) 16%,
+            var(--primary) 15%,
             transparent);
     --codeBlock-copy-hover-bg: color-mix(in srgb,
-            var(--on-surface) 10%,
+            var(--primary) 20%,
             transparent);
 
     /* Borders */
@@ -1198,13 +1198,14 @@
 
 .markdown-wrapper .code-block-wrapper pre.shiki code {
     display: block;
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
 }
 
 .markdown-wrapper .code-block-wrapper pre.shiki code .line {
     display: block;
     padding: 1px 14px;
-    white-space: pre-wrap;
+    white-space: pre;
     line-height: 1.45;
 }
 
