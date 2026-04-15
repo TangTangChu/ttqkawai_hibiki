@@ -30,4 +30,10 @@ export const friends: FriendLink[] = [
         url: "https://csec.jxufe.edu.cn",
         avatar: "https://csec.jxufe.edu.cn/favicon.svg",
     },
+    {
+        name: "Lestine",
+        description: "梦想在远方，我在月球",
+        url: "https://ilestine.cn",
+        avatar: "https://ilestine.cn/images/im.jpg",
+    },
 ];
