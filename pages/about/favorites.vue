@@ -26,12 +26,23 @@
 
                 <div v-else-if="currentData.length > 0">
                     <div
+                        v-if="activeTab === 'fav_char'"
+                        class="flex flex-col items-center"
+                    >
+                        <AnzuCharCard
+                            v-for="item in currentData"
+                            :key="item.id"
+                            :char="item as FavCharItem"
+                        />
+                    </div>
+                    <div
+                        v-else
                         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
                     >
                         <a
                             v-for="item in currentData"
                             :key="item.id"
-                            :href="item.record.link"
+                            :href="(item as FavItem).record.link"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="relative flex flex-col gap-2 cursor-pointer rounded-xl p-3 transition-colors duration-200 ease-out hover:bg-on-background/5 group"
@@ -73,6 +84,9 @@
                             :current-page="tabPages[activeTab] || 1"
                             :total-pages="currentMeta.total_pages"
                             :loading="loading"
+                            :layout="
+                                activeTab === 'fav_char' ? 'compact' : 'default'
+                            "
                             @page-change="onPageChange"
                         />
                     </div>
@@ -94,7 +108,8 @@ import { useApi } from "~/composables/useApi";
 import AnzuSelector from "~/components/AnzuSelector.vue";
 import AnzuPagination from "~/components/AnzuPagination.vue";
 import AnzuSpinner from "~/components/AnzuSpinner.vue";
-import type { FavItem } from "~/types/record";
+import AnzuCharCard from "~/components/AnzuCharCard.vue";
+import type { FavItem, FavCharItem } from "~/types/record";
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
 
@@ -110,13 +125,15 @@ const tabs = computed(() => [
     { value: "fav_galgame", label: t("pages.about.tabs.galgame") },
     { value: "fav_novel", label: t("pages.about.tabs.novel") },
     { value: "fav_comic", label: t("pages.about.tabs.comic") },
+    { value: "fav_char", label: t("pages.about.tabs.character") },
 ]);
 
 const activeTab = ref("fav_music");
 
-const { data, loading, error, meta, get } = useApi<FavItem[]>();
+const { data, loading, error, meta, get } = useApi<any>();
 
 const tabPages = ref<Record<string, number>>({
+    fav_char: 1,
     fav_music: 1,
     fav_anime: 1,
     fav_galgame: 1,
@@ -124,9 +141,11 @@ const tabPages = ref<Record<string, number>>({
     fav_comic: 1,
 });
 
-const currentData = ref<FavItem[]>([]);
+const currentData = ref<(FavItem | FavCharItem)[]>([]);
 const currentMeta = ref<any>(undefined);
-const tabDataCache = ref<Record<string, Record<number, FavItem[]>>>({});
+const tabDataCache = ref<
+    Record<string, Record<number, (FavItem | FavCharItem)[]>>
+>({});
 const tabMetaCache = ref<Record<string, Record<number, any>>>({});
 
 const fetchData = async (page: number) => {
@@ -141,7 +160,9 @@ const fetchData = async (page: number) => {
         return;
     }
 
-    await get(`/v1/datasets/${activeTab.value}?page=${page}&page_size=20`);
+    await get(
+        `/v1/datasets/${activeTab.value}?page=${page}&page_size=${activeTab.value === "fav_char" ? 1 : 20}`,
+    );
 };
 
 const onPageChange = async (page: number) => {

@@ -16,7 +16,7 @@
             </template>
         </AnzuButton>
 
-        <div class="flex items-center gap-1">
+        <div v-if="layout === 'default'" class="flex items-center gap-1">
             <template
                 v-for="(page, index) in displayPages"
                 :key="`${page}-${index}`"
@@ -40,6 +40,28 @@
                     {{ page }}
                 </AnzuButton>
             </template>
+        </div>
+
+        <div
+            v-else-if="layout === 'compact'"
+            class="flex items-center gap-1 mx-2"
+        >
+            <input
+                type="number"
+                :value="currentPage"
+                @keyup.enter="handleInputPageChange"
+                @blur="handleInputPageChange"
+                min="1"
+                :max="totalPages"
+                class="w-12 h-9 text-center text-sm font-semibold rounded-xl bg-transparent text-on-background hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                :aria-label="t('common.label.pagination')"
+            />
+            <span class="text-sm font-semibold text-on-background/50 px-1"
+                >/</span
+            >
+            <span class="text-sm font-semibold text-on-background/80 px-2">{{
+                totalPages
+            }}</span>
         </div>
 
         <AnzuButton
@@ -71,10 +93,12 @@ const props = withDefaults(
         totalPages: number;
         maxVisiblePages?: number;
         loading?: boolean;
+        layout?: "default" | "compact";
     }>(),
     {
         maxVisiblePages: 5,
         loading: false,
+        layout: "default",
     },
 );
 
@@ -135,4 +159,34 @@ const onPageChange = (page: number): void => {
 
     emit("page-change", page);
 };
+
+const handleInputPageChange = (evt: Event) => {
+    const target = evt.target as HTMLInputElement;
+    let page = parseInt(target.value, 10);
+
+    if (isNaN(page)) {
+        target.value = props.currentPage.toString();
+        return;
+    }
+
+    if (page < 1) page = 1;
+    if (page > props.totalPages) page = props.totalPages;
+
+    target.value = page.toString();
+
+    if (page !== props.currentPage) {
+        onPageChange(page);
+    }
+};
 </script>
+
+<style scoped>
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+</style>
