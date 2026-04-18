@@ -46,6 +46,7 @@
         "about": {
             "timeline": "Timeline",
             "tabs": {
+                "character": "Character",
                 "music": "Music",
                 "anime": "Anime",
                 "galgame": "Galgame",
