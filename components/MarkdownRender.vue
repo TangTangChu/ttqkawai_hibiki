@@ -14,6 +14,15 @@
                 }"
             />
 
+            <div
+                v-else-if="parsing"
+                class="flex items-center justify-center py-20"
+                role="status"
+                :aria-label="t('common.label.loading')"
+            >
+                <AnzuSpinner size="lg" />
+            </div>
+
             <p v-else-if="errorMessage" class="text-on-background/80">
                 {{ errorMessage }}
             </p>
@@ -26,6 +35,7 @@ import type { MDCParserResult } from "@nuxtjs/mdc";
 import { computed, ref, watch } from "vue";
 import type { DefineComponent } from "vue";
 import { useMarkdown } from "~/composables/UseMarkdown";
+import AnzuSpinner from "~/components/AnzuSpinner.vue";
 import BilibiliEmbed from "~/components/mdc/BilibiliEmbed.vue";
 import MarkdownAlert from "~/components/mdc/MarkdownAlert.vue";
 import ProseA from "~/components/prose/ProseA.vue";
@@ -57,6 +67,7 @@ const markdownRoot = ref<HTMLElement | null>(null);
 const parsedContent = ref<MDCParserResult | null>(null);
 const tocItems = ref<TocItem[]>([]);
 const errorMessage = ref("");
+const parsing = ref(false);
 
 const rendererComponents = {
     a: ProseA,
@@ -94,11 +105,13 @@ const updateParsedContent = (content: string): Promise<void> => {
         parsedContent.value = null;
         tocItems.value = [];
         errorMessage.value = "";
+        parsing.value = false;
         emit("toc-updated", []);
         return Promise.resolve();
     }
 
     errorMessage.value = "";
+    parsing.value = true;
 
     return parseMdcMarkdown(content, props.sanitize !== false)
         .then((result) => {
@@ -112,6 +125,9 @@ const updateParsedContent = (content: string): Promise<void> => {
             tocItems.value = [];
             emit("toc-updated", []);
             errorMessage.value = t("common.label.renderFailed");
+        })
+        .finally(() => {
+            parsing.value = false;
         });
 };
 

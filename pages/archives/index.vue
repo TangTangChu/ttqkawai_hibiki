@@ -10,12 +10,12 @@
             </h1>
         </header>
         <div
-            v-if="loadingTop || loadingList"
+            v-if="initialLoading"
             class="flex items-center justify-center"
         >
             <AnzuSpinner size="xl" />
         </div>
-        <div v-else-if="errorList || errorTop" class="py-8">
+        <div v-else-if="initialError" class="py-8">
             <ErrorDisplay :errorData="errorList || errorTop" />
         </div>
         <div v-else class="space-y-6">
@@ -55,7 +55,7 @@
             </ul>
 
             <div
-                v-if="!archives || archives.length === 0"
+                v-if="archives && archives.length === 0"
                 class="py-12 text-center"
             >
                 <p class="text-on-background/60">
@@ -68,13 +68,14 @@
             v-if="totalPages > 1"
             :currentPage="currentPage"
             :totalPages="totalPages"
+            :loading="loadingList"
             @page-change="handlePageChange"
         />
     </main>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ArticleBlock from "~/components/ArticleBlock.vue";
 import AnzuPagination from "~/components/AnzuPagination.vue";
@@ -83,7 +84,7 @@ import ErrorDisplay from "~/components/ErrorDisplay.vue";
 import { useApi } from "~/composables/useApi";
 import { useNavTitle } from "~/composables/useNavTitle";
 import type { Archive } from "~/types/archive";
-import { formatDate, resolveCmsLocale } from "~/utils/formatDate";
+import { resolveCmsLocale } from "~/utils/formatDate";
 
 const { t, locale } = useI18n();
 const route = useRoute();
@@ -111,10 +112,20 @@ const {
     get: getArchives,
 } = useApi<Archive[]>();
 
-const currentPage = ref(1);
+const currentPage = ref(Number(route.query.page) || 1);
 const totalPages = ref(1);
 
 const cmsLocale = computed(() => resolveCmsLocale(locale.value));
+
+const hasAnyData = computed(
+    () => Boolean(topArchives.value) || Boolean(archives.value),
+);
+const initialLoading = computed(
+    () => (loadingTop.value || loadingList.value) && !hasAnyData.value,
+);
+const initialError = computed(
+    () => Boolean(errorList.value || errorTop.value) && !hasAnyData.value,
+);
 
 const loadTopArchives = async () => {
     await getTopArchives(
@@ -134,10 +145,14 @@ const loadArchives = async (page: number) => {
 
 watch(
     () => route.query.page,
-    (newPage) => {
+    async (newPage) => {
         const pageNum = Number(newPage) || 1;
         currentPage.value = pageNum;
-        loadArchives(pageNum);
+        await loadArchives(pageNum);
+        await nextTick();
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
     },
 );
 
