@@ -101,7 +101,6 @@ export function useApi<T>(): {
 
         response.value.loading = true;
         response.value.error = null;
-        response.value.data = null;
 
         return fetch(
             `${baseURL}${endpoint}`,
