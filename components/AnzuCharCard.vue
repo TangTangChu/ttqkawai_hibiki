@@ -11,7 +11,7 @@
                 <img
                     :src="char.record.cover"
                     :alt="char.record.title"
-                    class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                    class="w-full h-full object-contain"
                     loading="lazy"
                 />
             </div>
@@ -27,23 +27,44 @@
         </div>
         <div class="flex flex-col justify-center flex-1 min-w-0 py-4">
             <div class="mb-8">
-                <div class="flex items-center gap-4">
+                <div class="flex items-baseline gap-3 flex-wrap">
                     <h2
                         class="text-3xl md:text-4xl font-extrabold text-on-background truncate"
                     >
                         {{ char.record.title }}
                     </h2>
+                    <span
+                        v-if="char.record.raw_name"
+                        class="text-lg md:text-xl text-on-background/60 font-medium"
+                    >
+                        {{ char.record.raw_name }}
+                    </span>
                 </div>
-                <p
-                    v-if="char.record.raw_name"
-                    class="text-base text-on-background/60 mt-2"
+                <div
+                    v-if="char.record.alias && char.record.alias.length"
+                    class="mt-2 text-sm text-on-background/60"
                 >
-                    {{ char.record.raw_name }}
-                </p>
+                    {{ char.record.alias.join(" / ") }}
+                </div>
             </div>
-            <div class="relative min-h-30 flex items-center">
-                <transition name="fade" mode="out-in">
-                    <div :key="currentKotobaIndex" class="relative py-2 w-full">
+            <div
+                class="relative w-full overflow-hidden transition-[height] duration-500 ease-out"
+                :style="{
+                    height:
+                        kotobaHeight === 'auto' ? 'auto' : `${kotobaHeight}px`,
+                }"
+            >
+                <transition
+                    name="kotoba-fade"
+                    @before-leave="onBeforeLeave"
+                    @leave="onLeave"
+                    @enter="onEnter"
+                    @after-enter="onAfterEnter"
+                >
+                    <div
+                        :key="currentKotobaIndex"
+                        class="w-full py-2 flex items-center min-h-20"
+                    >
                         <p
                             class="text-lg md:text-xl text-on-background/90 leading-relaxed"
                         >
@@ -88,6 +109,41 @@ const currentKotoba = computed(() => {
     return kotobas[currentKotobaIndex.value] || "";
 });
 
+// Height animation hooks
+const kotobaHeight = ref<number | "auto">("auto");
+
+const onBeforeLeave = (el: Element) => {
+    // Lock the current height before the element starts leaving
+    kotobaHeight.value = (el as HTMLElement).offsetHeight;
+};
+
+const onLeave = (el: Element) => {
+    // Remove the leaving element from normal document flow
+    // so it doesn't push the newly entering element down.
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.position = "absolute";
+    htmlEl.style.top = "0";
+    htmlEl.style.left = "0";
+    htmlEl.style.width = "100%";
+};
+
+const onEnter = (el: Element) => {
+    // Measure the natural height of the newly mounted element.
+    // It's in the document flow now.
+    const newHeight = (el as HTMLElement).offsetHeight;
+
+    // Force a small tick so Vue applies the locked height first,
+    // then immediately set the new target height to start the CSS transition.
+    requestAnimationFrame(() => {
+        kotobaHeight.value = newHeight;
+    });
+};
+
+const onAfterEnter = () => {
+    // Once the transition finishes, restore fluid height for any window resizing
+    kotobaHeight.value = "auto";
+};
+
 // 自动轮播语录
 let intervalId: ReturnType<typeof setInterval>;
 onMounted(() => {
@@ -108,12 +164,12 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.6s ease;
+.kotoba-fade-enter-active,
+.kotoba-fade-leave-active {
+    transition: opacity 0.5s ease-out;
 }
-.fade-enter-from,
-.fade-leave-to {
+.kotoba-fade-enter-from,
+.kotoba-fade-leave-to {
     opacity: 0;
 }
 </style>

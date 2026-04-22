@@ -29,6 +29,23 @@
                         v-if="activeTab === 'fav_char'"
                         class="flex flex-col items-center"
                     >
+                        <div
+                            class="w-full flex justify-center mb-6 min-h-16"
+                        >
+                            <AnzuSpinner
+                                v-if="isCharListLoading"
+                                class="w-5 h-5 text-primary my-auto"
+                            />
+                            <AnzuSelector
+                                v-else-if="charListCache.length"
+                                variant="text"
+                                :modelValue="tabPages[activeTab] || 1"
+                                :options="charListCache"
+                                @update:modelValue="
+                                    onPageChange(Number($event))
+                                "
+                            />
+                        </div>
                         <AnzuCharCard
                             v-for="item in currentData"
                             :key="item.id"
@@ -128,6 +145,16 @@ const tabs = computed(() => [
     { value: "fav_char", label: t("pages.about.tabs.character") },
 ]);
 
+const route = useRoute();
+const router = useRouter();
+
+const parseHashToTab = (hash: string) => {
+    if (!hash) return "fav_music";
+    const h = hash.replace("#", "");
+    const valid = ["music", "anime", "galgame", "novel", "comic", "char"];
+    return valid.includes(h) ? `fav_${h}` : "fav_music";
+};
+
 const activeTab = ref("fav_music");
 
 const { data, loading, error, meta, get } = useApi<any>();
@@ -147,6 +174,29 @@ const tabDataCache = ref<
     Record<string, Record<number, (FavItem | FavCharItem)[]>>
 >({});
 const tabMetaCache = ref<Record<string, Record<number, any>>>({});
+
+const charListCache = ref<{ label: string; value: number }[]>([]);
+const isCharListLoading = ref(false);
+
+const fetchCharList = async () => {
+    if (charListCache.value.length > 0) return;
+    isCharListLoading.value = true;
+    try {
+        const res = await $fetch<{ data: FavCharItem[] }>(
+            `${useRuntimeConfig().public.apiBase || "https://cms.tantanchugasuki.cn/nozomi"}/v1/datasets/fav_char?page=1&page_size=1000`,
+        );
+        if (res && res.data) {
+            charListCache.value = res.data.map((item, index) => ({
+                label: item.record.title,
+                value: index + 1,
+            }));
+        }
+    } catch (e) {
+        console.error("Failed to fetch full char list", e);
+    } finally {
+        isCharListLoading.value = false;
+    }
+};
 
 const fetchData = async (page: number) => {
     tabPages.value[activeTab.value] = page;
@@ -196,6 +246,15 @@ watch(data, (newData) => {
 });
 
 watch(activeTab, (newTab) => {
+    const hash = `#${newTab.replace("fav_", "")}`;
+    if (route.hash !== hash) {
+        router.replace({ hash });
+    }
+
+    if (newTab === "fav_char") {
+        fetchCharList();
+    }
+
     const savedPage = tabPages.value[newTab] || 1;
     const cachedData = tabDataCache.value[newTab]?.[savedPage];
     if (cachedData) {
@@ -213,6 +272,15 @@ watch(activeTab, (newTab) => {
 });
 
 onMounted(() => {
-    fetchData(1);
+    const hashTab = parseHashToTab(route.hash);
+    if (hashTab !== "fav_music") {
+        activeTab.value = hashTab;
+    } else {
+        fetchData(1);
+    }
+
+    if (activeTab.value === "fav_char") {
+        fetchCharList();
+    }
 });
 </script>
