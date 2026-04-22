@@ -8,8 +8,9 @@ export interface BaseRecord {
 }
 
 export interface CharRecord extends Omit<BaseRecord, 'link'> {
-    origin: string;
-    kotoba: string[];
+    origin?: string; // 立绘来源
+    kotoba?: string[]; // 角色语录
+    alias?: string[]; // 角色别号
 }
 
 export type FavItem = DatasetItem<BaseRecord>;
