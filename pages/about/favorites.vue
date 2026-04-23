@@ -29,19 +29,17 @@
                         v-if="activeTab === 'fav_char'"
                         class="flex flex-col items-center"
                     >
-                        <div
-                            class="w-full flex justify-center mb-6 min-h-16"
-                        >
+                        <div class="w-full flex justify-center mb-6 min-h-16">
                             <AnzuSpinner
                                 v-if="isCharListLoading"
                                 class="w-5 h-5 text-primary my-auto"
                             />
                             <AnzuSelector
-                                v-else-if="charListCache.length"
+                                v-else-if="charListCache.length > 0"
                                 variant="text"
-                                :modelValue="tabPages[activeTab] || 1"
+                                :model-value="tabPages[activeTab] || 1"
                                 :options="charListCache"
-                                @update:modelValue="
+                                @update:model-value="
                                     onPageChange(Number($event))
                                 "
                             />
@@ -182,14 +180,18 @@ const fetchCharList = async () => {
     if (charListCache.value.length > 0) return;
     isCharListLoading.value = true;
     try {
+        const config = useRuntimeConfig();
+        const apiBase =
+            config.public.apiBase || "https://cms.tantanchugasuki.cn/nozomi";
         const res = await $fetch<{ data: FavCharItem[] }>(
-            `${useRuntimeConfig().public.apiBase || "https://cms.tantanchugasuki.cn/nozomi"}/v1/datasets/fav_char?page=1&page_size=1000`,
+            `${apiBase}/v1/datasets/fav_char?page=1&page_size=100`,
         );
         if (res && res.data) {
             charListCache.value = res.data.map((item, index) => ({
                 label: item.record.title,
                 value: index + 1,
             }));
+            console.log("Char list fetched:", charListCache.value.length);
         }
     } catch (e) {
         console.error("Failed to fetch full char list", e);
@@ -200,6 +202,11 @@ const fetchCharList = async () => {
 
 const fetchData = async (page: number) => {
     tabPages.value[activeTab.value] = page;
+
+    if (activeTab.value === "fav_char") {
+        await fetchCharList();
+    }
+
     const cachedData = tabDataCache.value[activeTab.value]?.[page];
     if (cachedData) {
         currentData.value = cachedData;
