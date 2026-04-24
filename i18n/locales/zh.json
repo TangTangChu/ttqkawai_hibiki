@@ -1,7 +1,8 @@
 {
     "site": {
         "title": "糖糖毬",
-        "slogan": "愿我们终能与我们所憧憬的美好相遇"
+        "slogan": "愿我们终能与我们所憧憬的美好相遇",
+        "name": "糖糖毬"
     },
     "common": {
         "action": {
@@ -45,6 +46,9 @@
     "pages": {
         "about": {
             "timeline": "时间线",
+            "aboutMe": "关于 me",
+            "university": "大学",
+            "major": "网络空间安全",
             "tabs": {
                 "character": "角色",
                 "music": "音乐",

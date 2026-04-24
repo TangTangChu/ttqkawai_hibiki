@@ -1,7 +1,8 @@
 {
     "site": {
         "title": "Tantanchuのサイト",
-        "slogan": "Any Word Shows Love"
+        "slogan": "Any Word Shows Love",
+        "name": "Tantanchu"
     },
     "common": {
         "action": {
@@ -45,6 +46,9 @@
     "pages": {
         "about": {
             "timeline": "タイムライン",
+            "aboutMe": "自分について",
+            "university": "大学",
+            "major": "サイバースペースセキュリティ",
             "tabs": {
                 "character": "キャラクター",
                 "music": "音楽",

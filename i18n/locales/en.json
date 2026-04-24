@@ -1,7 +1,8 @@
 {
     "site": {
         "title": "Tantanchu's Site",
-        "slogan": "Any Word Shows Love"
+        "slogan": "Any Word Shows Love",
+        "name": "Tantanchu"
     },
     "common": {
         "action": {
@@ -45,6 +46,9 @@
     "pages": {
         "about": {
             "timeline": "Timeline",
+            "aboutMe": "About me",
+            "university": "University",
+            "major": "Cyberspace Security",
             "tabs": {
                 "character": "Character",
                 "music": "Music",
