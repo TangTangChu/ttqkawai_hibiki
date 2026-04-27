@@ -5,6 +5,7 @@ export interface BaseRecord {
     title: string;
     is_container: boolean;
     raw_name?: string;
+    desc?: string;
 }
 
 export interface CharRecord extends Omit<BaseRecord, 'link'> {

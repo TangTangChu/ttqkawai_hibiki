@@ -54,43 +54,48 @@
                         v-else
                         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
                     >
-                        <a
+                        <AnzuTooltip
                             v-for="item in currentData"
                             :key="item.id"
-                            :href="(item as FavItem).record.link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="relative flex flex-col gap-2 cursor-pointer rounded-xl p-3 transition-colors duration-200 ease-out hover:bg-on-background/5 group"
+                            :content="(item as FavItem).record.desc"
+                            class="w-full h-full"
                         >
-                            <div
-                                class="w-full shrink-0 rounded-xl overflow-hidden bg-surface-variant/50"
-                                :class="
-                                    activeTab === 'fav_music'
-                                        ? 'aspect-square'
-                                        : 'aspect-105/148'
-                                "
+                            <a
+                                :href="(item as FavItem).record.link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="relative flex flex-col h-full gap-2 cursor-pointer rounded-xl p-3 transition-colors duration-200 ease-out hover:bg-on-background/5 group"
                             >
-                                <img
-                                    :src="item.record.cover"
-                                    :alt="item.record.title"
-                                    class="w-full h-full object-cover"
-                                    loading="lazy"
-                                />
-                            </div>
-                            <div class="flex-1 min-w-0 text-center mt-2">
-                                <h3
-                                    class="text-sm font-bold text-on-background line-clamp-2 transition-colors duration-200 group-hover:text-primary"
+                                <div
+                                    class="w-full shrink-0 rounded-xl overflow-hidden bg-surface-variant/50"
+                                    :class="
+                                        activeTab === 'fav_music'
+                                            ? 'aspect-square'
+                                            : 'aspect-105/148'
+                                    "
                                 >
-                                    {{ item.record.title }}
-                                </h3>
-                                <p
-                                    v-if="item.record.raw_name"
-                                    class="text-xs text-on-background/60 line-clamp-1 mt-1"
-                                >
-                                    {{ item.record.raw_name }}
-                                </p>
-                            </div>
-                        </a>
+                                    <img
+                                        :src="item.record.cover"
+                                        :alt="item.record.title"
+                                        class="w-full h-full object-cover"
+                                        loading="lazy"
+                                    />
+                                </div>
+                                <div class="flex-1 min-w-0 text-center mt-2">
+                                    <h3
+                                        class="text-sm font-bold text-on-background line-clamp-2 transition-colors duration-200 group-hover:text-primary"
+                                    >
+                                        {{ item.record.title }}
+                                    </h3>
+                                    <p
+                                        v-if="item.record.raw_name"
+                                        class="text-xs text-on-background/60 line-clamp-1 mt-1"
+                                    >
+                                        {{ item.record.raw_name }}
+                                    </p>
+                                </div>
+                            </a>
+                        </AnzuTooltip>
                     </div>
 
                     <div class="mt-8">
@@ -123,6 +128,7 @@ import { useApi } from "~/composables/useApi";
 import AnzuSelector from "~/components/AnzuSelector.vue";
 import AnzuPagination from "~/components/AnzuPagination.vue";
 import AnzuSpinner from "~/components/AnzuSpinner.vue";
+import AnzuTooltip from "~/components/AnzuTooltip.vue";
 import AnzuCharCard from "~/components/AnzuCharCard.vue";
 import type { FavItem, FavCharItem } from "~/types/record";
 const { t } = useI18n();
