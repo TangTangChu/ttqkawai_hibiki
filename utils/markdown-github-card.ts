@@ -11,6 +11,16 @@ export interface ParsedGithubLink {
     tag?: string;
 }
 
+const RESERVED_PATHS = new Set([
+    "login", "logout", "signup", "settings", "notifications", "explore",
+    "marketplace", "sponsors", "codespaces", "organizations", "pricing",
+    "features", "new", "import", "search", "dashboard", "stars", "gists",
+    "discussions", "topics", "trending", "collections", "events", "about",
+    "blog", "contact", "security", "pull", "issues", "pulls", "releases",
+    "tags", "tree", "blob", "commit", "commits", "watchers", "stargazers",
+    "forks", "branches", "account", "copilot", "orgs",
+]);
+
 const STANDALONE_GITHUB_LINK_REGEX =
     /^(?:\[(?<label>[^\]]+)\]\((?<markdownUrl>https?:\/\/(?:www\.)?github\.com\/[^)\s]+)\)|<(?<angleUrl>https?:\/\/(?:www\.)?github\.com\/[^>\s]+)>|(?<rawUrl>https?:\/\/(?:www\.)?github\.com\/\S+))$/;
 
@@ -43,7 +53,7 @@ export const parseGithubLink = (href: string): ParsedGithubLink | null => {
         .filter(Boolean);
 
     const owner = segments[0];
-    if (!owner) return null;
+    if (!owner || RESERVED_PATHS.has(owner)) return null;
 
     if (segments.length === 1) {
         return {
@@ -54,7 +64,7 @@ export const parseGithubLink = (href: string): ParsedGithubLink | null => {
     }
 
     const repo = segments[1] ? segments[1].replace(/\.git$/i, "") : null;
-    if (!repo) return null;
+    if (!repo || RESERVED_PATHS.has(repo)) return null;
 
     if (segments.length === 2) {
         return {
@@ -106,6 +116,10 @@ export const parseGithubLink = (href: string): ParsedGithubLink | null => {
             repo,
             number: id,
         };
+    }
+
+    if (segments.length >= 3 && RESERVED_PATHS.has(marker)) {
+        return null;
     }
 
     return {
