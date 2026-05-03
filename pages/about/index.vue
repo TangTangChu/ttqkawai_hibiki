@@ -67,11 +67,9 @@
                     <span
                         v-for="tag in myTags"
                         :key="tag"
-                        class="px-3 py-1 rounded-xl bg-secondary/10 text-secondary text-sm font-medium transition-colors duration-200 hover:bg-secondary/20"
+                        class="px-3 py-1 rounded-xl bg-secondary/10 text-secondary text-sm font-medium transition-colors duration-200 hover:bg-secondary/20 flex items-center"
                     >
-                        <TagIcon
-                            class="inline-block w-3.5 h-3.5 mr-1 align-text-top opacity-50"
-                        />
+                        <TagIcon class="w-3.5 h-3.5 mr-1 opacity-50" />
                         {{ tag }}
                     </span>
                 </div>

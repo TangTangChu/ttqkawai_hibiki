@@ -3,7 +3,11 @@
         <NuxtLink
             :to="linkto"
             class="group relative flex w-full flex-col justify-between gap-3 rounded-xl p-4 md:p-6 transition-all duration-200 ease-out before:absolute before:inset-0 before:z-[-1] before:scale-[0.92] before:rounded-2xl before:bg-secondary before:opacity-0 before:backdrop-blur-md before:transition-all before:duration-200 hover:translate-x-2 hover:before:scale-100 hover:before:opacity-20 dark:hover:before:opacity-40 md:flex-row md:items-center"
-            :style="{ '--origin-x': `${(title.length * 13) % 100}%`, '--origin-y': `${(title.length * 7) % 30}%`, 'transform-origin': 'var(--origin-x) var(--origin-y)' }"
+            :style="{
+                '--origin-x': `${(title.length * 13) % 100}%`,
+                '--origin-y': `${(title.length * 7) % 30}%`,
+                'transform-origin': 'var(--origin-x) var(--origin-y)',
+            }"
         >
             <div class="flex-1 min-w-0">
                 <div class="flex items-start gap-3 mb-2">
@@ -45,21 +49,12 @@
                     <TagList v-if="tags && tags.length > 0" :tags="tags" />
                 </div>
             </div>
-
-            <div class="hidden shrink-0 items-center justify-center md:flex">
-                <div
-                    class="flex h-10 w-10 -translate-x-2.5 items-center justify-center rounded-full text-primary opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
-                    aria-hidden="true"
-                >
-                    <ChevronRightIcon class="h-5 w-5" />
-                </div>
-            </div>
         </NuxtLink>
     </li>
 </template>
 
 <script setup lang="ts">
-import { CalendarIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
+import { CalendarIcon } from "@heroicons/vue/20/solid";
 import TagList from "./TagList.vue";
 
 const { t } = useI18n();

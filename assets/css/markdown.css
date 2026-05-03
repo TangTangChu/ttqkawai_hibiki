@@ -45,11 +45,11 @@
     --focus-outlineColor: var(--primary);
 
     /* Semantic Colors */
-    --fgColor-accent: #8250df;
+    --fgColor-accent: var(--primary);
     --fgColor-success: #1a7f37;
     --fgColor-attention: var(--tertiary);
     --fgColor-danger: #cf222e;
-    --fgColor-done: #8250df;
+    --fgColor-done: var(--primary);
 
     /* Backgrounds */
     --bgColor-default: var(--background);
@@ -144,11 +144,11 @@
     --focus-outlineColor: var(--primary);
 
     /* Semantic Colors */
-    --fgColor-accent: #a371f7;
+    --fgColor-accent: var(--primary);
     --fgColor-success: #3fb950;
     --fgColor-attention: var(--tertiary);
     --fgColor-danger: #f85149;
-    --fgColor-done: #a371f7;
+    --fgColor-done: var(--primary);
 
     /* Backgrounds */
     --bgColor-default: var(--background);
