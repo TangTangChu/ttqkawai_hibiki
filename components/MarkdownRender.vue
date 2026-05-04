@@ -20,7 +20,7 @@
                 role="status"
                 :aria-label="t('common.label.loading')"
             >
-                <AnzuSpinner size="lg" />
+                <AnriSpinner size="lg" />
             </div>
 
             <p v-else-if="errorMessage" class="text-on-background/80">
@@ -35,7 +35,7 @@ import type { MDCParserResult } from "@nuxtjs/mdc";
 import { computed, ref, watch } from "vue";
 import type { DefineComponent } from "vue";
 import { useMarkdown } from "~/composables/UseMarkdown";
-import AnzuSpinner from "~/components/AnzuSpinner.vue";
+import AnriSpinner from "~/components/AnriSpinner.vue";
 import BilibiliEmbed from "~/components/mdc/BilibiliEmbed.vue";
 import MarkdownAlert from "~/components/mdc/MarkdownAlert.vue";
 import ProseA from "~/components/prose/ProseA.vue";

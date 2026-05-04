@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center my-8">
-        <AnzuButton 
+        <AnriButton 
             v-if="hasMore"
             variant="ghost"
             size="md"
@@ -9,7 +9,7 @@
             class="px-6 rounded-xl"
         >
             {{ loading ? t('common.label.loading') : t('common.action.loadMore') }}
-        </AnzuButton>
+        </AnriButton>
         <span v-else class="text-on-background/40 text-sm">
             {{ t('common.label.noMore') }}
         </span>
@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import AnzuButton from "~/components/AnzuButton.vue";
+import AnriButton from "~/components/AnriButton.vue";
 
 const { t } = useI18n();
 

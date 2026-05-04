@@ -3,7 +3,7 @@
         class="my-8 flex items-center justify-center gap-2"
         :aria-label="t('common.label.pagination')"
     >
-        <AnzuButton
+        <AnriButton
             variant="ghost"
             size="sm"
             :disabled="currentPage <= 1"
@@ -14,7 +14,7 @@
             <template #icon>
                 <ChevronLeftIcon class="h-4 w-4" />
             </template>
-        </AnzuButton>
+        </AnriButton>
 
         <div v-if="layout === 'default'" class="flex items-center gap-1">
             <template
@@ -28,7 +28,7 @@
                 >
                     …
                 </span>
-                <AnzuButton
+                <AnriButton
                     v-else
                     :variant="page === currentPage ? 'primary' : 'ghost'"
                     size="sm"
@@ -38,7 +38,7 @@
                     @click="onPageChange(page)"
                 >
                     {{ page }}
-                </AnzuButton>
+                </AnriButton>
             </template>
         </div>
 
@@ -64,7 +64,7 @@
             }}</span>
         </div>
 
-        <AnzuButton
+        <AnriButton
             variant="ghost"
             size="sm"
             iconPlacement="end"
@@ -76,14 +76,14 @@
             <template #icon>
                 <ChevronRightIcon class="h-4 w-4" />
             </template>
-        </AnzuButton>
+        </AnriButton>
     </nav>
 </template>
 
 <script setup lang="ts">
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
-import AnzuButton from "./AnzuButton.vue";
+import AnriButton from "./AnriButton.vue";
 
 const { t } = useI18n();
 

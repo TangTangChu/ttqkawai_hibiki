@@ -22,14 +22,14 @@
                     {{ t("common.label.errorPageDesc") }}
                 </p>
 
-                <AnzuButton
+                <AnriButton
                     variant="primary"
                     size="lg"
                     @click="handleGoHome"
                     class="px-10"
                 >
                     {{ t("common.label.backToHome") }}
-                </AnzuButton>
+                </AnriButton>
             </div>
         </main>
     </NuxtLayout>

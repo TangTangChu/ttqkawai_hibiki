@@ -1,7 +1,7 @@
 <template>
     <main class="mx-auto w-full max-w-8xl px-4 py-8 sm:px-6 lg:px-8">
         <div v-if="loading" class="flex items-center justify-center py-20">
-            <AnzuSpinner size="xl" />
+            <AnriSpinner size="xl" />
         </div>
         <div v-else-if="error" class="py-12">
             <ErrorDisplay :errorData="error" />
@@ -67,7 +67,7 @@
                         @toc-updated="handleTocUpdate"
                     />
                 </div>
-                <AnzuPrevNextNav
+                <AnriPrevNextNav
                     v-if="prevNav || nextNav"
                     :prev="prevNav"
                     :next="nextNav"
@@ -151,8 +151,8 @@ import { LanguageIcon } from "@heroicons/vue/20/solid";
 import { Bars3BottomLeftIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import AnzuPrevNextNav from "~/components/AnzuPrevNextNav.vue";
-import AnzuSpinner from "~/components/AnzuSpinner.vue";
+import AnriPrevNextNav from "~/components/AnriPrevNextNav.vue";
+import AnriSpinner from "~/components/AnriSpinner.vue";
 import ErrorDisplay from "~/components/ErrorDisplay.vue";
 import MarkdownRender from "~/components/MarkdownRender.vue";
 import MarkdownTOC from "~/components/MarkdownTOC.vue";

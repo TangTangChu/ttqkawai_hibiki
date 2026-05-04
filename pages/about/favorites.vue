@@ -12,14 +12,14 @@
 
         <section>
             <div class="mb-8">
-                <AnzuSelector v-model="activeTab" :options="tabs" />
+                <AnriSelector v-model="activeTab" :options="tabs" />
             </div>
             <div class="min-h-100">
                 <div
                     v-if="loading && currentData.length === 0"
                     class="flex justify-center py-12"
                 >
-                    <AnzuSpinner class="w-8 h-8 text-primary" />
+                    <AnriSpinner class="w-8 h-8 text-primary" />
                 </div>
 
                 <ErrorDisplay v-else-if="error" :error="error" />
@@ -30,11 +30,11 @@
                         class="flex flex-col items-center"
                     >
                         <div class="w-full flex justify-center mb-6 min-h-16">
-                            <AnzuSpinner
+                            <AnriSpinner
                                 v-if="isCharListLoading"
                                 class="w-5 h-5 text-primary my-auto"
                             />
-                            <AnzuSelector
+                            <AnriSelector
                                 v-else-if="charListCache.length > 0"
                                 variant="text"
                                 :model-value="tabPages[activeTab] || 1"
@@ -44,7 +44,7 @@
                                 "
                             />
                         </div>
-                        <AnzuCharCard
+                        <AnriCharCard
                             v-for="item in currentData"
                             :key="item.id"
                             :char="item as FavCharItem"
@@ -54,7 +54,7 @@
                         v-else
                         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
                     >
-                        <AnzuTooltip
+                        <AnriTooltip
                             v-for="item in currentData"
                             :key="item.id"
                             :content="(item as FavItem).record.desc"
@@ -95,11 +95,11 @@
                                     </p>
                                 </div>
                             </a>
-                        </AnzuTooltip>
+                        </AnriTooltip>
                     </div>
 
                     <div class="mt-8">
-                        <AnzuPagination
+                        <AnriPagination
                             v-if="currentMeta && currentMeta.total_pages > 1"
                             :current-page="tabPages[activeTab] || 1"
                             :total-pages="currentMeta.total_pages"
@@ -125,11 +125,11 @@ import { ref, watch, onMounted, computed, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
 import { useApi } from "~/composables/useApi";
-import AnzuSelector from "~/components/AnzuSelector.vue";
-import AnzuPagination from "~/components/AnzuPagination.vue";
-import AnzuSpinner from "~/components/AnzuSpinner.vue";
-import AnzuTooltip from "~/components/AnzuTooltip.vue";
-import AnzuCharCard from "~/components/AnzuCharCard.vue";
+import AnriSelector from "~/components/AnriSelector.vue";
+import AnriPagination from "~/components/AnriPagination.vue";
+import AnriSpinner from "~/components/AnriSpinner.vue";
+import AnriTooltip from "~/components/AnriTooltip.vue";
+import AnriCharCard from "~/components/AnriCharCard.vue";
 import type { FavItem, FavCharItem } from "~/types/record";
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();

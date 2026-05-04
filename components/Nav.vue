@@ -192,9 +192,9 @@
                     <div
                         class="ml-2 flex min-w-0 shrink-0 items-center gap-1 sm:gap-2"
                     >
-                        <AnzuThemeToggle />
+                        <AnriThemeToggle />
 
-                        <AnzuLocaleSelect class="shrink-0" />
+                        <AnriLocaleSelect class="shrink-0" />
 
                         <button
                             v-if="!isWideLayout"
@@ -262,8 +262,8 @@ import {
     EllipsisHorizontalIcon,
     XMarkIcon,
 } from "@heroicons/vue/24/outline";
-import AnzuLocaleSelect from "~/components/AnzuLocaleSelect.vue";
-import AnzuThemeToggle from "~/components/AnzuThemeToggle.vue";
+import AnriLocaleSelect from "~/components/AnriLocaleSelect.vue";
+import AnriThemeToggle from "~/components/AnriThemeToggle.vue";
 import { menu, type MenuItem } from "~/data/menu";
 import { useClickAway } from "~/composables/useClickAway";
 import { useNavTitle } from "~/composables/useNavTitle";

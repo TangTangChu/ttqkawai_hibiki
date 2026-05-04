@@ -13,7 +13,7 @@
             v-if="initialLoading"
             class="flex items-center justify-center"
         >
-            <AnzuSpinner size="xl" />
+            <AnriSpinner size="xl" />
         </div>
         <div v-else-if="initialError" class="py-8">
             <ErrorDisplay :errorData="errorList || errorTop" />
@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        <AnzuPagination
+        <AnriPagination
             v-if="totalPages > 1"
             :currentPage="currentPage"
             :totalPages="totalPages"
@@ -78,8 +78,8 @@
 import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ArticleBlock from "~/components/ArticleBlock.vue";
-import AnzuPagination from "~/components/AnzuPagination.vue";
-import AnzuSpinner from "~/components/AnzuSpinner.vue";
+import AnriPagination from "~/components/AnriPagination.vue";
+import AnriSpinner from "~/components/AnriSpinner.vue";
 import ErrorDisplay from "~/components/ErrorDisplay.vue";
 import { useApi } from "~/composables/useApi";
 import { useNavTitle } from "~/composables/useNavTitle";

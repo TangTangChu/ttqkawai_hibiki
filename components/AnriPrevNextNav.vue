@@ -53,13 +53,13 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-export interface AnzuPrevNextTarget {
+export interface AnriPrevNextTarget {
     to: string;
     title: string;
 }
 
 defineProps<{
-    prev?: AnzuPrevNextTarget | null;
-    next?: AnzuPrevNextTarget | null;
+    prev?: AnriPrevNextTarget | null;
+    next?: AnriPrevNextTarget | null;
 }>();
 </script>

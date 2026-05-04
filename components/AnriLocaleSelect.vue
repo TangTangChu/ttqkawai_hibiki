@@ -1,5 +1,5 @@
 <template>
-    <AnzuDropdown widthClass="w-32" align="right">
+    <AnriDropdown widthClass="w-32" align="right">
         <template #trigger="{ toggle, isOpen }">
             <button
                 @click="toggle"
@@ -29,14 +29,14 @@
                 {{ loc.name }}
             </button>
         </template>
-    </AnzuDropdown>
+    </AnriDropdown>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { LanguageIcon } from "@heroicons/vue/24/outline";
-import AnzuDropdown from "~/components/AnzuDropdown.vue";
+import AnriDropdown from "~/components/AnriDropdown.vue";
 
 const props = withDefaults(
     defineProps<{

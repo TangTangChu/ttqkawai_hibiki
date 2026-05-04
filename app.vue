@@ -17,8 +17,8 @@ useHead(() => ({
 <template>
     <NuxtLayout>
         <NuxtRouteAnnouncer />
-        <AnzuPageTransition />
+        <AnriPageTransition />
         <NuxtPage />
-        <AnzuImageViewer />
+        <AnriImageViewer />
     </NuxtLayout>
 </template>
