@@ -17,7 +17,7 @@
             class="group block rounded-2xl border border-primary/10 bg-surface/80 p-4 text-on-background! no-underline! transition-[border-color,background-color] duration-200 hover:border-primary/20 hover:bg-primary/5"
         >
             <span class="flex items-center gap-3">
-                <img
+                <AnriImageView
                     v-if="parsed.type === 'user'"
                     class="js-gh-image m-0 h-12 w-12 shrink-0 rounded-full object-cover shadow-none"
                     :src="previewImage"
@@ -38,7 +38,7 @@
                 </span>
             </span>
 
-            <img
+            <AnriImageView
                 v-if="parsed.type !== 'user'"
                 class="js-gh-image mt-3 hidden w-full rounded-xl object-contain shadow-none sm:block"
                 :src="previewImage"

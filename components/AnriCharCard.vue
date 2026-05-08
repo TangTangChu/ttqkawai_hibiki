@@ -8,10 +8,10 @@
             <div
                 class="relative aspect-105/148 rounded-xl overflow-hidden bg-surface-variant/50 group"
             >
-                <img
+                <AnriImageView
                     :src="char.record.cover"
                     :alt="char.record.title"
-                    class="w-full h-full object-contain"
+                    img-class="w-full h-full object-contain"
                     loading="lazy"
                 />
             </div>

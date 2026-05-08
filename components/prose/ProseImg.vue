@@ -1,12 +1,14 @@
 <template>
-    <img
-        ref="imgRef"
-        :src="src"
-        :alt="alt"
-        :title="title"
-        class="md-zoomable-img cursor-zoom-in rounded-xl"
-        @click="handleClick"
-    />
+    <div class="relative inline-block w-full">
+        <AnriImageView
+            ref="imgRef"
+            :src="src"
+            :alt="alt"
+            :title="title"
+            class="md-zoomable-img cursor-zoom-in rounded-xl"
+            @click="handleClick"
+        />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -19,13 +21,16 @@ const props = defineProps<{
     title?: string;
 }>();
 
-const imgRef = ref<HTMLImageElement | null>(null);
+const imgRef = ref<any>(null);
 const { openViewer } = useImageViewer();
 
 const handleClick = () => {
-    if (!imgRef.value) return;
+    const el = imgRef.value?.$el;
+    if (!el) return;
+    const img = el.querySelector("img");
+    if (!img) return;
 
-    const wrapper = imgRef.value.closest(".markdown-wrapper");
+    const wrapper = el.closest(".markdown-wrapper");
     const currentSrc = props.src || "";
     if (!wrapper) {
         openViewer(0, [currentSrc]);
@@ -33,10 +38,10 @@ const handleClick = () => {
     }
 
     const imgElements = Array.from(
-        wrapper.querySelectorAll(".md-zoomable-img"),
+        wrapper.querySelectorAll(".md-zoomable-img img"),
     ) as HTMLImageElement[];
     const images = imgElements.map((img) => img.src);
-    const index = imgElements.indexOf(imgRef.value);
+    const index = imgElements.indexOf(img);
 
     openViewer(
         index > -1 ? index : 0,

@@ -74,7 +74,7 @@
                                             : 'aspect-105/148'
                                     "
                                 >
-                                    <img
+                                    <AnriImageView
                                         :src="item.record.cover"
                                         :alt="item.record.title"
                                         class="w-full h-full object-cover"

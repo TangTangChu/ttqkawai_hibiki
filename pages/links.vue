@@ -22,7 +22,7 @@
                 style="transform-origin: var(--origin-x) var(--origin-y)"
             >
                 <div class="shrink-0">
-                    <img
+                    <AnriImageView
                         :src="friend.avatar"
                         :alt="friend.name"
                         class="w-16 h-16 md:w-20 md:h-20 rounded-2xl object-cover"
