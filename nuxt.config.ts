@@ -8,6 +8,7 @@ export default defineNuxtConfig({
             apiBase:
                 process.env.NUXT_PUBLIC_API_BASE ||
                 "https://cms.tantanchugasuki.cn/nozomi",
+            gitHash: process.env.NUXT_PUBLIC_GIT_HASH || "dev",
         },
     },
     vite: {

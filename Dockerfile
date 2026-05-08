@@ -11,6 +11,9 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+ARG GIT_HASH
+ENV NUXT_PUBLIC_GIT_HASH=${GIT_HASH}
+
 RUN pnpm run build
 
 ENV NODE_ENV=production

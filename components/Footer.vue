@@ -32,12 +32,25 @@
                     />
                     <span>赣公网安备36073102000182号</span>
                 </a>
+                <a
+                    href="https://github.com/TangTangChu/ttqkawai_hibiki"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="transition-colors hover:text-primary font-mono"
+                    v-if="showGitHash"
+                >
+                    #{{ shortGitHash }}
+                </a>
             </div>
         </div>
     </footer>
 </template>
 
 <script setup lang="ts">
+const config = useRuntimeConfig();
+const gitHash = String(config.public.gitHash || "dev");
+const shortGitHash = gitHash.slice(0, 7);
+const showGitHash = gitHash !== "dev";
 const currentYear = new Date().getFullYear();
 const copyrightYears = currentYear === 2025 ? "2025" : `2025-${currentYear}`;
 </script>
