@@ -36,7 +36,7 @@
                     href="https://github.com/TangTangChu/ttqkawai_hibiki"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="transition-colors hover:text-primary font-mono"
+                    class="transition-colors hover:text-primary"
                     v-if="showGitHash"
                 >
                     #{{ shortGitHash }}
