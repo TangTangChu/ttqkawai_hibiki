@@ -36,4 +36,10 @@ export const friends: FriendLink[] = [
         url: "https://ilestine.cn",
         avatar: "https://ilestine.cn/images/im.jpg",
     },
+    {
+        name: "fgfsj",
+        description: "生时何必久睡，死后必定长眠",
+        url: "http://fgfsj.top/",
+        avatar: "https://s3.bmp.ovh/2026/05/08/i1ptxaZ4.jpg",
+    }
 ];
