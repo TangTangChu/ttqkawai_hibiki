@@ -41,5 +41,11 @@ export const friends: FriendLink[] = [
         description: "生时何必久睡，死后必定长眠",
         url: "http://fgfsj.top/",
         avatar: "https://s3.bmp.ovh/2026/05/08/i1ptxaZ4.jpg",
+    },
+    {
+        name: "woodfish",
+        description: "我喜欢你",
+        url: "https://www.woodfish.site/newBlog/",
+        avatar: "https://pic1.imgdb.cn/item/682f3d1658cb8da5c807b704.jpg",
     }
 ];
