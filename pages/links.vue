@@ -21,11 +21,15 @@
                 :style="`--origin-x: ${(index * 13) % 100}%; --origin-y: ${(index * 7) % 30}%`"
                 style="transform-origin: var(--origin-x) var(--origin-y)"
             >
-                <div class="shrink-0">
+                <div
+                    class="shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden"
+                >
                     <AnriImage
                         :src="friend.avatar"
                         :alt="friend.name"
-                        class="w-16 h-16 md:w-20 md:h-20 rounded-2xl object-cover"
+                        :w-full="true"
+                        :h-full="true"
+                        class="w-full h-full object-cover"
                         loading="lazy"
                     />
                 </div>
@@ -35,8 +39,14 @@
                     >
                         {{ friend.name }}
                     </h2>
-                    <p class="text-xs text-on-background/50 truncate mb-1.5 font-medium">
-                        {{ friend.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') }}
+                    <p
+                        class="text-xs text-on-background/50 truncate mb-1.5 font-medium"
+                    >
+                        {{
+                            friend.url
+                                .replace(/^https?:\/\/(www\.)?/, "")
+                                .replace(/\/$/, "")
+                        }}
                     </p>
                     <p
                         class="text-sm text-on-background/70 line-clamp-2 leading-relaxed"

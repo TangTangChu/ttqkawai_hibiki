@@ -32,7 +32,10 @@
                     />
                     <span>赣公网安备36073102000182号</span>
                 </a>
-                <a href="https://icp.gov.moe/?keyword=20261230" target="_blank"
+                <a
+                    href="https://icp.gov.moe/?keyword=20261230"
+                    target="_blank"
+                    class="transition-colors hover:text-primary"
                     >萌ICP备20261230号</a
                 >
                 <a

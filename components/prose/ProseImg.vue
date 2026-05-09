@@ -5,6 +5,8 @@
             :src="src"
             :alt="alt"
             :title="title"
+            :w-full="false"
+            :h-full="false"
             class="md-zoomable-img cursor-zoom-in rounded-xl"
             @click="handleClick"
         />

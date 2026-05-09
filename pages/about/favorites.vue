@@ -77,6 +77,8 @@
                                     <AnriImage
                                         :src="item.record.cover"
                                         :alt="item.record.title"
+                                        :w-full="true"
+                                        :h-full="true"
                                         class="w-full h-full object-cover"
                                         loading="lazy"
                                     />
