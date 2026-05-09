@@ -19,6 +19,6 @@ useHead(() => ({
         <NuxtRouteAnnouncer />
         <AnriPageTransition />
         <NuxtPage />
-        <AnriImageViewer />
+        <AnriLightbox />
     </NuxtLayout>
 </template>

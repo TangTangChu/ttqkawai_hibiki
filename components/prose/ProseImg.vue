@@ -1,6 +1,6 @@
 <template>
     <div class="relative inline-block w-full">
-        <AnriImageView
+        <AnriImage
             ref="imgRef"
             :src="src"
             :alt="alt"
