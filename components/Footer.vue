@@ -15,9 +15,14 @@
                     href="https://beian.miit.gov.cn/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="transition-colors hover:text-primary"
+                    class="flex items-center gap-1 transition-colors hover:text-primary"
                 >
-                    赣ICP备2025067513号-1
+                    <img
+                        src="https://img.tantanchugasuki.cn/i/r/ICP备案"
+                        class="h-4 w-4"
+                        alt="ICP备案图标"
+                    />
+                    <span>赣ICP备2025067513号-1</span>
                 </a>
                 <a
                     href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=36073102000182"
@@ -35,9 +40,15 @@
                 <a
                     href="https://icp.gov.moe/?keyword=20261230"
                     target="_blank"
-                    class="transition-colors hover:text-primary"
-                    >萌ICP备20261230号</a
+                    class="flex items-center gap-1 transition-colors hover:text-primary"
                 >
+                    <img
+                        src="https://img.tantanchugasuki.cn/i/r/萌ICP"
+                        class="w-4 h-4"
+                        alt="萌ICP备案图标"
+                    />
+                    <span>萌ICP备20261230号</span>
+                </a>
                 <a
                     href="https://github.com/TangTangChu/ttqkawai_hibiki"
                     target="_blank"
@@ -45,7 +56,7 @@
                     class="transition-colors hover:text-primary"
                     v-if="showGitHash"
                 >
-                    #{{ shortGitHash }}
+                    #{{ shortGitHash.toUpperCase() }}
                 </a>
             </div>
         </div>
