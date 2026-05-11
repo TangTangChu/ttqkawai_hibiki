@@ -10,7 +10,7 @@
             <article class="min-w-0 flex-1">
                 <header class="my-2 text-left">
                     <h1
-                        class="mb-2 text-3xl font-extrabold leading-tight text-on-background sm:text-4xl md:text-5xl lg:text-6xl"
+                        class="mb-2 text-2xl font-extrabold leading-tight text-on-background sm:text-3xl lg:text-4xl xl:text-5xl"
                     >
                         {{ archive.data?.title || archive.title }}
                     </h1>
