@@ -24,6 +24,9 @@ const RESERVED_PATHS = new Set([
 const STANDALONE_GITHUB_LINK_REGEX =
     /^(?:\[(?<label>[^\]]+)\]\((?<markdownUrl>https?:\/\/(?:www\.)?github\.com\/[^)\s]+)\)|<(?<angleUrl>https?:\/\/(?:www\.)?github\.com\/[^>\s]+)>|(?<rawUrl>https?:\/\/(?:www\.)?github\.com\/\S+))$/;
 
+const TRAILING_GITHUB_URL_REGEX =
+    /^(?<prefix>.+?)\s*(?:\[(?<label>[^\]]+)\]\((?<markdownUrl>https?:\/\/(?:www\.)?github\.com\/[^)\s]+)\)|(?<rawUrl>https?:\/\/(?:www\.)?github\.com\/\S+))\s*$/;
+
 export const getLinkKey = (link: ParsedGithubLink): string => {
     return [
         link.type,
@@ -134,18 +137,37 @@ const toGithubCardBlock = (href: string): string => {
     return `::github-card{href="${href}"}\n::`;
 };
 
-const extractMatchedGithubUrl = (line: string): string => {
-    const match = line.match(STANDALONE_GITHUB_LINK_REGEX);
-    if (!match || !match.groups) {
-        return "";
+interface ExtractedUrl {
+    prefix: string;
+    href: string;
+}
+
+const extractGithubUrl = (line: string): ExtractedUrl | null => {
+    let match = line.match(TRAILING_GITHUB_URL_REGEX);
+    if (match?.groups) {
+        const prefix = match.groups.prefix || "";
+        const href =
+            match.groups.markdownUrl ||
+            match.groups.rawUrl ||
+            "";
+        if (href) {
+            return { prefix, href };
+        }
     }
 
-    return (
-        match.groups.markdownUrl ||
-        match.groups.angleUrl ||
-        match.groups.rawUrl ||
-        ""
-    );
+    match = line.match(STANDALONE_GITHUB_LINK_REGEX);
+    if (match?.groups) {
+        const href =
+            match.groups.markdownUrl ||
+            match.groups.angleUrl ||
+            match.groups.rawUrl ||
+            "";
+        if (href) {
+            return { prefix: "", href };
+        }
+    }
+
+    return null;
 };
 
 const transformGithubCardEmbeds = (content: string): string => {
@@ -158,13 +180,21 @@ const transformGithubCardEmbeds = (content: string): string => {
                     return line;
                 }
 
-                const href = extractMatchedGithubUrl(trimmed);
-
-                if (!href || !parseGithubLink(href)) {
+                const extracted = extractGithubUrl(trimmed);
+                if (!extracted) {
                     return line;
                 }
 
-                return toGithubCardBlock(href);
+                const href = extracted.href;
+                if (!parseGithubLink(href)) {
+                    return line;
+                }
+
+                const cardBlock = toGithubCardBlock(href);
+                if (extracted.prefix) {
+                    return `${extracted.prefix}\n${cardBlock}`;
+                }
+                return cardBlock;
             })
             .join("\n");
     });
