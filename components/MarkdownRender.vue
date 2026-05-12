@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import type { MDCParserResult } from "@nuxtjs/mdc";
-import { computed, ref, watch } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
 import type { DefineComponent } from "vue";
 import { useMarkdown } from "~/composables/UseMarkdown";
 import AnriSpinner from "~/components/AnriSpinner.vue";
@@ -49,6 +49,7 @@ import ProseImg from "~/components/prose/ProseImg.vue";
 import ProsePre from "~/components/prose/ProsePre.vue";
 import GithubCard from "~/components/GithubCard.vue";
 import type { TocItem } from "~/types/tocItems";
+import slugify from "slugify";
 import "~/assets/css/markdown.css";
 
 const { t } = useI18n();
@@ -62,12 +63,56 @@ const emit = defineEmits<{
     (e: "toc-updated", items: TocItem[]): void;
 }>();
 
-const { parseMdcMarkdown, extractTocItems } = useMarkdown();
+const { parseMdcMarkdown } = useMarkdown();
 const markdownRoot = ref<HTMLElement | null>(null);
 const parsedContent = ref<MDCParserResult | null>(null);
 const tocItems = ref<TocItem[]>([]);
 const errorMessage = ref("");
 const parsing = ref(false);
+
+const slugifyConfig = {
+    lower: true,
+    strict: true,
+    remove: /[*+~.()'"!:@]/g,
+    locale: "zh" as const,
+    trim: true,
+};
+
+const extractHeadingItems = (): TocItem[] => {
+    if (!markdownRoot.value) return [];
+
+    const headings = markdownRoot.value.querySelectorAll(
+        "h1, h2, h3, h4, h5, h6",
+    );
+    const usedIds = new Set<string>();
+    const items: TocItem[] = [];
+
+    headings.forEach((heading, index) => {
+        if (!heading.id) {
+            const textContent = heading.textContent || "";
+            const baseSlug =
+                slugify(textContent, slugifyConfig) || `heading-${index}`;
+
+            let slug = baseSlug;
+            let counter = 2;
+            while (usedIds.has(slug)) {
+                slug = `${baseSlug}-${counter}`;
+                counter++;
+            }
+            heading.id = slug;
+        }
+
+        usedIds.add(heading.id);
+
+        items.push({
+            id: heading.id,
+            text: heading.textContent || "",
+            level: parseInt(heading.tagName.substring(1)),
+        });
+    });
+
+    return items;
+};
 
 const rendererComponents = {
     a: ProseA,
@@ -100,7 +145,11 @@ const headingSizeLevel = computed(() => {
     return Math.min(...tocItems.value.map((item) => item.level));
 });
 
+let renderRequestId = 0;
+
 const updateParsedContent = (content: string): Promise<void> => {
+    const requestId = (renderRequestId += 1);
+
     if (!content.trim()) {
         parsedContent.value = null;
         tocItems.value = [];
@@ -115,11 +164,11 @@ const updateParsedContent = (content: string): Promise<void> => {
 
     return parseMdcMarkdown(content, props.sanitize !== false)
         .then((result) => {
+            if (requestId !== renderRequestId) return;
             parsedContent.value = result;
-            tocItems.value = extractTocItems(result);
-            emit("toc-updated", tocItems.value);
         })
         .catch((error) => {
+            if (requestId !== renderRequestId) return;
             console.error(t("common.label.renderFailed"), error);
             parsedContent.value = null;
             tocItems.value = [];
@@ -127,8 +176,19 @@ const updateParsedContent = (content: string): Promise<void> => {
             errorMessage.value = t("common.label.renderFailed");
         })
         .finally(() => {
-            parsing.value = false;
+            if (requestId === renderRequestId) {
+                parsing.value = false;
+            }
         });
+};
+
+const syncMarkdownDom = () => {
+    const root = markdownRoot.value;
+    if (!root) return;
+
+    const items = extractHeadingItems();
+    tocItems.value = items;
+    emit("toc-updated", items);
 };
 
 const handleCopyClick = (event: Event): void => {
@@ -166,13 +226,47 @@ const handleCopyClick = (event: Event): void => {
 };
 
 watch(
-    () => props.content,
-    (content) => {
-        updateParsedContent(content).catch((error) => {
+    () => [props.content, props.sanitize] as const,
+    ([content]) => {
+        updateParsedContent(String(content || "")).catch((error) => {
             console.error(t("common.label.updateFailed"), error);
         });
     },
     { immediate: true },
+);
+
+let domSyncTimer1: ReturnType<typeof setTimeout> | null = null;
+let domSyncTimer2: ReturnType<typeof setTimeout> | null = null;
+
+const clearDomSyncTimers = () => {
+    if (domSyncTimer1 !== null) {
+        clearTimeout(domSyncTimer1);
+        domSyncTimer1 = null;
+    }
+    if (domSyncTimer2 !== null) {
+        clearTimeout(domSyncTimer2);
+        domSyncTimer2 = null;
+    }
+};
+
+onUnmounted(() => {
+    clearDomSyncTimers();
+});
+
+watch(
+    () => parsedContent.value,
+    (value) => {
+        clearDomSyncTimers();
+        if (!value) return;
+        domSyncTimer1 = setTimeout(() => {
+            domSyncTimer1 = null;
+            syncMarkdownDom();
+            domSyncTimer2 = setTimeout(() => {
+                domSyncTimer2 = null;
+                syncMarkdownDom();
+            }, 0);
+        }, 0);
+    },
 );
 
 defineExpose({

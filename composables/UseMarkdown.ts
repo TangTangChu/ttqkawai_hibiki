@@ -1,6 +1,5 @@
 import { parseMarkdown } from "@nuxtjs/mdc/runtime";
-import type { MDCParserResult, TocLink } from "@nuxtjs/mdc";
-import type { TocItem } from "~/types/tocItems";
+import type { MDCParserResult } from "@nuxtjs/mdc";
 import transformMarkdownAlerts from "~/utils/markdown-alerts";
 import transformBilibiliEmbeds from "~/utils/markdown-bilibili";
 import transformGithubCardEmbeds from "~/utils/markdown-github-card";
@@ -20,33 +19,14 @@ const sanitizeMarkdownContent = (content: string): string => {
         .replace(DANGEROUS_PROTOCOL_REGEX, "$1=$2#");
 };
 
-const flattenTocLinks = (links: TocLink[] = []): TocItem[] => {
-    const items: TocItem[] = [];
-
-    for (const link of links) {
-        items.push({
-            id: link.id,
-            text: link.text,
-            level: link.depth,
-        });
-
-        if (link.children && link.children.length > 0) {
-            items.push(...flattenTocLinks(link.children));
-        }
-    }
-
-    return items;
-};
-
 const prepareMarkdown = (content: string, sanitize = true): string => {
     const normalized = content.replace(/\r\n/g, "\n");
-    const safeContent = sanitize
-        ? sanitizeMarkdownContent(normalized)
-        : normalized;
 
-    return transformGithubCardEmbeds(
-        transformBilibiliEmbeds(transformMarkdownAlerts(safeContent)),
+    const transformed = transformGithubCardEmbeds(
+        transformBilibiliEmbeds(transformMarkdownAlerts(normalized)),
     );
+
+    return sanitize ? sanitizeMarkdownContent(transformed) : transformed;
 };
 
 export const useMarkdown = (): {
@@ -55,7 +35,6 @@ export const useMarkdown = (): {
         content: string,
         sanitize?: boolean,
     ) => Promise<MDCParserResult>;
-    extractTocItems: (result: MDCParserResult | null) => TocItem[];
 } => {
     const parseMdcMarkdown = (
         content: string,
@@ -71,17 +50,8 @@ export const useMarkdown = (): {
         });
     };
 
-    const extractTocItems = (result: MDCParserResult | null): TocItem[] => {
-        if (!result || !result.toc || !result.toc.links) {
-            return [];
-        }
-
-        return flattenTocLinks(result.toc.links);
-    };
-
     return {
         prepareMarkdown,
         parseMdcMarkdown,
-        extractTocItems,
     };
 };
