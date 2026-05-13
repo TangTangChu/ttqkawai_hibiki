@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import type { TocItem } from "~/types/tocItems";
 
 const HEADING_SELECTOR = "h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]";
@@ -179,6 +179,14 @@ function handleScroll(): void {
 const scrollHandler = (): void => {
     handleScroll();
 };
+
+watch(
+    () => props.items,
+    () => {
+        setTimeout(handleScroll, 100);
+    },
+    { deep: true },
+);
 
 onMounted(() => {
     window.addEventListener("scroll", scrollHandler, { passive: true });

@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import type { MDCParserResult } from "@nuxtjs/mdc";
-import { computed, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import type { DefineComponent } from "vue";
 import { useMarkdown } from "~/composables/UseMarkdown";
 import AnriSpinner from "~/components/AnriSpinner.vue";
@@ -48,8 +48,8 @@ import ProseH6 from "~/components/prose/ProseH6.vue";
 import ProseImg from "~/components/prose/ProseImg.vue";
 import ProsePre from "~/components/prose/ProsePre.vue";
 import GithubCard from "~/components/GithubCard.vue";
-import type { TocItem } from "~/types/tocItems";
 import slugify from "slugify";
+import type { TocItem } from "~/types/tocItems";
 import "~/assets/css/markdown.css";
 
 const { t } = useI18n();
@@ -236,36 +236,47 @@ watch(
 );
 
 let domSyncTimer1: ReturnType<typeof setTimeout> | null = null;
-let domSyncTimer2: ReturnType<typeof setTimeout> | null = null;
+let resizeObserver: ResizeObserver | null = null;
 
-const clearDomSyncTimers = () => {
+const clearDomSyncResources = () => {
     if (domSyncTimer1 !== null) {
         clearTimeout(domSyncTimer1);
         domSyncTimer1 = null;
     }
-    if (domSyncTimer2 !== null) {
-        clearTimeout(domSyncTimer2);
-        domSyncTimer2 = null;
+    if (resizeObserver) {
+        resizeObserver.disconnect();
+        resizeObserver = null;
     }
 };
 
+onMounted(() => {
+    resizeObserver = new ResizeObserver(() => {
+        if (domSyncTimer1) clearTimeout(domSyncTimer1);
+        domSyncTimer1 = setTimeout(() => {
+            syncMarkdownDom();
+            domSyncTimer1 = null;
+        }, 100);
+    });
+
+    if (markdownRoot.value) {
+        resizeObserver.observe(markdownRoot.value);
+    }
+});
+
 onUnmounted(() => {
-    clearDomSyncTimers();
+    clearDomSyncResources();
 });
 
 watch(
     () => parsedContent.value,
-    (value) => {
-        clearDomSyncTimers();
-        if (!value) return;
-        domSyncTimer1 = setTimeout(() => {
-            domSyncTimer1 = null;
-            syncMarkdownDom();
-            domSyncTimer2 = setTimeout(() => {
-                domSyncTimer2 = null;
-                syncMarkdownDom();
-            }, 0);
-        }, 0);
+    async (value) => {
+        if (!value) {
+            tocItems.value = [];
+            emit("toc-updated", []);
+            return;
+        }
+        await nextTick();
+        syncMarkdownDom();
     },
 );
 
