@@ -8,6 +8,7 @@
         "action": {
             "more": "更多",
             "loadMore": "加载更多",
+            "search": "搜索",
             "switchLanguage": "切换语言",
             "prevContent": "上一篇",
             "nextContent": "下一篇",
@@ -56,7 +57,8 @@
                 "galgame": "Galgame",
                 "novel": "轻小说",
                 "comic": "漫画"
-            }
+            },
+            "searchPlaceholder": "在该分类下搜索..."
         },
         "archive": {
             "fallback": "当前内容暂无对应语言，已自动为您展示 {lang} 版本。"

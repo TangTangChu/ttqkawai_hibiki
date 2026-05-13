@@ -8,6 +8,7 @@
         "action": {
             "more": "もっと",
             "loadMore": "もっと読み込む",
+            "search": "検索",
             "switchLanguage": "言語切り替え",
             "prevContent": "前の記事",
             "nextContent": "次の記事",
@@ -56,7 +57,8 @@
                 "galgame": "ギャルゲー",
                 "novel": "ライトノベル",
                 "comic": "マンガ"
-            }
+            },
+            "searchPlaceholder": "このカテゴリで検索..."
         },
         "archive": {
             "fallback": "現在の言語に対応するコンテンツがありません。代わりに {lang} バージョンを表示します。"

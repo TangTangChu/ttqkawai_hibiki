@@ -11,12 +11,22 @@
         </header>
 
         <section>
-            <div class="mb-8">
+            <div class="mb-4">
                 <AnriSelector v-model="activeTab" :options="tabs" />
             </div>
+            <div class="mb-8 max-w-md mx-auto">
+                <AnriInput
+                    v-model="searchQuery"
+                    :placeholder="t('pages.about.searchPlaceholder')"
+                    search
+                    allow-clear
+                    @update:model-value="onSearch"
+                />
+            </div>
+
             <div class="min-h-100">
                 <div
-                    v-if="loading && currentData.length === 0"
+                    v-if="loading && displayData.length === 0"
                     class="flex justify-center py-12"
                 >
                     <AnriSpinner class="w-8 h-8 text-primary" />
@@ -24,9 +34,9 @@
 
                 <ErrorDisplay v-else-if="error" :error="error" />
 
-                <div v-else-if="currentData.length > 0">
+                <div v-else-if="displayData.length > 0">
                     <div
-                        v-if="activeTab === 'fav_char'"
+                        v-if="activeTab === 'fav_char' && !searchQuery"
                         class="flex flex-col items-center"
                     >
                         <div class="w-full flex justify-center mb-6 min-h-16">
@@ -45,7 +55,7 @@
                             />
                         </div>
                         <AnriCharCard
-                            v-for="item in currentData"
+                            v-for="item in displayData"
                             :key="item.id"
                             :char="item as FavCharItem"
                         />
@@ -55,7 +65,7 @@
                         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
                     >
                         <AnriTooltip
-                            v-for="item in currentData"
+                            v-for="item in displayData"
                             :key="item.id"
                             :content="(item as FavItem).record.desc"
                             class="w-full h-full"
@@ -100,7 +110,7 @@
                         </AnriTooltip>
                     </div>
 
-                    <div class="mt-8">
+                    <div v-if="!searchQuery" class="mt-8">
                         <AnriPagination
                             v-if="currentMeta && currentMeta.total_pages > 1"
                             :current-page="tabPages[activeTab] || 1"
@@ -128,6 +138,7 @@ import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
 import { useApi } from "~/composables/useApi";
 import AnriSelector from "~/components/AnriSelector.vue";
+import AnriInput from "~/components/AnriInput.vue";
 import AnriPagination from "~/components/AnriPagination.vue";
 import AnriSpinner from "~/components/AnriSpinner.vue";
 import AnriTooltip from "~/components/AnriTooltip.vue";
@@ -162,6 +173,7 @@ const parseHashToTab = (hash: string) => {
 };
 
 const activeTab = ref("fav_music");
+const searchQuery = ref("");
 
 const { data, loading, error, meta, get } = useApi<any>();
 
@@ -175,6 +187,12 @@ const tabPages = ref<Record<string, number>>({
 });
 
 const currentData = ref<(FavItem | FavCharItem)[]>([]);
+const searchResults = ref<(FavItem | FavCharItem)[]>([]);
+
+const displayData = computed(() => {
+    return searchQuery.value ? searchResults.value : currentData.value;
+});
+
 const currentMeta = ref<any>(undefined);
 const tabDataCache = ref<
     Record<string, Record<number, (FavItem | FavCharItem)[]>>
@@ -183,6 +201,33 @@ const tabMetaCache = ref<Record<string, Record<number, any>>>({});
 
 const charListCache = ref<{ label: string; value: number }[]>([]);
 const isCharListLoading = ref(false);
+
+let searchTimer: any = null;
+const onSearch = (val: string) => {
+    if (searchTimer) clearTimeout(searchTimer);
+
+    if (!val) {
+        searchResults.value = [];
+        return;
+    }
+
+    searchTimer = setTimeout(async () => {
+        try {
+            const config = useRuntimeConfig();
+            const apiBase =
+                config.public.apiBase ||
+                "https://cms.tantanchugasuki.cn/nozomi";
+            const res = await $fetch<{ data: (FavItem | FavCharItem)[] }>(
+                `${apiBase}/v1/datasets/${activeTab.value}?filter[title][contains]=${encodeURIComponent(val)}&page=1&page_size=40`,
+            );
+            if (res && res.data) {
+                searchResults.value = res.data;
+            }
+        } catch (e) {
+            console.error("Search failed:", e);
+        }
+    }, 300);
+};
 
 const fetchCharList = async () => {
     if (charListCache.value.length > 0) return;
@@ -265,6 +310,8 @@ watch(activeTab, (newTab) => {
     if (route.hash !== hash) {
         router.replace({ hash });
     }
+    searchQuery.value = "";
+    searchResults.value = [];
 
     if (newTab === "fav_char") {
         fetchCharList();
