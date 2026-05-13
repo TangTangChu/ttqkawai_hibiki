@@ -43,11 +43,22 @@
                     </button>
 
                     <!-- Image -->
-                    <img
-                        :src="currentImageSrc"
-                        class="max-w-full max-h-full object-contain rounded-xl select-none"
+                    <div
+                        class="w-full h-full flex items-center justify-center"
+                        @wheel.prevent="handleWheel"
+                        @mousedown="startDrag"
+                        @touchstart.passive="handleTouchStart"
+                        @touchmove.prevent="handleTouchMove"
+                        @touchend="handleTouchEnd"
                         @click.stop
-                    />
+                    >
+                        <img
+                            :src="currentImageSrc"
+                            class="max-w-full max-h-full object-contain select-none will-change-transform rounded-xl"
+                            :style="imageStyle"
+                            draggable="false"
+                        />
+                    </div>
 
                     <!-- Counter -->
                     <div
@@ -63,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import {
     XMarkIcon,
     ChevronLeftIcon,
@@ -77,6 +88,100 @@ const { isOpen, images, currentIndex, closeViewer, nextImage, prevImage } =
 const hasPrev = computed(() => currentIndex.value > 0);
 const hasNext = computed(() => currentIndex.value < images.value.length - 1);
 const currentImageSrc = computed(() => images.value[currentIndex.value] || "");
+
+const scale = ref(1);
+const translateX = ref(0);
+const translateY = ref(0);
+const isDragging = ref(false);
+const startX = ref(0);
+const startY = ref(0);
+
+// Touch State
+const lastTouchDistance = ref(0);
+
+const imageStyle = computed(() => ({
+    transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${scale.value})`,
+    cursor: isDragging.value ? "grabbing" : "grab",
+    transition: isDragging.value ? "none" : "transform 0.2s ease-out",
+}));
+
+const resetTransform = () => {
+    scale.value = 1;
+    translateX.value = 0;
+    translateY.value = 0;
+};
+
+// Reset transform when image changes or viewer opens
+watch([currentIndex, isOpen], () => {
+    resetTransform();
+});
+
+// Mouse Wheel Zoom
+const handleWheel = (e: WheelEvent) => {
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const newScale = Math.max(0.5, Math.min(5, scale.value + delta));
+    scale.value = newScale;
+    if (scale.value === 1) {
+        translateX.value = 0;
+        translateY.value = 0;
+    }
+};
+
+const startDrag = (e: MouseEvent) => {
+    isDragging.value = true;
+    startX.value = e.clientX - translateX.value;
+    startY.value = e.clientY - translateY.value;
+
+    window.addEventListener("mousemove", onDragging);
+    window.addEventListener("mouseup", stopDrag);
+};
+
+const onDragging = (e: MouseEvent) => {
+    if (!isDragging.value) return;
+    translateX.value = e.clientX - startX.value;
+    translateY.value = e.clientY - startY.value;
+};
+
+const stopDrag = () => {
+    isDragging.value = false;
+    window.removeEventListener("mousemove", onDragging);
+    window.removeEventListener("mouseup", stopDrag);
+};
+
+const handleTouchStart = (e: TouchEvent) => {
+    if (e.touches.length === 1 && e.touches[0]) {
+        isDragging.value = true;
+        startX.value = e.touches[0].clientX - translateX.value;
+        startY.value = e.touches[0].clientY - translateY.value;
+    } else if (e.touches.length === 2 && e.touches[0] && e.touches[1]) {
+        const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY,
+        );
+        lastTouchDistance.value = dist;
+    }
+};
+
+const handleTouchMove = (e: TouchEvent) => {
+    if (e.touches.length === 1 && isDragging.value && e.touches[0]) {
+        translateX.value = e.touches[0].clientX - startX.value;
+        translateY.value = e.touches[0].clientY - startY.value;
+    } else if (e.touches.length === 2 && e.touches[0] && e.touches[1]) {
+        const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY,
+        );
+        const delta = (dist - lastTouchDistance.value) * 0.01;
+        const newScale = Math.max(0.5, Math.min(5, scale.value + delta));
+        scale.value = newScale;
+        lastTouchDistance.value = dist;
+    }
+};
+
+const handleTouchEnd = () => {
+    isDragging.value = false;
+    lastTouchDistance.value = 0;
+};
 
 const handleKeydown = (e: KeyboardEvent) => {
     if (!isOpen.value) return;
