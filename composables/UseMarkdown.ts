@@ -3,6 +3,7 @@ import type { MDCParserResult } from "@nuxtjs/mdc";
 import transformMarkdownAlerts from "~/utils/markdown-alerts";
 import transformBilibiliEmbeds from "~/utils/markdown-bilibili";
 import transformGithubCardEmbeds from "~/utils/markdown-github-card";
+import transformMarkdownImageSize from "~/utils/markdown-image-size";
 
 const SCRIPT_TAG_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gis;
 const STYLE_TAG_REGEX = /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gis;
@@ -22,8 +23,10 @@ const sanitizeMarkdownContent = (content: string): string => {
 const prepareMarkdown = (content: string, sanitize = true): string => {
     const normalized = content.replace(/\r\n/g, "\n");
 
-    const transformed = transformGithubCardEmbeds(
-        transformBilibiliEmbeds(transformMarkdownAlerts(normalized)),
+    const transformed = transformMarkdownImageSize(
+        transformGithubCardEmbeds(
+            transformBilibiliEmbeds(transformMarkdownAlerts(normalized)),
+        ),
     );
 
     return sanitize ? sanitizeMarkdownContent(transformed) : transformed;

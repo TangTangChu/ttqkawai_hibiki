@@ -1,5 +1,5 @@
 <template>
-    <div class="relative inline-block w-full">
+    <div class="relative flex justify-center w-full">
         <AnriImage
             ref="imgRef"
             :src="src"
@@ -7,6 +7,7 @@
             :title="title"
             :w-full="false"
             :h-full="false"
+            :style="style"
             class="md-zoomable-img cursor-zoom-in rounded-xl"
             @click="handleClick"
         />
@@ -14,14 +15,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useImageViewer } from "~/composables/useImageViewer";
 
 const props = defineProps<{
     src?: string;
     alt?: string;
     title?: string;
+    width?: string | number;
+    height?: string | number;
 }>();
+
+const style = computed(() => {
+    const s: any = {};
+    if (props.width) {
+        s.width =
+            typeof props.width === "number" ? `${props.width}px` : props.width;
+    }
+    if (props.height) {
+        s.height =
+            typeof props.height === "number"
+                ? `${props.height}px`
+                : props.height;
+    }
+    return s;
+});
 
 const imgRef = ref<any>(null);
 const { openViewer } = useImageViewer();
