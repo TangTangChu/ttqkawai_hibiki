@@ -271,8 +271,75 @@ const fetchFullMusicList = async () => {
     }
 };
 
+// Media Session API 适配
+const updateMediaMetadata = () => {
+    if ("mediaSession" in navigator && currentTrack.value) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: currentTrack.value.title,
+            artist: "",
+            album: "Tantanchu's Favorite Tracks",
+            artwork: [
+                {
+                    src: currentTrack.value.cover || "",
+                    sizes: "512x512",
+                    type: "image/png",
+                },
+            ],
+        });
+        navigator.mediaSession.setActionHandler("play", () => togglePlay());
+        navigator.mediaSession.setActionHandler("pause", () => togglePlay());
+        navigator.mediaSession.setActionHandler("previoustrack", () =>
+            prevTrack(),
+        );
+        navigator.mediaSession.setActionHandler("nexttrack", () => nextTrack());
+        navigator.mediaSession.setActionHandler("seekbackward", () => {
+            if (audioRef.value)
+                audioRef.value.currentTime = Math.max(
+                    0,
+                    audioRef.value.currentTime - 10,
+                );
+        });
+        navigator.mediaSession.setActionHandler("seekforward", () => {
+            if (audioRef.value)
+                audioRef.value.currentTime = Math.min(
+                    audioRef.value.duration,
+                    audioRef.value.currentTime + 10,
+                );
+        });
+        try {
+            navigator.mediaSession.setActionHandler("stop", () => stop());
+        } catch (error) {
+            console.warn('MediaSession "stop" action not supported.');
+        }
+    }
+};
+
+const updatePlaybackState = (state: "playing" | "paused" | "none") => {
+    if ("mediaSession" in navigator) {
+        navigator.mediaSession.playbackState = state;
+    }
+};
+
+const updatePositionState = () => {
+    if (
+        "mediaSession" in navigator &&
+        "setPositionState" in navigator.mediaSession &&
+        audioRef.value &&
+        !isNaN(audioRef.value.duration)
+    ) {
+        navigator.mediaSession.setPositionState({
+            duration: audioRef.value.duration,
+            playbackRate: audioRef.value.playbackRate,
+            position: audioRef.value.currentTime,
+        });
+    }
+};
+
 onMounted(() => {
     fetchFullMusicList();
+    if ("mediaSession" in navigator && currentTrack.value) {
+        updateMediaMetadata();
+    }
 });
 
 const playlistWrapRef = ref<HTMLElement | null>(null);
@@ -305,16 +372,20 @@ const onTimeUpdate = (e: Event) => {
     if (!target.duration || isNaN(target.duration)) return;
     currentTime.value = target.currentTime;
     progress.value = (target.currentTime / target.duration) * 100;
+    updatePositionState();
 };
 
 const onLoadedMetadata = (e: Event) => {
     const target = e.target as HTMLAudioElement;
     duration.value = target.duration;
+    updateMediaMetadata();
+    updatePositionState();
 };
 
 const onAudioError = (e: Event) => {
     const target = e.target as HTMLAudioElement;
     console.warn("Audio load failed, skipping to next track:", target.src);
+    updatePlaybackState("none");
     // 延迟一秒自动下一首
     setTimeout(() => {
         if (playlist.value.length > 1) {
@@ -331,6 +402,7 @@ const seek = (e: MouseEvent) => {
     const rect = target.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
     audioRef.value.currentTime = percent * duration.value;
+    updatePositionState();
 };
 
 const handleEnded = () => {
@@ -340,15 +412,19 @@ const handleEnded = () => {
         isPlaying.value = false;
         currentTime.value = 0;
         progress.value = 0;
+        updatePlaybackState("none");
     }
 };
 
 const onPlayEvent = () => {
     isPlaying.value = true;
+    updatePlaybackState("playing");
+    updatePositionState();
 };
 
 const onPauseEvent = () => {
     isPlaying.value = false;
+    updatePlaybackState("paused");
 };
 
 // 状态同步
