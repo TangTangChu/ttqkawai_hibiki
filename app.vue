@@ -15,10 +15,13 @@ useHead(() => ({
 </script>
 
 <template>
-    <NuxtLayout>
-        <NuxtRouteAnnouncer />
-        <AnriPageTransition />
-        <NuxtPage />
-        <AnriLightbox />
-    </NuxtLayout>
+    <div class="contents">
+        <NuxtLayout>
+            <NuxtRouteAnnouncer />
+            <AnriPageTransition />
+            <NuxtPage />
+            <AnriLightbox />
+        </NuxtLayout>
+        <MusicPlayer />
+    </div>
 </template>

@@ -92,6 +92,15 @@
                                         class="w-full h-full object-cover"
                                         loading="lazy"
                                     />
+                                    <div
+                                        v-if="activeTab === 'fav_music'"
+                                        class="absolute top-2 right-2 w-7 h-7 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 cursor-pointer text-white drop-shadow-md hover:text-primary"
+                                        @click.prevent="
+                                            playMusic(item as FavItem)
+                                        "
+                                    >
+                                        <PlayCircleIcon class="w-full h-full" />
+                                    </div>
                                 </div>
                                 <div class="flex-1 min-w-0 text-center mt-2">
                                     <h3
@@ -137,6 +146,8 @@ import { ref, watch, onMounted, computed, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
 import { useApi } from "~/composables/useApi";
+import { usePlayer } from "~/composables/usePlayer";
+import { PlayCircleIcon } from "@heroicons/vue/20/solid";
 import AnriSelector from "~/components/AnriSelector.vue";
 import AnriInput from "~/components/AnriInput.vue";
 import AnriPagination from "~/components/AnriPagination.vue";
@@ -146,6 +157,7 @@ import AnriCharCard from "~/components/AnriCharCard.vue";
 import type { FavItem, FavCharItem } from "~/types/record";
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
+const { setTrack, playlist } = usePlayer();
 
 resetNavTitle();
 
@@ -198,6 +210,37 @@ const tabDataCache = ref<
     Record<string, Record<number, (FavItem | FavCharItem)[]>>
 >({});
 const tabMetaCache = ref<Record<string, Record<number, any>>>({});
+
+const playMusic = (item: FavItem) => {
+    const extractId = (link: string) => link.split("id=")[1]?.split("&")[0];
+    const musicId = extractId(item.record.link);
+    if (!musicId) return;
+
+    // 优先从全局播放列表中定位
+    const existingTrack = (playlist.value as any[]).find(
+        (t) => String(t.id) === String(musicId),
+    );
+    if (existingTrack) {
+        setTrack(existingTrack, playlist.value);
+        return;
+    }
+
+    // 兜底逻辑：如果全局列表没加载完或没找到
+    const track = {
+        id: musicId,
+        title: item.record.title,
+        cover: item.record.cover,
+        source: `https://music.163.com/song/media/outer/url?id=${musicId}.mp3`,
+    };
+
+    // 如果 playlist 为空，直接设置 [track]；如果不为空，尝试合并
+    const newList =
+        playlist.value && playlist.value.length > 0
+            ? [...playlist.value, track]
+            : [track];
+
+    setTrack(track, newList);
+};
 
 const charListCache = ref<{ label: string; value: number }[]>([]);
 const isCharListLoading = ref(false);
