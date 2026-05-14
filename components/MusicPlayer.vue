@@ -1,12 +1,12 @@
 <template>
     <div
         v-show="playlist.length > 0"
-        class="fixed bottom-6 left-6 z-50 flex items-end"
+        class="fixed bottom-6 left-4 right-4 sm:right-auto sm:bottom-6 sm:left-6 z-50 flex items-end pointer-events-none"
     >
         <transition name="player-anim" mode="out-in">
             <div
                 v-if="isMinimized"
-                class="relative bg-surface p-1 rounded-2xl cursor-pointer transition-colors duration-200 hover:bg-on-background/5 group"
+                class="relative bg-surface p-1 rounded-2xl cursor-pointer transition-colors duration-200 hover:bg-on-background/5 group pointer-events-auto"
                 @click="isMinimized = false"
             >
                 <div class="relative w-12 h-12 rounded-xl overflow-hidden">
@@ -26,13 +26,13 @@
             </div>
             <div
                 v-else
-                class="flex flex-col gap-2 w-96 bg-surface p-3 rounded-2xl"
+                class="flex flex-col gap-2 w-full sm:w-96 bg-surface p-3 pb-5 sm:pb-3 rounded-2xl pointer-events-auto transition-all duration-300"
             >
                 <div
                     class="w-full flex items-center gap-2 px-1 text-[11px] text-on-background/60 select-none pb-1"
                     style="font-family: &quot;ChillRoundF&quot;, sans-serif"
                 >
-                    <span class="w-8 text-right">{{
+                    <span class="w-8 text-right shrink-0">{{
                         formatTime(currentTime)
                     }}</span>
                     <div
@@ -48,15 +48,15 @@
                             :style="{ width: progress + '%' }"
                         ></div>
                     </div>
-                    <span class="w-8 text-left">{{
+                    <span class="w-8 text-left shrink-0">{{
                         formatTime(duration) || "00:00"
                     }}</span>
                 </div>
 
-                <div class="flex items-center gap-4 px-1">
+                <div class="flex items-center gap-2 sm:gap-4 px-1">
                     <!-- 封面 -->
                     <div
-                        class="w-14 h-14 rounded-xl overflow-hidden shrink-0 relative"
+                        class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden shrink-0 relative"
                     >
                         <img
                             v-if="currentTrack"
@@ -68,11 +68,11 @@
 
                     <!-- 信息 -->
                     <div
-                        class="flex flex-col min-w-0 flex-1 justify-center relative overflow-hidden h-14"
+                        class="flex flex-col min-w-0 flex-1 justify-center relative overflow-hidden h-12 sm:h-14"
                     >
                         <div v-if="currentTrack" class="w-full">
                             <span
-                                class="text-base font-bold text-on-background line-clamp-2 leading-tight pr-2"
+                                class="text-sm sm:text-base font-bold text-on-background line-clamp-2 leading-tight pr-2"
                                 :title="currentTrack.title"
                             >
                                 {{ currentTrack.title }}
@@ -82,7 +82,7 @@
 
                     <!-- 控件 -->
                     <div
-                        class="flex flex-col items-end justify-between h-14 shrink-0 gap-1 mt-0.5"
+                        class="flex flex-col items-end justify-between h-12 sm:h-14 shrink-0 gap-1 mt-0.5"
                     >
                         <div class="flex items-center gap-1">
                             <button
@@ -100,7 +100,7 @@
                                 <XMarkIconOutline class="w-4 h-4" />
                             </button>
                         </div>
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center gap-0.5 sm:gap-1">
                             <button
                                 @click="prevTrack"
                                 class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-on-background/10 text-on-background/80 hover:text-primary transition-colors duration-150"
@@ -149,7 +149,7 @@
                                 >
                                     <div
                                         v-if="showPlaylist"
-                                        class="absolute bottom-full right-0 mb-3 w-72 max-h-72 overflow-y-auto bg-surface rounded-2xl p-2 flex flex-col gap-1 z-50 origin-bottom-right"
+                                        class="absolute bottom-full right-0 mb-3 w-[70vw] sm:w-72 max-h-72 overflow-y-auto bg-surface rounded-2xl p-2 flex flex-col gap-1 z-50 origin-bottom-right"
                                     >
                                         <div
                                             v-for="item in playlist"
