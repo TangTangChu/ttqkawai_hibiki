@@ -177,6 +177,18 @@ const { setTitle, setScrollReveal, reset: resetNavTitle } = useNavTitle();
 const slug = computed(() => String(route.params.slug || ""));
 const cmsLocale = computed(() => resolveCmsLocale(locale.value));
 
+await useBotMeta(
+    () =>
+        slug.value
+            ? `/v1/contents/by-path/archive/${slug.value}?i18n=${cmsLocale.value}`
+            : null,
+    {
+        schema: "Article",
+        type: "article",
+        locale: cmsLocale.value,
+    },
+);
+
 const { data: archive, loading, error, get, meta } = useApi<ArchiveData>();
 const { prev: prevNav, next: nextNav } = useArchivePrevNext(slug);
 
