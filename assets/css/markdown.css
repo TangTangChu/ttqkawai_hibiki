@@ -476,7 +476,7 @@
 .markdown-wrapper h5,
 .markdown-wrapper h6 {
     margin-top: var(--base-size-24);
-    margin-bottom: var(--base-size-16);
+    margin-bottom: 1px;
     font-weight: var(--base-text-weight-semibold, 600);
     line-height: 1.25;
 }
@@ -833,7 +833,7 @@
 
 .markdown-wrapper h1,
 .markdown-wrapper h2 {
-    padding-bottom: 8px;
+    padding-bottom: 1px;
 }
 
 .markdown-wrapper ul.no-list,

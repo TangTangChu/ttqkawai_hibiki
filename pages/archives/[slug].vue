@@ -1,5 +1,5 @@
 <template>
-    <main class="mx-auto w-full max-w-8xl px-4 py-8 sm:px-6 lg:px-8">
+    <main class="mx-auto w-full px-4 py-8 sm:px-6">
         <div v-if="loading" class="flex items-center justify-center py-20">
             <AnriSpinner size="xl" />
         </div>
@@ -10,7 +10,7 @@
             <article class="min-w-0 flex-1">
                 <header class="my-2 text-left">
                     <h1
-                        class="mb-2 text-2xl font-extrabold leading-tight text-on-background sm:text-3xl lg:text-4xl xl:text-5xl"
+                        class="mb-2 text-2xl font-extrabold leading-tight text-on-background sm:text-3xl lg:text-4xl"
                     >
                         {{ archive.data?.title || archive.title }}
                     </h1>

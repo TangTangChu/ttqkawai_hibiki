@@ -120,7 +120,7 @@
         <Nav class="z-50" />
 
         <main
-            class="grow flex flex-col relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 mb-10"
+            class="grow flex flex-col relative z-10 w-full max-w-7xl mx-auto mt-20 mb-10"
         >
             <slot />
         </main>
