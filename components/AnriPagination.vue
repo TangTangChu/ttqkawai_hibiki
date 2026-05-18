@@ -23,7 +23,7 @@
             >
                 <span
                     v-if="page === 'ellipsis'"
-                    class="px-2 py-1 text-sm text-on-background/45"
+                    class="px-1 text-sm text-on-background/45 w-6 text-center select-none"
                     aria-hidden="true"
                 >
                     …
@@ -33,6 +33,7 @@
                     :variant="page === currentPage ? 'primary' : 'ghost'"
                     size="sm"
                     :disabled="loading"
+                    class="min-w-9"
                     :aria-current="page === currentPage ? 'page' : undefined"
                     :aria-label="t('common.label.page', { page })"
                     @click="onPageChange(page)"
@@ -43,7 +44,10 @@
         </div>
 
         <div
-            v-else-if="layout === 'compact'"
+            v-else-if="
+                layout === 'compact' ||
+                (layout === 'default' && useNarrowLayout)
+            "
             class="flex items-center gap-1 mx-2"
         >
             <input
@@ -82,7 +86,7 @@
 
 <script setup lang="ts">
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import AnriButton from "./AnriButton.vue";
 
 const { t } = useI18n();
@@ -96,7 +100,7 @@ const props = withDefaults(
         layout?: "default" | "compact";
     }>(),
     {
-        maxVisiblePages: 5,
+        maxVisiblePages: 7,
         loading: false,
         layout: "default",
     },
@@ -106,48 +110,75 @@ const emit = defineEmits<{
     (e: "page-change", page: number): void;
 }>();
 
+const windowWidth = ref(0);
+const isMobile = computed(() => windowWidth.value < 640);
+const useNarrowLayout = computed(() => {
+    if (props.layout === "compact") return true;
+    return windowWidth.value < 400;
+});
+
+const updateWidth = () => {
+    windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+});
+
+onUnmounted(() => {
+    window.removeEventListener("resize", updateWidth);
+});
+
 const displayPages = computed((): Array<number | "ellipsis"> => {
     const total = props.totalPages;
     const current = props.currentPage;
-    const max = props.maxVisiblePages;
+
+    // 动态调整显示策略：优先填满可用空间，再考虑省略
+    const max = isMobile.value ? 5 : props.maxVisiblePages;
 
     if (total <= max) {
         return Array.from({ length: total }, (_, index) => index + 1);
     }
 
     const pages: Array<number | "ellipsis"> = [];
-    const half = Math.floor(max / 2);
-
-    let start = current - half;
-    let end = current + half;
-
-    if (start <= 1) {
-        start = 1;
-        end = max;
+    const sideCount = Math.floor((max - 3) / 2);
+    let start = current - sideCount;
+    let end = current + sideCount;
+    if (start <= 2) {
+        end = max - 1;
+        start = 2;
+    }
+    if (end >= total - 1) {
+        start = total - (max - 2);
+        end = total - 1;
     }
 
-    if (end >= total) {
-        end = total;
-        start = total - max + 1;
-    }
+    pages.push(1);
 
-    if (start > 1) {
-        pages.push(1);
-        if (start > 2) {
-            pages.push("ellipsis");
+    if (start > 2) {
+        pages.push("ellipsis");
+    } else if (total > 2) {
+        for (let i = 2; i < start; i++) {
+            pages.push(i);
         }
     }
 
-    for (let page = start; page <= end; page += 1) {
-        pages.push(page);
+    for (let i = start; i <= end; i++) {
+        if (i > 1 && i < total) {
+            pages.push(i);
+        }
     }
 
-    if (end < total) {
-        if (end < total - 1) {
-            pages.push("ellipsis");
+    if (end < total - 1) {
+        pages.push("ellipsis");
+    } else if (total > 1) {
+        for (let i = end + 1; i < total; i++) {
+            pages.push(i);
         }
-        pages.push(total);
     }
+
+    pages.push(total);
 
     return pages;
 });

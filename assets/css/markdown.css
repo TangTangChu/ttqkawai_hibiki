@@ -289,7 +289,6 @@
     border-radius: var(--border-radius-base);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-width: 100%;
-    height: auto;
     display: block;
     margin: 16px auto;
 }
