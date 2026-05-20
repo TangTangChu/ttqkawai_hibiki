@@ -58,7 +58,7 @@ const handleClick = () => {
     }
 
     const imgElements = Array.from(
-        wrapper.querySelectorAll(".md-zoomable-img img"),
+        wrapper.querySelectorAll("img.md-zoomable-img"),
     ) as HTMLImageElement[];
     const images = imgElements.map((img) => img.src);
     const index = imgElements.indexOf(img);

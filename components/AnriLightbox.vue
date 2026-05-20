@@ -18,7 +18,7 @@
                 >
                     <!-- Close button -->
                     <button
-                        class="absolute top-4 right-4 sm:top-8 sm:right-8 p-2 rounded-xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-colors cursor-pointer z-10 shadow-lg"
+                        class="absolute top-4 right-4 sm:top-8 sm:right-8 p-2 rounded-2xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-all duration-200 ease-out cursor-pointer z-10"
                         @click.stop="closeViewer"
                     >
                         <XMarkIcon class="w-6 h-6 sm:w-8 sm:h-8" />
@@ -27,7 +27,7 @@
                     <!-- Prev button -->
                     <button
                         v-if="hasPrev"
-                        class="absolute left-4 sm:left-8 p-3 rounded-xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-colors cursor-pointer z-10 shadow-lg"
+                        class="absolute left-4 sm:left-8 p-3 rounded-2xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-all duration-200 ease-out cursor-pointer z-10"
                         @click.stop="prevImage"
                     >
                         <ChevronLeftIcon class="w-6 h-6 sm:w-8 sm:h-8" />
@@ -36,7 +36,7 @@
                     <!-- Next button -->
                     <button
                         v-if="hasNext"
-                        class="absolute right-4 sm:right-8 p-3 rounded-xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-colors cursor-pointer z-10 shadow-lg"
+                        class="absolute right-4 sm:right-8 p-3 rounded-2xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-all duration-200 ease-out cursor-pointer z-10"
                         @click.stop="nextImage"
                     >
                         <ChevronRightIcon class="w-6 h-6 sm:w-8 sm:h-8" />
@@ -44,7 +44,7 @@
 
                     <!-- Image -->
                     <div
-                        class="w-full h-full flex items-center justify-center"
+                        class="relative w-full h-full flex items-center justify-center"
                         @wheel.prevent="handleWheel"
                         @mousedown="startDrag"
                         @touchstart.passive="handleTouchStart"
@@ -52,18 +52,28 @@
                         @touchend="handleTouchEnd"
                         @click.stop
                     >
-                        <img
-                            :src="currentImageSrc"
-                            class="max-w-full max-h-full object-contain select-none will-change-transform rounded-xl"
-                            :style="imageStyle"
-                            draggable="false"
-                        />
+                        <Transition
+                            enter-active-class="transition-all duration-300 ease-out"
+                            enter-from-class="opacity-0 scale-95"
+                            enter-to-class="opacity-100 scale-100"
+                            leave-active-class="transition-all duration-200 ease-in absolute"
+                            leave-from-class="opacity-100 scale-100"
+                            leave-to-class="opacity-0 scale-95"
+                        >
+                            <img
+                                :key="currentIndex"
+                                :src="currentImageSrc"
+                                class="max-w-full max-h-full object-contain select-none will-change-transform rounded-xl"
+                                :style="imageStyle"
+                                draggable="false"
+                            />
+                        </Transition>
                     </div>
 
                     <!-- Counter -->
                     <div
                         v-if="images.length > 1"
-                        class="absolute bottom-4 sm:bottom-8 px-4 py-2 rounded-xl bg-black/50 text-white/90 text-sm font-medium tracking-wide backdrop-blur-md select-none"
+                        class="absolute bottom-4 sm:bottom-8 px-4 py-2 rounded-2xl bg-black/50 text-white/90 text-sm font-medium tracking-wide backdrop-blur-md select-none"
                     >
                         {{ currentIndex + 1 }} / {{ images.length }}
                     </div>
