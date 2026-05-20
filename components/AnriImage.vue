@@ -22,7 +22,7 @@
         </div>
         <img
             v-bind="$attrs"
-            :src="src"
+            :src="safeSrc"
             class="transition-opacity duration-300 rounded-[inherit]"
             :class="[
                 imgClass,
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { PhotoIcon } from "@heroicons/vue/24/outline";
 
 defineOptions({
@@ -62,8 +62,42 @@ const props = withDefaults(
     },
 );
 
+const ensureHttps = (url?: string) => {
+    if (!url) return "";
+    if (url.startsWith("http://")) {
+        return url.replace("http://", "https://");
+    }
+    return url;
+};
+
+const safeSrc = computed(() => ensureHttps(props.src));
+
+const { getStatus, setStatus } = useImageCache();
+
 const isLoading = ref(true);
 const isError = ref(false);
+
+const initStatus = () => {
+    const url = safeSrc.value;
+    if (!url) {
+        isLoading.value = false;
+        return;
+    }
+
+    const status = getStatus(url);
+    if (status === "loaded") {
+        isLoading.value = false;
+        isError.value = false;
+    } else if (status === "error") {
+        isError.value = true;
+        isLoading.value = false;
+    } else {
+        isLoading.value = true;
+        isError.value = false;
+    }
+};
+
+initStatus();
 
 const errorIconSize = computed(() => {
     switch (props.spinnerSize) {
@@ -81,12 +115,54 @@ const errorIconSize = computed(() => {
 });
 
 const onLoad = () => {
+    if (safeSrc.value) {
+        setStatus(safeSrc.value, "loaded");
+    }
     isLoading.value = false;
     isError.value = false;
 };
 
 const onError = () => {
+    if (safeSrc.value) {
+        setStatus(safeSrc.value, "error");
+    }
     isLoading.value = false;
     isError.value = true;
 };
+
+watch(
+    () => safeSrc.value,
+    (newSrc) => {
+        if (!newSrc) {
+            isLoading.value = false;
+            isError.value = false;
+            return;
+        }
+
+        const status = getStatus(newSrc);
+        if (status === "loaded") {
+            isLoading.value = false;
+            isError.value = false;
+        } else if (status === "error") {
+            isLoading.value = false;
+            isError.value = true;
+        } else {
+            isLoading.value = true;
+            isError.value = false;
+        }
+    },
+);
+
+watch(
+    () => (safeSrc.value ? getStatus(safeSrc.value) : undefined),
+    (newStatus) => {
+        if (newStatus === "loaded") {
+            isLoading.value = false;
+            isError.value = false;
+        } else if (newStatus === "error") {
+            isLoading.value = false;
+            isError.value = true;
+        }
+    },
+);
 </script>
