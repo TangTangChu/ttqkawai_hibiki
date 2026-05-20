@@ -34,7 +34,8 @@
             "errorPageTitle": "这是禁止事项",
             "errorPageDesc": "才怪的说",
             "backToHome": "回到温馨的家",
-            "noMore": "没有更多啦~"
+            "noMore": "没有更多啦~",
+            "viewDetails": "了解详情"
         }
     },
     "menu": {

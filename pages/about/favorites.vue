@@ -70,11 +70,9 @@
                             :content="(item as FavItem).record.desc"
                             class="w-full h-full"
                         >
-                            <a
-                                :href="(item as FavItem).record.link"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <div
                                 class="relative flex flex-col h-full gap-2 cursor-pointer rounded-xl p-3 transition-colors duration-200 ease-out hover:bg-on-background/5 group"
+                                @click="openDialog(item as FavItem)"
                             >
                                 <div
                                     class="w-full shrink-0 rounded-xl overflow-hidden bg-surface-variant/50"
@@ -95,9 +93,7 @@
                                     <div
                                         v-if="activeTab === 'fav_music'"
                                         class="absolute top-2 right-2 w-7 h-7 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 cursor-pointer text-white drop-shadow-md hover:text-primary"
-                                        @click.prevent="
-                                            playMusic(item as FavItem)
-                                        "
+                                        @click.stop="playMusic(item as FavItem)"
                                     >
                                         <PlayCircleIcon class="w-full h-full" />
                                     </div>
@@ -115,7 +111,7 @@
                                         {{ item.record.raw_name }}
                                     </p>
                                 </div>
-                            </a>
+                            </div>
                         </AnriTooltip>
                     </div>
 
@@ -138,6 +134,75 @@
                 </div>
             </div>
         </section>
+
+        <AnriDialog v-model="isDialogOpen" max-width="3xl">
+            <div
+                v-if="selectedItem"
+                class="flex flex-col md:flex-row overflow-y-auto md:overflow-hidden max-h-[85vh] md:max-h-150"
+            >
+                <div
+                    class="w-full md:w-1/2 shrink-0 bg-surface-variant/50 relative"
+                    :class="
+                        activeTab === 'fav_music'
+                            ? 'aspect-square'
+                            : 'aspect-105/148'
+                    "
+                >
+                    <AnriImage
+                        :src="selectedItem.record.cover"
+                        :alt="selectedItem.record.title"
+                        :w-full="true"
+                        :h-full="true"
+                        class="w-full h-full object-cover"
+                    />
+                </div>
+                <div
+                    class="px-6 py-8 md:p-8 flex flex-col flex-1 shrink-0 md:shrink md:overflow-y-auto"
+                >
+                    <h2 class="text-2xl font-bold text-on-background mb-2">
+                        {{ selectedItem.record.title }}
+                    </h2>
+                    <p
+                        v-if="selectedItem.record.raw_name"
+                        class="text-sm text-on-background/60 mb-6"
+                    >
+                        {{ selectedItem.record.raw_name }}
+                    </p>
+
+                    <div
+                        v-if="selectedItem.record.desc"
+                        class="mb-8 prose prose-sm prose-p:text-on-background/80 max-w-none"
+                    >
+                        <p>{{ selectedItem.record.desc }}</p>
+                    </div>
+
+                    <div class="mt-auto flex flex-col gap-4">
+                        <div class="pt-2 flex gap-3">
+                            <a
+                                v-if="selectedItem.record.link"
+                                :href="selectedItem.record.link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center justify-center rounded-xl whitespace-nowrap shrink-0 bg-primary/10 text-primary px-4 py-2 text-sm font-medium transition-colors hover:bg-primary/20"
+                            >
+                                {{ t("common.label.viewDetails") }}
+                                <ArrowTopRightOnSquareIcon
+                                    class="ml-2 w-4 h-4"
+                                />
+                            </a>
+                            <button
+                                v-if="activeTab === 'fav_music'"
+                                class="inline-flex items-center justify-center rounded-xl whitespace-nowrap shrink-0 bg-secondary/10 text-secondary px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary/20"
+                                @click="playMusic(selectedItem)"
+                            >
+                                {{ t("pages.about.tabs.music") }}
+                                <PlayCircleIcon class="ml-2 w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </AnriDialog>
     </main>
 </template>
 
@@ -147,7 +212,11 @@ import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
 import { useApi } from "~/composables/useApi";
 import { usePlayer } from "~/composables/usePlayer";
-import { PlayCircleIcon } from "@heroicons/vue/20/solid";
+import {
+    PlayCircleIcon,
+    ArrowTopRightOnSquareIcon,
+} from "@heroicons/vue/24/solid";
+import AnriDialog from "~/components/AnriDialog.vue";
 import AnriSelector from "~/components/AnriSelector.vue";
 import AnriInput from "~/components/AnriInput.vue";
 import AnriPagination from "~/components/AnriPagination.vue";
@@ -164,6 +233,14 @@ resetNavTitle();
 useHead(() => ({
     title: t("menu.favorites"),
 }));
+
+const isDialogOpen = ref(false);
+const selectedItem = ref<FavItem | null>(null);
+
+const openDialog = (item: FavItem) => {
+    selectedItem.value = item;
+    isDialogOpen.value = true;
+};
 
 const tabs = computed(() => [
     { value: "fav_music", label: t("pages.about.tabs.music") },

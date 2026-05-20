@@ -34,7 +34,8 @@
             "errorPageTitle": "禁則事項です",
             "errorPageDesc": "なーんてね",
             "backToHome": "おうちへ帰る",
-            "noMore": "もうないよ〜"
+            "noMore": "もうないよ〜",
+            "viewDetails": "詳細を見る"
         }
     },
     "menu": {

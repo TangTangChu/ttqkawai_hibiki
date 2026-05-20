@@ -34,7 +34,8 @@
             "errorPageTitle": "Classified Information",
             "errorPageDesc": "Just kidding~",
             "backToHome": "Back to Home",
-            "noMore": "No more items~"
+            "noMore": "No more items~",
+            "viewDetails": "View Details"
         }
     },
     "menu": {
