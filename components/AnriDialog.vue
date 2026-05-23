@@ -24,7 +24,7 @@
                 >
                     <div
                         v-if="modelValue"
-                        class="relative w-full bg-surface/90 backdrop-blur-md rounded-2xl overflow-hidden border border-on-background/5 text-on-background flex flex-col"
+                        class="relative w-full bg-surface/90 backdrop-blur-md rounded-2xl overflow-hidden shadow-xl text-on-background flex flex-col"
                         :class="[maxWidthClass]"
                         role="dialog"
                         aria-modal="true"
@@ -32,7 +32,7 @@
                         <button
                             v-if="showCloseButton"
                             type="button"
-                            class="absolute top-3 right-3 z-10 p-2 rounded-xl bg-surface/30 backdrop-blur-sm text-on-background/80 hover:bg-on-background/10 hover:text-on-background transition-colors duration-200 ease-out"
+                            class="absolute top-4 right-4 z-10 p-2 rounded-xl text-on-background/50 hover:bg-on-background/5 hover:text-on-background transition-all duration-200 ease-out"
                             @click="close"
                             aria-label="Close modal"
                         >

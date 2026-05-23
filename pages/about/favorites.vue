@@ -159,7 +159,9 @@
                 <div
                     class="px-6 py-8 md:p-8 flex flex-col flex-1 shrink-0 md:shrink md:overflow-y-auto"
                 >
-                    <h2 class="text-2xl font-bold text-on-background mb-2">
+                    <h2
+                        class="text-2xl font-bold text-on-background mb-2 pr-10"
+                    >
                         {{ selectedItem.record.title }}
                     </h2>
                     <p
