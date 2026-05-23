@@ -32,7 +32,7 @@
                     {{ summary }}
                 </p>
 
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <div class="flex flex-col gap-3">
                     <div
                         v-if="datetime"
                         class="flex items-center text-xs font-medium text-on-background/50"

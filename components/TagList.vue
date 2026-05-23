@@ -3,7 +3,7 @@
         <span
             v-for="tag in tags"
             :key="tag"
-            class="inline-flex items-center rounded-lg bg-secondary/10 px-2.5 py-1 text-xs font-medium text-secondary transition-colors duration-200 hover:bg-secondary/20"
+            class="inline-flex items-center text-xs font-medium text-on-background/50 transition-colors duration-200"
         >
             <TagIcon class="mr-1 h-3 w-3" aria-hidden="true" />
             {{ tag }}
