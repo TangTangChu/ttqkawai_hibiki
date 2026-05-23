@@ -173,7 +173,7 @@
 
                     <div
                         v-if="selectedItem.record.desc"
-                        class="mb-8 prose prose-sm prose-p:text-on-background/80 max-w-none"
+                        class="mb-8 prose prose-sm prose-p:text-on-background/80 max-w-none font-['ChillRoundF']"
                     >
                         <p>{{ selectedItem.record.desc }}</p>
                     </div>
