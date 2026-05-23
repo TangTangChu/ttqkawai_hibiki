@@ -16,7 +16,7 @@
                     </h1>
 
                     <div
-                        class="flex flex-wrap items-center justify-start gap-x-6 gap-y-3 text-sm font-medium text-on-background/60"
+                        class="mt-4 flex flex-wrap items-center justify-start gap-x-6 gap-y-3 text-sm font-medium text-on-background/60"
                     >
                         <div v-if="publisherText" class="flex items-center">
                             <UserIcon class="mr-2 h-4 w-4" aria-hidden="true" />
@@ -37,13 +37,11 @@
                                 }}
                             </time>
                         </div>
-                    </div>
 
-                    <div
-                        v-if="archive.tags && archive.tags.length > 0"
-                        class="mt-8 flex justify-start"
-                    >
-                        <TagList :tags="archive.tags.map((t) => t.name)" />
+                        <TagList
+                            v-if="archive.tags && archive.tags.length > 0"
+                            :tags="archive.tags.map((t) => t.name)"
+                        />
                     </div>
 
                     <div
@@ -59,7 +57,7 @@
                     </div>
                 </header>
 
-                <div class="prose-container relative w-full max-w-none">
+                <div class="prose-container relative mt-10 w-full max-w-none">
                     <MarkdownRender
                         ref="markdownRenderRef"
                         :content="archive.data?.body ?? ''"
