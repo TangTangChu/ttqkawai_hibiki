@@ -16,7 +16,7 @@ export const friends: FriendLink[] = [
         name: "Heaven",
         description: "唯有热爱可抵岁月漫长",
         url: "https://dearheaven.cn",
-        avatar: "https://pic-bed.dearheaven.cn/img/touxiang.webp",
+        avatar: "https://www.dearheaven.cn/avatar.webp",
     },
     {
         name: "Piterの小屋",
