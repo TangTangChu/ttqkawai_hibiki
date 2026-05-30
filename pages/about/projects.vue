@@ -38,7 +38,7 @@
                         </div>
 
                         <p
-                            class="text-sm text-on-background/60 line-clamp-2 leading-relaxed flex-1"
+                            class="text-sm text-on-background/60 line-clamp-3 leading-relaxed flex-1"
                         >
                             {{ project.desc }}
                         </p>
