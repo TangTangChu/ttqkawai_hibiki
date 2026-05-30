@@ -43,7 +43,8 @@
         "archive": "Archive",
         "links": "Links",
         "about": "About",
-        "favorites": "My Favorites"
+        "favorites": "Favorites",
+        "projects": "Projects"
     },
     "pages": {
         "about": {

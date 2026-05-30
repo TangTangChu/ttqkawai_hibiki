@@ -43,7 +43,8 @@
         "archive": "アーカイブ",
         "links": "リンク",
         "about": "私について",
-        "favorites": "私のお気に入り"
+        "favorites": "お気に入り",
+        "projects": "プロジェクト"
     },
     "pages": {
         "about": {

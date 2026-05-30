@@ -43,6 +43,21 @@
                     </h2>
                 </div>
             </NuxtLink>
+            <NuxtLink
+                to="/about/projects"
+                class="flex items-center gap-4 p-4 rounded-xl bg-surface/50 transition-colors duration-200 hover:bg-on-background/5"
+            >
+                <div
+                    class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary"
+                >
+                    <CodeBracketIcon class="w-6 h-6" />
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-lg font-bold text-on-background truncate">
+                        {{ t("menu.projects") }}
+                    </h2>
+                </div>
+            </NuxtLink>
         </div>
         <div class="flex flex-col md:flex-row items-center gap-8 mb-16">
             <div class="relative shrink-0">
@@ -126,6 +141,7 @@ import {
     ClockIcon,
     TagIcon,
     BookOpenIcon,
+    CodeBracketIcon,
 } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
