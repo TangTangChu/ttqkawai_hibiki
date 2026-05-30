@@ -22,6 +22,7 @@
             "updateFailed": "Markdown 更新失败",
             "loading": "加载中...",
             "empty": "暂无数据",
+            "all": "全部",
             "pagination": "分页导航",
             "prevPage": "上一页",
             "nextPage": "下一页",

@@ -22,6 +22,7 @@
             "updateFailed": "Failed to update Markdown",
             "loading": "Loading...",
             "empty": "No data",
+            "all": "All",
             "pagination": "Pagination",
             "prevPage": "Previous Page",
             "nextPage": "Next Page",

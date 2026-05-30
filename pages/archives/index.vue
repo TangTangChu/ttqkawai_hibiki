@@ -9,10 +9,13 @@
                 {{ t("menu.archive") }}
             </h1>
         </header>
-        <div
-            v-if="initialLoading"
-            class="flex items-center justify-center"
-        >
+        <nav class="flex justify-center my-1">
+            <AnriSelector
+                v-model="selectedCategory"
+                :options="categoryOptions"
+            />
+        </nav>
+        <div v-if="initialLoading" class="flex items-center justify-center">
             <AnriSpinner size="xl" />
         </div>
         <div v-else-if="initialError" class="py-8">
@@ -25,7 +28,9 @@
                     :key="archive.id"
                     :title="archive.title"
                     :linkto="`/archives/${archive.slug}`"
-                    :datetime="formatDateTime(archive.data.publish_time, locale)"
+                    :datetime="
+                        formatDateTime(archive.data.publish_time, locale)
+                    "
                     :rawDate="archive.data.publish_time"
                     :summary="archive.data.summary"
                     :tags="archive.tags?.map((t) => t.name)"
@@ -47,7 +52,9 @@
                     :key="archive.id"
                     :title="archive.title"
                     :linkto="`/archives/${archive.slug}`"
-                    :datetime="formatDateTime(archive.data.publish_time, locale)"
+                    :datetime="
+                        formatDateTime(archive.data.publish_time, locale)
+                    "
                     :rawDate="archive.data.publish_time"
                     :summary="archive.data.summary"
                     :tags="archive.tags?.map((t) => t.name)"
@@ -80,6 +87,7 @@ import { useRoute, useRouter } from "vue-router";
 import ArticleBlock from "~/components/ArticleBlock.vue";
 import AnriPagination from "~/components/AnriPagination.vue";
 import AnriSpinner from "~/components/AnriSpinner.vue";
+import AnriSelector from "~/components/AnriSelector.vue";
 import ErrorDisplay from "~/components/ErrorDisplay.vue";
 import { useApi } from "~/composables/useApi";
 import { useNavTitle } from "~/composables/useNavTitle";
@@ -96,6 +104,26 @@ resetNavTitle();
 useHead(() => ({
     title: t("menu.archive"),
 }));
+
+interface Taxonomy {
+    id: string;
+    name: string;
+    slug: string;
+}
+
+const { data: taxonomies, get: getTaxonomies } = useApi<Taxonomy[]>();
+
+const selectedCategory = ref(route.query.category?.toString() || "");
+
+const categoryOptions = computed(() => {
+    const opts = [{ label: t("common.label.all"), value: "" }];
+    if (taxonomies.value) {
+        taxonomies.value.forEach((tax) => {
+            opts.push({ label: tax.name, value: tax.slug });
+        });
+    }
+    return opts;
+});
 
 const {
     data: topArchives,
@@ -128,15 +156,19 @@ const initialError = computed(
 );
 
 const loadTopArchives = async () => {
-    await getTopArchives(
-        `/v1/contents?type_slug=archive&fields=publish_time,summary&filter[isTop][eq]=true&sort_order=desc&i18n=${cmsLocale.value}`,
-    );
+    let url = `/v1/contents?type_slug=archive&fields=publish_time,summary&filter[isTop][eq]=true&sort_order=desc&i18n=${cmsLocale.value}`;
+    if (selectedCategory.value) {
+        url += `&taxonomy_slug=${selectedCategory.value}`;
+    }
+    await getTopArchives(url);
 };
 
 const loadArchives = async (page: number) => {
-    await getArchives(
-        `/v1/contents?type_slug=archive&fields=publish_time,summary&page=${page}&sort_order=desc&i18n=${cmsLocale.value}`,
-    );
+    let url = `/v1/contents?type_slug=archive&fields=publish_time,summary&page=${page}&sort_order=desc&i18n=${cmsLocale.value}`;
+    if (selectedCategory.value) {
+        url += `&taxonomy_slug=${selectedCategory.value}`;
+    }
+    await getArchives(url);
     if (meta.value) {
         totalPages.value = meta.value.total_pages;
         currentPage.value = meta.value.current_page;
@@ -157,8 +189,36 @@ watch(
 );
 
 watch(
+    () => route.query.category,
+    (newCat) => {
+        selectedCategory.value = newCat?.toString() || "";
+    },
+);
+
+watch(selectedCategory, async (newVal) => {
+    // Only push if different from current query to avoid loops
+    if (newVal !== (route.query.category || "")) {
+        router.push({
+            query: {
+                ...route.query,
+                category: newVal || undefined,
+                page: undefined,
+            },
+        });
+    }
+    // Reload data when category changes
+    currentPage.value = 1;
+    await Promise.all([loadTopArchives(), loadArchives(1)]);
+    await nextTick();
+    requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+});
+
+watch(
     cmsLocale,
     () => {
+        getTaxonomies("/v1/taxonomies");
         loadTopArchives();
         loadArchives(currentPage.value);
     },
