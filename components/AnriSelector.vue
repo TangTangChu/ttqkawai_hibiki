@@ -1,5 +1,7 @@
 <template>
-    <div
+    <TransitionGroup
+        tag="div"
+        name="selector-list"
         class="flex flex-wrap"
         :class="
             variant === 'text'
@@ -7,7 +9,12 @@
                 : 'gap-2 md:gap-4'
         "
     >
-        <template v-for="(option, index) in options" :key="option.value">
+        <div
+            v-for="(option, index) in options"
+            :key="option.value"
+            class="flex items-center"
+            :class="variant === 'text' ? 'gap-x-2' : ''"
+        >
             <button
                 @click="$emit('update:modelValue', option.value)"
                 class="transition-all duration-200 outline-none"
@@ -30,8 +37,8 @@
             >
                 ·
             </span>
-        </template>
-    </div>
+        </div>
+    </TransitionGroup>
 </template>
 
 <script setup lang="ts">
@@ -50,3 +57,24 @@ defineEmits<{
     (e: "update:modelValue", value: string | number): void;
 }>();
 </script>
+
+<style scoped>
+.selector-list-enter-active {
+    transition: all 0.2s ease-out;
+}
+
+.selector-list-leave-active {
+    transition: all 0.15s ease-in;
+    position: absolute;
+}
+
+.selector-list-enter-from,
+.selector-list-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.selector-list-move {
+    transition: transform 0.3s ease;
+}
+</style>

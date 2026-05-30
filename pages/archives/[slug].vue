@@ -71,74 +71,10 @@
                     :next="nextNav"
                 />
             </article>
-            <aside
-                v-if="tocItems.length > 0"
-                class="hidden w-64 shrink-0 lg:block"
-            >
-                <div class="sticky top-24 p-6">
-                    <MarkdownTOC
-                        :items="tocItems"
-                        :markdownRenderRef="markdownRenderRef"
-                    />
-                </div>
-            </aside>
-            <Teleport to="body">
-                <button
-                    v-if="tocItems.length > 0 && !isMobileTocOpen"
-                    type="button"
-                    class="fixed right-4 bottom-6 z-70 inline-flex items-center gap-2 rounded-xl border border-on-surface/10 bg-background px-4 py-2 text-sm font-semibold text-on-surface/80 transition-colors duration-200 hover:border-primary/30 hover:text-primary lg:hidden"
-                    :aria-label="t('common.label.toc')"
-                    @click="openMobileToc"
-                >
-                    <Bars3BottomLeftIcon class="h-4 w-4" aria-hidden="true" />
-                    {{ t("common.label.toc") }}
-                </button>
-                <Transition
-                    enter-active-class="transition-opacity duration-200"
-                    leave-active-class="transition-opacity duration-200"
-                    enter-from-class="opacity-0"
-                    leave-to-class="opacity-0"
-                >
-                    <div
-                        v-if="isMobileTocOpen"
-                        class="fixed inset-0 z-80 lg:hidden"
-                    >
-                        <button
-                            type="button"
-                            class="absolute inset-0 bg-black/30"
-                            :aria-label="t('common.label.toc')"
-                            @click="closeMobileToc"
-                        />
-
-                        <div
-                            class="absolute right-0 bottom-0 left-0 flex max-h-[78vh] flex-col rounded-t-2xl border-t border-on-surface/10 bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
-                            @click="handleMobileDrawerClick"
-                        >
-                            <div class="mb-2 flex justify-end">
-                                <button
-                                    type="button"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-on-surface/10 text-on-surface/70 transition-colors hover:border-primary/30 hover:text-primary"
-                                    :aria-label="t('common.label.toc')"
-                                    @click="closeMobileToc"
-                                >
-                                    <XMarkIcon
-                                        class="h-5 w-5"
-                                        aria-hidden="true"
-                                    />
-                                </button>
-                            </div>
-                            <div
-                                class="min-h-0 flex-1 overflow-y-auto px-1 pb-1"
-                            >
-                                <MarkdownTOC
-                                    :items="tocItems"
-                                    :markdownRenderRef="markdownRenderRef"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </Transition>
-            </Teleport>
+            <ArchiveSidebar
+                :items="tocItems"
+                :markdown-render-ref="markdownRenderRef"
+            />
         </div>
     </main>
 </template>
@@ -146,14 +82,13 @@
 <script setup lang="ts">
 import { CalendarIcon, UserIcon } from "@heroicons/vue/20/solid";
 import { LanguageIcon } from "@heroicons/vue/20/solid";
-import { Bars3BottomLeftIcon, XMarkIcon } from "@heroicons/vue/24/outline";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, ref, watch, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import AnriPrevNextNav from "~/components/AnriPrevNextNav.vue";
 import AnriSpinner from "~/components/AnriSpinner.vue";
 import ErrorDisplay from "~/components/ErrorDisplay.vue";
 import MarkdownRender from "~/components/MarkdownRender.vue";
-import MarkdownTOC from "~/components/MarkdownTOC.vue";
+import ArchiveSidebar from "~/components/ArchiveSidebar.vue";
 import TagList from "~/components/TagList.vue";
 import { useApi } from "~/composables/useApi";
 import { useArchivePrevNext } from "~/composables/useArchivePrevNext";
@@ -161,14 +96,13 @@ import { useNavTitle } from "~/composables/useNavTitle";
 import type { ArchiveData } from "~/types/archive";
 import type { ExtendedApiMeta } from "~/types/api";
 import type { TocItem } from "~/types/tocItems";
-import { formatDate, resolveCmsLocale } from "~/utils/formatDate";
+import { formatDateTime, resolveCmsLocale } from "~/utils/formatDate";
 
 const { t, locale, locales } = useI18n();
 const route = useRoute();
 
 const markdownRenderRef = ref();
 const tocItems = ref<TocItem[]>([]);
-const isMobileTocOpen = ref(false);
 
 const { setTitle, setScrollReveal, reset: resetNavTitle } = useNavTitle();
 
@@ -229,27 +163,6 @@ useHead(() => ({
 
 const handleTocUpdate = (items: TocItem[]): void => {
     tocItems.value = items;
-    if (!items.length) {
-        isMobileTocOpen.value = false;
-    }
-};
-
-const openMobileToc = (): void => {
-    if (!tocItems.value.length) return;
-    isMobileTocOpen.value = true;
-};
-
-const closeMobileToc = (): void => {
-    isMobileTocOpen.value = false;
-};
-
-const handleMobileDrawerClick = (event: MouseEvent): void => {
-    const target = event.target as HTMLElement | null;
-    if (!target) return;
-
-    if (target.closest("a")) {
-        closeMobileToc();
-    }
 };
 
 watch(
@@ -277,12 +190,7 @@ watch(archive, (newVal) => {
     }
 });
 
-onMounted(() => {
-    setScrollReveal(true);
-});
-
 onUnmounted(() => {
-    isMobileTocOpen.value = false;
     resetNavTitle();
 });
 </script>

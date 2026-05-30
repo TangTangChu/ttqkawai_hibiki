@@ -12,7 +12,9 @@
             "switchLanguage": "言語切り替え",
             "prevContent": "前の記事",
             "nextContent": "次の記事",
-            "copy": "コードをコピー"
+            "copy": "コードをコピー",
+            "expand": "展開",
+            "collapse": "折りたたむ"
         },
         "label": {
             "error": "エラーが発生しました",

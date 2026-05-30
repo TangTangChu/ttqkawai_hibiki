@@ -12,7 +12,9 @@
             "switchLanguage": "Switch Language",
             "prevContent": "Previous Article",
             "nextContent": "Next Article",
-            "copy": "Copy code"
+            "copy": "Copy code",
+            "expand": "Expand",
+            "collapse": "Collapse"
         },
         "label": {
             "error": "Error",

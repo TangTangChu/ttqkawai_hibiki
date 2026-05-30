@@ -566,7 +566,7 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-info .markdown-alert-content {
-    color: var(--fgColor-default);
+    color: color-mix(in srgb, var(--secondary) 80%, var(--fgColor-default) 20%);
 }
 
 .markdown-wrapper .markdown-alert.alert-succ {
@@ -579,7 +579,7 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-succ .markdown-alert-content {
-    color: var(--fgColor-default);
+    color: color-mix(in srgb, var(--fgColor-success) 80%, var(--fgColor-default) 20%);
 }
 
 .markdown-wrapper .markdown-alert.alert-warn {
@@ -592,7 +592,7 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-warn .markdown-alert-content {
-    color: var(--fgColor-default);
+    color: color-mix(in srgb, var(--tertiary) 80%, var(--fgColor-default) 20%);
 }
 
 .markdown-wrapper .markdown-alert.alert-error {
@@ -605,7 +605,7 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-error .markdown-alert-content {
-    color: var(--fgColor-default);
+    color: color-mix(in srgb, var(--fgColor-danger) 80%, var(--fgColor-default) 20%);
 }
 
 .markdown-wrapper .markdown-alert.alert-important {
@@ -618,7 +618,7 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-important .markdown-alert-content {
-    color: var(--fgColor-default);
+    color: color-mix(in srgb, var(--primary) 80%, var(--fgColor-default) 20%);
 }
 
 .markdown-wrapper .markdown-alert.alert-plain {
