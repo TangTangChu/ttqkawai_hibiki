@@ -121,7 +121,7 @@ export const parseGithubLink = (href: string): ParsedGithubLink | null => {
         };
     }
 
-    if (segments.length >= 3 && RESERVED_PATHS.has(marker)) {
+    if (marker && RESERVED_PATHS.has(marker)) {
         return null;
     }
 

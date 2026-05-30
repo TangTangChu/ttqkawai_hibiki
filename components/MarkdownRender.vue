@@ -55,7 +55,7 @@ import "~/assets/css/markdown.css";
 const { t } = useI18n();
 
 const props = defineProps<{
-    content: string | "";
+    content: string;
     sanitize?: boolean;
 }>();
 
@@ -182,11 +182,30 @@ const updateParsedContent = (content: string): Promise<void> => {
         });
 };
 
+const tocItemsEqual = (a: TocItem[], b: TocItem[]): boolean => {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+        const itemA = a[i];
+        const itemB = b[i];
+        if (!itemA || !itemB) return false;
+        if (
+            itemA.id !== itemB.id ||
+            itemA.text !== itemB.text ||
+            itemA.level !== itemB.level
+        ) {
+            return false;
+        }
+    }
+    return true;
+};
+
 const syncMarkdownDom = () => {
     const root = markdownRoot.value;
     if (!root) return;
 
     const items = extractHeadingItems();
+    if (tocItemsEqual(items, tocItems.value)) return;
+
     tocItems.value = items;
     emit("toc-updated", items);
 };
@@ -235,13 +254,13 @@ watch(
     { immediate: true },
 );
 
-let domSyncTimer1: ReturnType<typeof setTimeout> | null = null;
+let domSyncTimer: ReturnType<typeof setTimeout> | null = null;
 let resizeObserver: ResizeObserver | null = null;
 
 const clearDomSyncResources = () => {
-    if (domSyncTimer1 !== null) {
-        clearTimeout(domSyncTimer1);
-        domSyncTimer1 = null;
+    if (domSyncTimer !== null) {
+        clearTimeout(domSyncTimer);
+        domSyncTimer = null;
     }
     if (resizeObserver) {
         resizeObserver.disconnect();
@@ -251,10 +270,10 @@ const clearDomSyncResources = () => {
 
 onMounted(() => {
     resizeObserver = new ResizeObserver(() => {
-        if (domSyncTimer1) clearTimeout(domSyncTimer1);
-        domSyncTimer1 = setTimeout(() => {
+        if (domSyncTimer) clearTimeout(domSyncTimer);
+        domSyncTimer = setTimeout(() => {
             syncMarkdownDom();
-            domSyncTimer1 = null;
+            domSyncTimer = null;
         }, 100);
     });
 

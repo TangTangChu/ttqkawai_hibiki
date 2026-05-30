@@ -1,3 +1,32 @@
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from "vue";
+
+const svgRef = ref<SVGSVGElement | null>(null);
+const isPaused = ref(false);
+
+const syncAnimationState = () => {
+    const hidden = document.hidden;
+    isPaused.value = hidden;
+
+    const svg = svgRef.value;
+    if (!svg) return;
+    if (hidden) {
+        svg.pauseAnimations();
+    } else {
+        svg.unpauseAnimations();
+    }
+};
+
+onMounted(() => {
+    document.addEventListener("visibilitychange", syncAnimationState);
+    syncAnimationState();
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener("visibilitychange", syncAnimationState);
+});
+</script>
+
 <template>
     <div
         class="min-h-screen flex flex-col relative overflow-x-clip selection:bg-primary/30"
@@ -6,6 +35,7 @@
             class="fixed inset-0 pointer-events-none z-0 opacity-70 dark:opacity-20"
         >
             <svg
+                ref="svgRef"
                 class="absolute inset-0 w-full h-full"
                 xmlns="http://www.w3.org/2000/svg"
                 preserveAspectRatio="none"
@@ -98,7 +128,7 @@
             </svg>
 
             <!-- Sakura / Flowers moving smoothly to top-right -->
-            <div class="sakura-layer">
+            <div class="sakura-layer" :class="{ 'is-paused': isPaused }">
                 <div class="sakura s1 text-primary opacity-60 text-2xl">✿</div>
                 <div class="sakura s2 text-secondary opacity-60 text-3xl">✿</div>
                 <div class="sakura s3 text-tertiary opacity-60 text-xl">✿</div>
@@ -135,6 +165,10 @@
     inset: 0;
     pointer-events: none;
     overflow: hidden;
+}
+
+.sakura-layer.is-paused .sakura {
+    animation-play-state: paused;
 }
 
 .sakura {

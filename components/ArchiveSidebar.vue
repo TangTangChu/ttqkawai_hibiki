@@ -151,9 +151,15 @@ import {
 } from "@heroicons/vue/24/outline";
 import type { TocItem } from "~/types/tocItems";
 
+type MarkdownRenderRef =
+    | HTMLElement
+    | { markdownRoot?: HTMLElement; $el?: HTMLElement }
+    | null
+    | undefined;
+
 const props = defineProps<{
     items: TocItem[];
-    markdownRenderRef?: any;
+    markdownRenderRef?: MarkdownRenderRef;
     isMobile?: boolean;
 }>();
 
@@ -176,7 +182,7 @@ const scrollToTop = () => {
 };
 
 const handleTocClick = (id: string) => {
-    scrollTo(id);
+    scrollToHeading(id);
     if (props.isMobile) {
         emit("close");
     }
@@ -233,7 +239,7 @@ const displayItems = computed(() =>
     }),
 );
 
-const scrollTo = (id: string): void => {
+const scrollToHeading = (id: string): void => {
     if (!id) return;
 
     const rootElement = getRootElement();
@@ -335,7 +341,10 @@ watch(
 <style scoped>
 @reference "tailwindcss";
 .archive-sidebar-container {
-    transition: all 0.5s ease-in-out;
+    transition:
+        width 0.5s ease-in-out,
+        opacity 0.5s ease-in-out,
+        transform 0.5s ease-in-out;
 }
 
 .archive-sidebar-container:not(.w-full) {
@@ -378,7 +387,7 @@ watch(
     position: sticky;
     top: 6rem;
     max-height: calc(100vh - 8rem);
-    transition: all 0.5s ease-in-out;
+    transition: padding 0.5s ease-in-out;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -404,7 +413,9 @@ watch(
 .sidebar-tools {
     margin-bottom: 1rem;
     display: flex;
-    transition: all 0.5s ease-in-out;
+    transition:
+        gap 0.5s ease-in-out,
+        padding 0.5s ease-in-out;
     flex-shrink: 0;
     position: relative;
 }
@@ -449,7 +460,10 @@ watch(
     justify-content: center;
     border-radius: 0.75rem;
     background-color: transparent;
-    transition: all 0.5s ease-in-out;
+    transition:
+        color 0.5s ease-in-out,
+        background-color 0.5s ease-in-out,
+        transform 0.5s ease-in-out;
     color: color-mix(in srgb, var(--on-surface) 50%, transparent);
     cursor: pointer;
     border: none;
@@ -533,7 +547,9 @@ watch(
 
 .toc-fade-enter-active,
 .toc-fade-leave-active {
-    transition: all 0.5s ease-in-out;
+    transition:
+        opacity 0.5s ease-in-out,
+        transform 0.5s ease-in-out;
 }
 .toc-fade-enter-from,
 .toc-fade-leave-to {
