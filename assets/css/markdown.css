@@ -46,9 +46,9 @@
 
     /* Semantic Colors */
     --fgColor-accent: var(--primary);
-    --fgColor-success: #1a7f37;
+    --fgColor-success: #4cd48a;
     --fgColor-attention: var(--tertiary);
-    --fgColor-danger: #cf222e;
+    --fgColor-danger: #fe728a;
     --fgColor-done: var(--primary);
 
     /* Backgrounds */
@@ -145,9 +145,9 @@
 
     /* Semantic Colors */
     --fgColor-accent: var(--primary);
-    --fgColor-success: #3fb950;
+    --fgColor-success: #4cc785;
     --fgColor-attention: var(--tertiary);
-    --fgColor-danger: #f85149;
+    --fgColor-danger: #ea647a;
     --fgColor-done: var(--primary);
 
     /* Backgrounds */
@@ -566,20 +566,20 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-info .markdown-alert-content {
-    color: color-mix(in srgb, var(--secondary) 90%, var(--fgColor-default) 10%);
+    color: var(--fgColor-default);
 }
 
 .markdown-wrapper .markdown-alert.alert-succ {
-    background-color: color-mix(in srgb, var(--primary) var(--alert-bg-opacity), transparent);
+    background-color: color-mix(in srgb, var(--fgColor-success) var(--alert-bg-opacity), transparent);
 }
 
 .markdown-wrapper .markdown-alert.alert-succ .alert-icon,
 .markdown-wrapper .markdown-alert.alert-succ .markdown-alert-title {
-    color: var(--primary);
+    color: var(--fgColor-success);
 }
 
 .markdown-wrapper .markdown-alert.alert-succ .markdown-alert-content {
-    color: color-mix(in srgb, var(--primary) 90%, var(--fgColor-default) 10%);
+    color: var(--fgColor-default);
 }
 
 .markdown-wrapper .markdown-alert.alert-warn {
@@ -592,7 +592,7 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-warn .markdown-alert-content {
-    color: color-mix(in srgb, var(--tertiary) 90%, var(--fgColor-default) 10%);
+    color: var(--fgColor-default);
 }
 
 .markdown-wrapper .markdown-alert.alert-error {
@@ -605,24 +605,24 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-error .markdown-alert-content {
-    color: color-mix(in srgb, var(--fgColor-danger) 90%, var(--fgColor-default) 10%);
+    color: var(--fgColor-default);
 }
 
 .markdown-wrapper .markdown-alert.alert-important {
-    background-color: color-mix(in srgb, var(--fgColor-accent) var(--alert-bg-opacity), transparent);
+    background-color: color-mix(in srgb, var(--primary) var(--alert-bg-opacity), transparent);
 }
 
 .markdown-wrapper .markdown-alert.alert-important .alert-icon,
 .markdown-wrapper .markdown-alert.alert-important .markdown-alert-title {
-    color: var(--fgColor-accent);
+    color: var(--primary);
 }
 
 .markdown-wrapper .markdown-alert.alert-important .markdown-alert-content {
-    color: color-mix(in srgb, var(--fgColor-accent) 90%, var(--fgColor-default) 10%);
+    color: var(--fgColor-default);
 }
 
 .markdown-wrapper .markdown-alert.alert-plain {
-    background-color: color-mix(in srgb, var(--fgColor-default) var(--alert-bg-opacity), transparent);
+    background-color: color-mix(in srgb, var(--surface-container) var(--alert-bg-opacity), transparent);
 }
 
 .markdown-wrapper .markdown-alert.alert-plain .alert-icon,
@@ -631,7 +631,7 @@
 }
 
 .markdown-wrapper .markdown-alert.alert-plain .markdown-alert-content {
-    color: color-mix(in srgb, var(--fgColor-default) 80%, var(--bgColor-default) 20%);
+    color: var(--fgColor-default);
     margin-top: 0;
 }
 
