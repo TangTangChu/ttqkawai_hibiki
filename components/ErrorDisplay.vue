@@ -1,9 +1,9 @@
 <template>
     <div
-        class="my-4 rounded-2xl border border-primary/10 bg-surface/85 p-6 text-center"
+        class="my-4 rounded-2xl border border-primary/20 bg-surface/50 p-6 text-center backdrop-blur-sm"
     >
         <div
-            class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary"
+            class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-500 hover:scale-110"
         >
             <ExclamationTriangleIcon class="h-6 w-6" />
         </div>
@@ -12,13 +12,13 @@
             {{ title || t("common.label.error") }}
         </h3>
 
-        <p class="mt-2 text-sm leading-6 text-on-background/65">
+        <p class="mt-2 text-sm leading-6 text-on-background/60">
             {{ message || t("common.label.loadFailed") }}
         </p>
 
         <p
             v-if="errorData?.message"
-            class="mt-3 rounded-xl bg-primary/5 px-3 py-2 text-xs font-medium wrap-break-word text-on-background/60"
+            class="mt-3 rounded-xl bg-on-background/5 px-3 py-2 text-xs font-medium break-all text-on-background/50"
         >
             {{ errorData.message }}
         </p>
