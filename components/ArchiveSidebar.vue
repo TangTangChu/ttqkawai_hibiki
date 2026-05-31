@@ -86,56 +86,49 @@
             </Transition>
         </div>
         <Teleport v-if="!isMobile" to="body">
-            <button
-                v-if="hasToc && !isMobileDrawerOpen"
-                type="button"
-                class="fixed right-4 bottom-6 z-40 inline-flex items-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--on-surface)_10%,transparent)] bg-background px-4 py-2 text-sm font-semibold text-[color-mix(in_srgb,var(--on-surface)_80%,transparent)] shadow-lg transition-all active:scale-95 lg:hidden"
-                @click="isMobileDrawerOpen = true"
+            <div
+                class="fixed right-4 bottom-6 z-40 flex flex-col items-end gap-3 lg:hidden"
             >
-                <Bars3BottomLeftIcon class="h-4 w-4" aria-hidden="true" />
-                {{ t("common.label.toc") }}
-            </button>
-            <Transition
-                enter-active-class="transition-opacity duration-200"
-                leave-active-class="transition-opacity duration-200"
-                enter-from-class="opacity-0"
-                leave-to-class="opacity-0"
-            >
-                <div
-                    v-if="isMobileDrawerOpen"
-                    class="fixed inset-0 z-50 lg:hidden"
+                <Transition
+                    enter-active-class="transform transition duration-200 ease-out"
+                    enter-from-class="scale-95 opacity-0"
+                    enter-to-class="scale-100 opacity-100"
+                    leave-active-class="transform transition duration-150 ease-in"
+                    leave-from-class="scale-100 opacity-100"
+                    leave-to-class="scale-95 opacity-0"
                 >
-                    <div
-                        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
-                        @click="isMobileDrawerOpen = false"
-                    />
-
-                    <div
-                        class="absolute right-0 bottom-0 left-0 flex max-h-[85vh] flex-col rounded-t-3xl border-t border-[color-mix(in_srgb,var(--on-surface)_10%,transparent)] bg-background p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+                    <button
+                        v-if="showBackToTop && !isMobileDrawerOpen"
+                        type="button"
+                        class="flex h-11 w-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--on-surface)_10%,transparent)] bg-background/80 text-[color-mix(in_srgb,var(--on-surface)_70%,transparent)] shadow-sm backdrop-blur-md transition-all active:scale-95"
+                        :title="t('common.label.top')"
+                        @click="scrollToTop"
                     >
-                        <div class="mb-4 flex items-center justify-between">
-                            <h2 class="text-xl font-bold text-on-background">
-                                {{ t("common.label.toc") }}
-                            </h2>
-                            <button
-                                type="button"
-                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--on-surface)_5%,transparent)] text-[color-mix(in_srgb,var(--on-surface)_70%,transparent)]"
-                                @click="isMobileDrawerOpen = false"
-                            >
-                                <XMarkIcon class="h-6 w-6" aria-hidden="true" />
-                            </button>
-                        </div>
-                        <div class="min-h-0 flex-1 overflow-y-auto">
-                            <ArchiveSidebar
-                                :items="items"
-                                :markdown-render-ref="markdownRenderRef"
-                                is-mobile
-                                @close="isMobileDrawerOpen = false"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Transition>
+                        <ArrowUpIcon class="h-5 w-5" />
+                    </button>
+                </Transition>
+
+                <button
+                    v-if="hasToc && !isMobileDrawerOpen"
+                    type="button"
+                    class="flex h-11 w-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--on-surface)_10%,transparent)] bg-background/80 text-[color-mix(in_srgb,var(--on-surface)_80%,transparent)] shadow-sm backdrop-blur-md transition-all active:scale-95"
+                    @click="isMobileDrawerOpen = true"
+                >
+                    <Bars3BottomLeftIcon class="h-6 w-6" aria-hidden="true" />
+                </button>
+            </div>
+
+            <AnriDrawer
+                v-model:show="isMobileDrawerOpen"
+                :title="t('common.label.toc')"
+            >
+                <ArchiveSidebar
+                    :items="items"
+                    :markdown-render-ref="markdownRenderRef"
+                    is-mobile
+                    @close="isMobileDrawerOpen = false"
+                />
+            </AnriDrawer>
         </Teleport>
     </div>
 </template>
