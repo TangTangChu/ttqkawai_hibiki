@@ -409,8 +409,58 @@
     display: table-cell;
 }
 
+.markdown-wrapper details {
+    background-color: color-mix(in srgb, var(--on-surface) 3%, transparent);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    transition: background-color 200ms ease-out;
+}
+
+.markdown-wrapper details:hover {
+    background-color: color-mix(in srgb, var(--on-surface) 6%, transparent);
+}
+
 .markdown-wrapper details summary {
     cursor: pointer;
+    font-weight: 600;
+    padding: 4px 0;
+    user-select: none;
+    outline: none;
+    transition: color 200ms ease-out;
+}
+
+.markdown-wrapper details summary:hover {
+    color: var(--primary);
+}
+
+.markdown-wrapper details[open] summary {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid color-mix(in srgb, var(--on-surface) 5%, transparent);
+}
+
+.markdown-wrapper details>*:not(summary) {
+    margin-left: 0;
+}
+
+.markdown-wrapper mark {
+    background-color: color-mix(in srgb, var(--tertiary) 40%, transparent);
+    color: inherit;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.markdown-wrapper .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: var(--base-size-16) 0;
+    margin: var(--base-size-16) 0;
+}
+
+.markdown-wrapper .katex {
+    font-size: 1.1em;
 }
 
 .markdown-wrapper a:focus,

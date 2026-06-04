@@ -4,6 +4,9 @@ import transformMarkdownAlerts from "~/utils/markdown-alerts";
 import transformBilibiliEmbeds from "~/utils/markdown-bilibili";
 import transformGithubCardEmbeds from "~/utils/markdown-github-card";
 import transformMarkdownImageSize from "~/utils/markdown-image-size";
+import transformMarkdownHighlight from "~/utils/markdown-highlight";
+import transformMarkdownSubSup from "~/utils/markdown-sub-sup";
+import transformMarkdownMath from "~/utils/markdown-math";
 
 const SCRIPT_TAG_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gis;
 const STYLE_TAG_REGEX = /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gis;
@@ -23,9 +26,15 @@ const sanitizeMarkdownContent = (content: string): string => {
 const prepareMarkdown = (content: string, sanitize = true): string => {
     const normalized = content.replace(/\r\n/g, "\n");
 
-    const transformed = transformMarkdownImageSize(
-        transformGithubCardEmbeds(
-            transformBilibiliEmbeds(transformMarkdownAlerts(normalized)),
+    const transformed = transformMarkdownSubSup(
+        transformMarkdownMath(
+            transformMarkdownHighlight(
+                transformMarkdownImageSize(
+                    transformGithubCardEmbeds(
+                        transformBilibiliEmbeds(transformMarkdownAlerts(normalized)),
+                    ),
+                ),
+            ),
         ),
     );
 
