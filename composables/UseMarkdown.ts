@@ -1,48 +1,80 @@
 import { parseMarkdown } from "@nuxtjs/mdc/runtime";
 import type { MDCParserResult } from "@nuxtjs/mdc";
-import transformMarkdownAlerts from "~/utils/markdown-alerts";
-import transformBilibiliEmbeds from "~/utils/markdown-bilibili";
-import transformGithubCardEmbeds from "~/utils/markdown-github-card";
-import transformMarkdownImageSize from "~/utils/markdown-image-size";
-import transformMarkdownHighlight from "~/utils/markdown-highlight";
-import transformMarkdownSubSup from "~/utils/markdown-sub-sup";
-import transformMarkdownMath from "~/utils/markdown-math";
+import type { Component } from "vue";
+import {
+    runMarkdownPipeline,
+    type SegmentTransform,
+} from "~/utils/markdown/pipeline";
+import {
+    collectTransforms,
+    type MarkdownPlugin,
+} from "~/utils/markdown/plugin";
+import {
+    alertsPlugin,
+    bilibiliPlugin,
+    githubCardPlugin,
+    imageSizePlugin,
+    captionPlugin,
+    highlightPlugin,
+    mathPlugin,
+    subSupPlugin,
+    codeCopyPlugin,
+} from "~/utils/markdown/plugins";
+import MarkdownAlert from "~/components/mdc/MarkdownAlert.vue";
+import BilibiliEmbed from "~/components/mdc/BilibiliEmbed.vue";
+import Katex from "~/components/mdc/Katex.vue";
+import MdFigure from "~/components/mdc/MdFigure.vue";
+import GithubCard from "~/components/GithubCard.vue";
+import ProseA from "~/components/prose/ProseA.vue";
+import ProseH1 from "~/components/prose/ProseH1.vue";
+import ProseH2 from "~/components/prose/ProseH2.vue";
+import ProseH3 from "~/components/prose/ProseH3.vue";
+import ProseH4 from "~/components/prose/ProseH4.vue";
+import ProseH5 from "~/components/prose/ProseH5.vue";
+import ProseH6 from "~/components/prose/ProseH6.vue";
+import ProseImg from "~/components/prose/ProseImg.vue";
+import ProsePre from "~/components/prose/ProsePre.vue";
 
-const SCRIPT_TAG_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gis;
-const STYLE_TAG_REGEX = /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gis;
-const INLINE_EVENT_ATTR_REGEX =
-    /\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
-const DANGEROUS_PROTOCOL_REGEX =
-    /(href|src)\s*=\s*(["'])\s*(javascript:|data:text\/html)/gi;
+// transform 顺序：块级/属性在前，行内（哨兵）其后，纯装饰器最后。
+export const markdownPlugins: MarkdownPlugin[] = [
+    alertsPlugin,
+    bilibiliPlugin,
+    githubCardPlugin,
+    imageSizePlugin,
+    captionPlugin,
+    highlightPlugin,
+    mathPlugin,
+    subSupPlugin,
+    codeCopyPlugin,
+];
 
-const sanitizeMarkdownContent = (content: string): string => {
-    return content
-        .replace(SCRIPT_TAG_REGEX, "")
-        .replace(STYLE_TAG_REGEX, "")
-        .replace(INLINE_EVENT_ATTR_REGEX, "")
-        .replace(DANGEROUS_PROTOCOL_REGEX, "$1=$2#");
+export const markdownComponents: Record<string, Component> = {
+    a: ProseA,
+    pre: ProsePre,
+    h1: ProseH1,
+    h2: ProseH2,
+    h3: ProseH3,
+    h4: ProseH4,
+    h5: ProseH5,
+    h6: ProseH6,
+    img: ProseImg,
+    "markdown-alert": MarkdownAlert,
+    "bilibili-embed": BilibiliEmbed,
+    "github-card": GithubCard,
+    katex: Katex,
+    "md-figure": MdFigure,
 };
 
-const prepareMarkdown = (content: string, sanitize = true): string => {
-    const normalized = content.replace(/\r\n/g, "\n");
+const transforms: SegmentTransform[] = collectTransforms(markdownPlugins);
 
-    const transformed = transformMarkdownSubSup(
-        transformMarkdownMath(
-            transformMarkdownHighlight(
-                transformMarkdownImageSize(
-                    transformGithubCardEmbeds(
-                        transformBilibiliEmbeds(transformMarkdownAlerts(normalized)),
-                    ),
-                ),
-            ),
-        ),
-    );
+const prepareMarkdown = (content: string): string =>
+    runMarkdownPipeline(content, transforms);
 
-    return sanitize ? sanitizeMarkdownContent(transformed) : transformed;
-};
+const CACHE_LIMIT = 16;
+const parseCache = new Map<string, Promise<MDCParserResult>>();
 
 export const useMarkdown = (): {
-    prepareMarkdown: (content: string, sanitize?: boolean) => string;
+    prepareMarkdown: (content: string) => string;
     parseMdcMarkdown: (
         content: string,
         sanitize?: boolean,
@@ -52,18 +84,30 @@ export const useMarkdown = (): {
         content: string,
         sanitize = true,
     ): Promise<MDCParserResult> => {
-        const preparedContent = prepareMarkdown(content, sanitize);
+        const cacheKey = `${sanitize ? "1" : "0"}::${content}`;
+        const cached = parseCache.get(cacheKey);
+        if (cached) {
+            return cached;
+        }
 
-        return parseMarkdown(preparedContent, {
-            toc: {
-                depth: 6,
-                searchDepth: 6,
-            },
+        const promise = parseMarkdown(prepareMarkdown(content), {
+            rehype: { options: { allowDangerousHtml: !sanitize } },
+            toc: { depth: 6, searchDepth: 6 },
+        }).catch((error) => {
+            parseCache.delete(cacheKey);
+            throw error;
         });
+
+        parseCache.set(cacheKey, promise);
+        if (parseCache.size > CACHE_LIMIT) {
+            const oldestKey = parseCache.keys().next().value;
+            if (oldestKey !== undefined) {
+                parseCache.delete(oldestKey);
+            }
+        }
+
+        return promise;
     };
 
-    return {
-        prepareMarkdown,
-        parseMdcMarkdown,
-    };
+    return { prepareMarkdown, parseMdcMarkdown };
 };

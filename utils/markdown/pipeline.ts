@@ -5,7 +5,6 @@ const getFenceLength = (line: string): number => {
     if (!match || !match[0]) {
         return 0;
     }
-
     return match[0].length;
 };
 
@@ -18,6 +17,7 @@ const isClosingFence = (
     return trimmed.startsWith(marker) && getFenceLength(line) >= markerLength;
 };
 
+/** 对内容做一次代码围栏扫描，仅对非代码段调用 transform。 */
 export const transformOutsideFencedBlocks = (
     content: string,
     transform: (segment: string) => string,
@@ -29,10 +29,7 @@ export const transformOutsideFencedBlocks = (
     let activeMarkerLength = 0;
 
     const flushBuffer = (): void => {
-        if (buffer.length === 0) {
-            return;
-        }
-
+        if (buffer.length === 0) return;
         output.push(transform(buffer.join("\n")));
         buffer.length = 0;
     };
@@ -51,12 +48,10 @@ export const transformOutsideFencedBlocks = (
 
         if (activeMarker) {
             output.push(line);
-
             if (isClosingFence(line, activeMarker, activeMarkerLength)) {
                 activeMarker = "";
                 activeMarkerLength = 0;
             }
-
             continue;
         }
 
@@ -65,4 +60,22 @@ export const transformOutsideFencedBlocks = (
 
     flushBuffer();
     return output.join("\n");
+};
+
+export type SegmentTransform = (segment: string) => string;
+
+/** 预处理管线：一次代码围栏扫描，transform 顺序作用于每个非代码段。 */
+export const runMarkdownPipeline = (
+    content: string,
+    transforms: SegmentTransform[],
+): string => {
+    const normalized = content.replace(/\r\n/g, "\n");
+
+    if (transforms.length === 0) {
+        return normalized;
+    }
+
+    return transformOutsideFencedBlocks(normalized, (segment) =>
+        transforms.reduce((current, transform) => transform(current), segment),
+    );
 };
