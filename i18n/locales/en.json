@@ -66,7 +66,8 @@
             "searchPlaceholder": "Search in this category..."
         },
         "archive": {
-            "fallback": "This content is not available in your language. Displaying the {lang} version instead."
+            "fallback": "This content is not available in your language. Displaying the {lang} version instead.",
+            "searchPlaceholder": "Search archives..."
         }
     }
 }

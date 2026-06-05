@@ -66,7 +66,8 @@
             "searchPlaceholder": "このカテゴリで検索..."
         },
         "archive": {
-            "fallback": "現在の言語に対応するコンテンツがありません。代わりに {lang} バージョンを表示します。"
+            "fallback": "現在の言語に対応するコンテンツがありません。代わりに {lang} バージョンを表示します。",
+            "searchPlaceholder": "アーカイブを検索..."
         }
     }
 }
