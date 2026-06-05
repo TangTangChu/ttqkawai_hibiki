@@ -1,4 +1,4 @@
-import { transformOutsideFencedBlocks } from "~/utils/markdown-preprocess";
+import type { MarkdownPlugin } from "../plugin";
 
 const alertTypeMap = {
     NOTE: { type: "info", title: "Note" },
@@ -14,16 +14,15 @@ const ALERT_MARKER_REGEX =
     /^>\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\](?:\s+(?:"([^"]+)"|(.+)))?\s*$/;
 const BLOCKQUOTE_LINE_REGEX = /^>\s?(.*)$/;
 
-const escapeMdcAttr = (value: string): string => {
-    return value
+const escapeMdcAttr = (value: string): string =>
+    value
         .replaceAll("&", "&amp;")
         .replaceAll('"', "&quot;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;");
-};
 
-const transformAlertSegment = (content: string): string => {
-    const lines = content.split("\n");
+const transform = (segment: string): string => {
+    const lines = segment.split("\n");
     const output: string[] = [];
 
     for (let index = 0; index < lines.length; index += 1) {
@@ -65,8 +64,8 @@ const transformAlertSegment = (content: string): string => {
     return output.join("\n");
 };
 
-const transformMarkdownAlerts = (content: string): string => {
-    return transformOutsideFencedBlocks(content, transformAlertSegment);
+export const alertsPlugin: MarkdownPlugin = {
+    name: "alerts",
+    transform,
+    components: ["markdown-alert"],
 };
-
-export default transformMarkdownAlerts;

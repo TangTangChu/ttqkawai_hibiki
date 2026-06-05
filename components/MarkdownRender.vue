@@ -1,6 +1,6 @@
 <template>
     <div class="w-full max-w-full">
-        <div ref="markdownRoot" class="w-full" @click="handleCopyClick">
+        <div ref="markdownRoot" class="w-full">
             <MDCRenderer
                 v-if="renderPayload"
                 :body="renderPayload.body"
@@ -33,22 +33,18 @@
 <script setup lang="ts">
 import type { MDCParserResult } from "@nuxtjs/mdc";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
-import type { DefineComponent } from "vue";
-import { useMarkdown } from "~/composables/UseMarkdown";
+import {
+    useMarkdown,
+    markdownPlugins,
+    markdownComponents,
+} from "~/composables/UseMarkdown";
 import AnriSpinner from "~/components/AnriSpinner.vue";
-import BilibiliEmbed from "~/components/mdc/BilibiliEmbed.vue";
-import MarkdownAlert from "~/components/mdc/MarkdownAlert.vue";
-import ProseA from "~/components/prose/ProseA.vue";
-import ProseH1 from "~/components/prose/ProseH1.vue";
-import ProseH2 from "~/components/prose/ProseH2.vue";
-import ProseH3 from "~/components/prose/ProseH3.vue";
-import ProseH4 from "~/components/prose/ProseH4.vue";
-import ProseH5 from "~/components/prose/ProseH5.vue";
-import ProseH6 from "~/components/prose/ProseH6.vue";
-import ProseImg from "~/components/prose/ProseImg.vue";
-import ProsePre from "~/components/prose/ProsePre.vue";
-import GithubCard from "~/components/GithubCard.vue";
-import slugify from "slugify";
+import {
+    collectDecorators,
+    assertComponentsBound,
+    type MarkdownDecorator,
+} from "~/utils/markdown/plugin";
+import { extractHeadingItems, tocItemsEqual } from "~/utils/markdown/toc";
 import type { TocItem } from "~/types/tocItems";
 import "~/assets/css/markdown.css";
 
@@ -70,64 +66,13 @@ const tocItems = ref<TocItem[]>([]);
 const errorMessage = ref("");
 const parsing = ref(false);
 
-const slugifyConfig = {
-    lower: true,
-    strict: true,
-    remove: /[*+~.()'"!:@]/g,
-    locale: "zh" as const,
-    trim: true,
-};
+const rendererComponents = markdownComponents;
+const decoratorFactories = collectDecorators(markdownPlugins);
+const decorators = new Map<string, MarkdownDecorator>();
 
-const extractHeadingItems = (): TocItem[] => {
-    if (!markdownRoot.value) return [];
-
-    const headings = markdownRoot.value.querySelectorAll(
-        "h1, h2, h3, h4, h5, h6",
-    );
-    const usedIds = new Set<string>();
-    const items: TocItem[] = [];
-
-    headings.forEach((heading, index) => {
-        if (!heading.id) {
-            const textContent = heading.textContent || "";
-            const baseSlug =
-                slugify(textContent, slugifyConfig) || `heading-${index}`;
-
-            let slug = baseSlug;
-            let counter = 2;
-            while (usedIds.has(slug)) {
-                slug = `${baseSlug}-${counter}`;
-                counter++;
-            }
-            heading.id = slug;
-        }
-
-        usedIds.add(heading.id);
-
-        items.push({
-            id: heading.id,
-            text: heading.textContent || "",
-            level: parseInt(heading.tagName.substring(1)),
-        });
-    });
-
-    return items;
-};
-
-const rendererComponents = {
-    a: ProseA,
-    pre: ProsePre,
-    h1: ProseH1,
-    h2: ProseH2,
-    h3: ProseH3,
-    h4: ProseH4,
-    h5: ProseH5,
-    h6: ProseH6,
-    img: ProseImg,
-    "markdown-alert": MarkdownAlert,
-    "bilibili-embed": BilibiliEmbed,
-    "github-card": GithubCard as unknown as DefineComponent<any, any, any>,
-};
+if (import.meta.dev) {
+    assertComponentsBound(markdownPlugins, markdownComponents);
+}
 
 const renderPayload = computed(() => {
     if (!parsedContent.value) {
@@ -182,66 +127,31 @@ const updateParsedContent = (content: string): Promise<void> => {
         });
 };
 
-const tocItemsEqual = (a: TocItem[], b: TocItem[]): boolean => {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-        const itemA = a[i];
-        const itemB = b[i];
-        if (!itemA || !itemB) return false;
-        if (
-            itemA.id !== itemB.id ||
-            itemA.text !== itemB.text ||
-            itemA.level !== itemB.level
-        ) {
-            return false;
-        }
+const destroyDecorators = () => {
+    for (const decorator of decorators.values()) {
+        decorator.destroy();
     }
-    return true;
+    decorators.clear();
 };
 
 const syncMarkdownDom = () => {
     const root = markdownRoot.value;
     if (!root) return;
 
-    const items = extractHeadingItems();
-    if (tocItemsEqual(items, tocItems.value)) return;
-
-    tocItems.value = items;
-    emit("toc-updated", items);
-};
-
-const handleCopyClick = (event: Event): void => {
-    const target = event.target as Element | null;
-    if (!target) return;
-
-    const button = target.closest(".code-copy-btn") as HTMLButtonElement | null;
-    if (!button) return;
-
-    const encodedCode = button.getAttribute("data-code") || "";
-    const codeEncoding = button.getAttribute("data-code-encoding") || "";
-
-    if (!encodedCode) return;
-
-    let code = encodedCode;
-    if (codeEncoding === "uri") {
-        try {
-            code = decodeURIComponent(encodedCode);
-        } catch {
-            code = encodedCode;
+    for (const factory of decoratorFactories) {
+        const existing = decorators.get(factory.name);
+        if (existing) {
+            existing.refresh();
+        } else {
+            decorators.set(factory.name, factory.create(root));
         }
     }
 
-    navigator.clipboard
-        .writeText(code)
-        .then(() => {
-            button.classList.add("copied");
-            setTimeout(() => {
-                button.classList.remove("copied");
-            }, 2000);
-        })
-        .catch((error) => {
-            console.error(t("common.label.copyFailed"), error);
-        });
+    const items = extractHeadingItems(root);
+    if (!tocItemsEqual(items, tocItems.value)) {
+        tocItems.value = items;
+        emit("toc-updated", items);
+    }
 };
 
 watch(
@@ -284,6 +194,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     clearDomSyncResources();
+    destroyDecorators();
 });
 
 watch(
@@ -292,6 +203,7 @@ watch(
         if (!value) {
             tocItems.value = [];
             emit("toc-updated", []);
+            destroyDecorators();
             return;
         }
         await nextTick();
