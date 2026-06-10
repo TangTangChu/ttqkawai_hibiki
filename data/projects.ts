@@ -10,7 +10,7 @@ export interface ProjectItem {
 export const projects: ProjectItem[] = [
     {
         name: "ttqkawai_hibiki",
-        url: "https://github.com/tantanchu/ttqkawai_hibiki",
+        url: "https://github.com/TangTangChu/ttqkawai_hibiki",
         liveUrl: "https://tantanchugasuki.cn",
         desc: "本网站的源代码",
         techStack: ["Nuxt 4", "Tailwind CSS", "TypeScript"],
