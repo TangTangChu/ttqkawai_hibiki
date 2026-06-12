@@ -250,16 +250,16 @@ const fetchFullMusicList = async () => {
             `${apiBase}/v1/datasets/fav_music?page=1&page_size=100`,
         );
         if (res && res.data) {
-            const extractId = (link: string) =>
-                link.split("id=")[1]?.split("&")[0];
-            const fullList = res.data.map((item) => ({
-                id:
-                    extractId(item.record.link) ||
-                    Math.random().toString(36).substr(2, 9),
-                title: item.record.title,
-                cover: item.record.cover,
-                source: `https://music.163.com/song/media/outer/url?id=${extractId(item.record.link)}.mp3`,
-            }));
+            const extractId = (link?: string) =>
+                link?.split("id=")[1]?.split("&")[0];
+            const fullList = res.data
+                .filter((item) => item.record.link)
+                .map((item) => ({
+                    id: extractId(item.record.link)!,
+                    title: item.record.title,
+                    cover: item.record.cover,
+                    source: `https://music.163.com/song/media/outer/url?id=${extractId(item.record.link)}.mp3`,
+                }));
             updatePlaylistOnly(fullList);
             // 默认载入第一首，但不自动播放
             if (fullList.length > 0 && !currentTrack.value) {

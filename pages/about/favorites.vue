@@ -291,7 +291,7 @@ const tabDataCache = ref<
 const tabMetaCache = ref<Record<string, Record<number, any>>>({});
 
 const playMusic = (item: FavItem) => {
-    const extractId = (link: string) => link.split("id=")[1]?.split("&")[0];
+    const extractId = (link?: string) => link?.split("id=")[1]?.split("&")[0];
     const musicId = extractId(item.record.link);
     if (!musicId) return;
 
