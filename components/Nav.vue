@@ -3,7 +3,7 @@
         <div class="mx-auto max-w-7xl px-3 pt-3 sm:px-6 sm:pt-4">
             <div
                 ref="headerRef"
-                class="relative rounded-2xl transition-[background-color,backdrop-filter] duration-500 ease-out"
+                class="relative rounded-2xl transition-[background-color,backdrop-filter,box-shadow] duration-500 ease-out"
                 :style="headerStyles"
             >
                 <nav
@@ -321,13 +321,16 @@ const headerStyles = computed((): CSSProperties => {
         isMobileMenuOpen.value || moreOpen.value || opacity.value > 0.08;
     const alphaValue =
         isMobileMenuOpen.value || moreOpen.value
-            ? 0.95
-            : Math.min(0.82, 0.56 + opacity.value * 0.22);
+            ? 1
+            : Math.min(1, 0.88 + opacity.value * 0.12);
 
     return {
         backgroundColor: bgEffect
             ? `color-mix(in srgb, var(--surface) ${Math.round(alphaValue * 100)}%, transparent)`
             : "transparent",
+        boxShadow: bgEffect
+            ? "0px 2px 16px 0px rgba(113, 93, 84, 0.06)"
+            : "none",
         backdropFilter: bgEffect ? "blur(12px)" : "none",
         WebkitBackdropFilter: bgEffect ? "blur(12px)" : "none",
     };
