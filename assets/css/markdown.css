@@ -302,7 +302,7 @@
 }
 
 .markdown-wrapper figure {
-    margin: 1em var(--base-size-40);
+    margin: 1em 0;
 }
 
 .markdown-wrapper hr {

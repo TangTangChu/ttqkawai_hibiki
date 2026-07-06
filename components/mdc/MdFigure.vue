@@ -1,5 +1,5 @@
 <template>
-    <figure class="my-4 flex flex-col items-center">
+    <figure class="flex flex-col items-center">
         <ProseImg :src="src" :alt="alt" />
         <figcaption
             v-if="caption"
