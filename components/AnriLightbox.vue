@@ -1,7 +1,5 @@
 <template>
-    <AnriOverlay
-        v-model="modelValue"
-    >
+    <AnriOverlay v-model="modelValue">
         <div
             class="relative w-full h-full flex items-center justify-center p-4 sm:p-8"
         >
@@ -33,7 +31,7 @@
 
             <!-- Image -->
             <div
-                class="relative w-full h-full flex items-center justify-center"
+                class="relative w-full h-full overflow-hidden"
                 @wheel.prevent="handleWheel"
                 @mousedown="startDrag"
                 @touchstart.passive="handleTouchStart"
@@ -42,20 +40,25 @@
                 @click.stop
             >
                 <Transition
-                    enter-active-class="transition-all duration-200 ease-out"
-                    enter-from-class="opacity-0 scale-95"
-                    enter-to-class="opacity-100 scale-100"
-                    leave-active-class="transition-all duration-150 ease-in absolute"
-                    leave-from-class="opacity-100 scale-100"
-                    leave-to-class="opacity-0 scale-95"
+                    enter-active-class="transition-opacity duration-200 ease-out"
+                    enter-from-class="opacity-0"
+                    enter-to-class="opacity-100"
+                    leave-active-class="transition-opacity duration-150 ease-in absolute"
+                    leave-from-class="opacity-100"
+                    leave-to-class="opacity-0"
                 >
-                    <img
-                        :key="currentIndex"
-                        :src="currentImageSrc"
-                        class="max-w-full max-h-full object-contain select-none will-change-transform rounded-xl"
-                        :style="imageStyle"
-                        draggable="false"
-                    />
+                    <div
+                        v-if="displayedImageSrc"
+                        :key="displayedImageKey"
+                        class="absolute inset-0 flex items-center justify-center"
+                    >
+                        <img
+                            :src="displayedImageSrc"
+                            class="max-w-full max-h-full object-contain select-none will-change-transform rounded-xl"
+                            :style="imageStyle"
+                            draggable="false"
+                        />
+                    </div>
                 </Transition>
             </div>
 
@@ -64,7 +67,7 @@
                 v-if="images.length > 1"
                 class="absolute bottom-4 sm:bottom-8 px-4 py-2 rounded-xl bg-surface/80 backdrop-blur-md text-on-background/80 text-sm font-medium tracking-wide select-none"
             >
-                {{ currentIndex + 1 }} / {{ images.length }}
+                {{ displayedIndex + 1 }} / {{ images.length }}
             </div>
         </div>
     </AnriOverlay>
@@ -82,6 +85,7 @@ import AnriOverlay from "~/components/AnriOverlay.vue";
 
 const { isOpen, images, currentIndex, closeViewer, nextImage, prevImage } =
     useImageViewer();
+const { getStatus, setStatus } = useImageCache();
 
 const modelValue = computed({
     get: () => isOpen.value,
@@ -92,7 +96,13 @@ const modelValue = computed({
 
 const hasPrev = computed(() => currentIndex.value > 0);
 const hasNext = computed(() => currentIndex.value < images.value.length - 1);
-const currentImageSrc = computed(() => images.value[currentIndex.value] || "");
+const displayedIndex = ref(0);
+const displayedImageSrc = computed(
+    () => images.value[displayedIndex.value] || "",
+);
+const displayedImageKey = computed(
+    () => `${displayedIndex.value}:${displayedImageSrc.value}`,
+);
 
 const scale = ref(1);
 const translateX = ref(0);
@@ -116,10 +126,104 @@ const resetTransform = () => {
     translateY.value = 0;
 };
 
-// Reset transform when image changes or viewer opens
-watch([currentIndex, isOpen], () => {
+const decodedImages = new Set<string>();
+const pendingPreloads = new Map<string, Promise<void>>();
+let switchRequestId = 0;
+let viewerWasOpen = false;
+
+const getImageSrc = (index: number) => images.value[index] || "";
+
+const clampImageIndex = (index: number) => {
+    if (images.value.length === 0) return 0;
+    return Math.min(Math.max(index, 0), images.value.length - 1);
+};
+
+const preloadImage = (src: string): Promise<void> => {
+    if (!src || import.meta.server) {
+        return Promise.resolve();
+    }
+
+    if (decodedImages.has(src)) {
+        return Promise.resolve();
+    }
+
+    const pending = pendingPreloads.get(src);
+    if (pending) {
+        return pending;
+    }
+
+    if (getStatus(src) !== "loaded") {
+        setStatus(src, "loading");
+    }
+
+    const task = new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.onload = () => {
+            const decodeTask = img.decode
+                ? img.decode().catch(() => undefined)
+                : Promise.resolve();
+
+            decodeTask.then(() => {
+                decodedImages.add(src);
+                setStatus(src, "loaded");
+                resolve();
+            });
+        };
+        img.onerror = () => {
+            setStatus(src, "error");
+            reject(new Error(`Failed to load image: ${src}`));
+        };
+        img.src = src;
+    }).finally(() => {
+        pendingPreloads.delete(src);
+    });
+
+    pendingPreloads.set(src, task);
+    return task;
+};
+
+const preloadAround = (index: number) => {
+    const nearbySources = [getImageSrc(index - 1), getImageSrc(index + 1)];
+    for (const src of nearbySources) {
+        if (src) {
+            void preloadImage(src).catch(() => undefined);
+        }
+    }
+};
+
+const commitDisplayedImage = (index: number) => {
+    displayedIndex.value = index;
     resetTransform();
-});
+    preloadAround(index);
+};
+
+const syncDisplayedImage = async (index: number) => {
+    const nextIndex = clampImageIndex(index);
+    const src = getImageSrc(nextIndex);
+    const requestId = ++switchRequestId;
+
+    if (nextIndex === displayedIndex.value) {
+        preloadAround(nextIndex);
+        return;
+    }
+
+    try {
+        await preloadImage(src);
+    } catch (error) {
+        console.error(error);
+    }
+
+    if (
+        requestId !== switchRequestId ||
+        !isOpen.value ||
+        currentIndex.value !== nextIndex
+    ) {
+        return;
+    }
+
+    commitDisplayedImage(nextIndex);
+};
 
 // Mouse Wheel Zoom
 const handleWheel = (e: WheelEvent) => {
@@ -201,5 +305,28 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.removeEventListener("keydown", handleKeydown);
+    stopDrag();
 });
+
+watch(
+    () => [isOpen.value, currentIndex.value, images.value] as const,
+    ([open, index]) => {
+        switchRequestId++;
+
+        if (!open) {
+            viewerWasOpen = false;
+            return;
+        }
+
+        const nextIndex = clampImageIndex(index);
+        if (!viewerWasOpen) {
+            viewerWasOpen = true;
+            commitDisplayedImage(nextIndex);
+            return;
+        }
+
+        void syncDisplayedImage(nextIndex);
+    },
+    { flush: "sync" },
+);
 </script>
