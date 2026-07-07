@@ -1,6 +1,7 @@
 <template>
     <AnriOverlay
-        v-model="modelValue"
+        :model-value="modelValue"
+        @update:model-value="close"
         :close-on-backdrop="closeOnBackdrop"
     >
         <div class="flex items-center justify-center p-4 sm:p-6 w-full h-full">
