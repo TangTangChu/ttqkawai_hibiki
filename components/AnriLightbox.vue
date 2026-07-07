@@ -1,86 +1,73 @@
 <template>
-    <Teleport to="body">
-        <Transition
-            enter-active-class="transition-opacity duration-300 ease-out"
-            enter-from-class="opacity-0"
-            enter-to-class="opacity-100"
-            leave-active-class="transition-opacity duration-200 ease-in"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
+    <AnriOverlay
+        v-model="modelValue"
+    >
+        <div
+            class="relative w-full h-full flex items-center justify-center p-4 sm:p-8"
         >
-            <div
-                v-if="isOpen"
-                class="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-                @click="closeViewer"
+            <!-- Close button -->
+            <button
+                class="absolute top-4 right-4 sm:top-8 sm:right-8 p-2 rounded-xl border-transparent bg-transparent text-on-background hover:bg-primary/5 hover:text-primary active:bg-primary/10 transition-[background-color,border-color,color,box-shadow] duration-200 ease-out cursor-pointer z-10"
+                @click.stop="closeViewer"
             >
-                <div
-                    class="relative w-full h-full flex items-center justify-center p-4 sm:p-8"
+                <XMarkIcon class="w-6 h-6 sm:w-8 sm:h-8" />
+            </button>
+
+            <!-- Prev button -->
+            <button
+                v-if="hasPrev"
+                class="absolute left-4 sm:left-8 p-3 rounded-xl border-transparent bg-transparent text-on-background hover:bg-primary/5 hover:text-primary active:bg-primary/10 transition-[background-color,border-color,color,box-shadow] duration-200 ease-out cursor-pointer z-10"
+                @click.stop="prevImage"
+            >
+                <ChevronLeftIcon class="w-6 h-6 sm:w-8 sm:h-8" />
+            </button>
+
+            <!-- Next button -->
+            <button
+                v-if="hasNext"
+                class="absolute right-4 sm:right-8 p-3 rounded-xl border-transparent bg-transparent text-on-background hover:bg-primary/5 hover:text-primary active:bg-primary/10 transition-[background-color,border-color,color,box-shadow] duration-200 ease-out cursor-pointer z-10"
+                @click.stop="nextImage"
+            >
+                <ChevronRightIcon class="w-6 h-6 sm:w-8 sm:h-8" />
+            </button>
+
+            <!-- Image -->
+            <div
+                class="relative w-full h-full flex items-center justify-center"
+                @wheel.prevent="handleWheel"
+                @mousedown="startDrag"
+                @touchstart.passive="handleTouchStart"
+                @touchmove.prevent="handleTouchMove"
+                @touchend="handleTouchEnd"
+                @click.stop
+            >
+                <Transition
+                    enter-active-class="transition-all duration-200 ease-out"
+                    enter-from-class="opacity-0 scale-95"
+                    enter-to-class="opacity-100 scale-100"
+                    leave-active-class="transition-all duration-150 ease-in absolute"
+                    leave-from-class="opacity-100 scale-100"
+                    leave-to-class="opacity-0 scale-95"
                 >
-                    <!-- Close button -->
-                    <button
-                        class="absolute top-4 right-4 sm:top-8 sm:right-8 p-2 rounded-2xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-all duration-200 ease-out cursor-pointer z-10"
-                        @click.stop="closeViewer"
-                    >
-                        <XMarkIcon class="w-6 h-6 sm:w-8 sm:h-8" />
-                    </button>
-
-                    <!-- Prev button -->
-                    <button
-                        v-if="hasPrev"
-                        class="absolute left-4 sm:left-8 p-3 rounded-2xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-all duration-200 ease-out cursor-pointer z-10"
-                        @click.stop="prevImage"
-                    >
-                        <ChevronLeftIcon class="w-6 h-6 sm:w-8 sm:h-8" />
-                    </button>
-
-                    <!-- Next button -->
-                    <button
-                        v-if="hasNext"
-                        class="absolute right-4 sm:right-8 p-3 rounded-2xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-all duration-200 ease-out cursor-pointer z-10"
-                        @click.stop="nextImage"
-                    >
-                        <ChevronRightIcon class="w-6 h-6 sm:w-8 sm:h-8" />
-                    </button>
-
-                    <!-- Image -->
-                    <div
-                        class="relative w-full h-full flex items-center justify-center"
-                        @wheel.prevent="handleWheel"
-                        @mousedown="startDrag"
-                        @touchstart.passive="handleTouchStart"
-                        @touchmove.prevent="handleTouchMove"
-                        @touchend="handleTouchEnd"
-                        @click.stop
-                    >
-                        <Transition
-                            enter-active-class="transition-all duration-300 ease-out"
-                            enter-from-class="opacity-0 scale-95"
-                            enter-to-class="opacity-100 scale-100"
-                            leave-active-class="transition-all duration-200 ease-in absolute"
-                            leave-from-class="opacity-100 scale-100"
-                            leave-to-class="opacity-0 scale-95"
-                        >
-                            <img
-                                :key="currentIndex"
-                                :src="currentImageSrc"
-                                class="max-w-full max-h-full object-contain select-none will-change-transform rounded-xl"
-                                :style="imageStyle"
-                                draggable="false"
-                            />
-                        </Transition>
-                    </div>
-
-                    <!-- Counter -->
-                    <div
-                        v-if="images.length > 1"
-                        class="absolute bottom-4 sm:bottom-8 px-4 py-2 rounded-2xl bg-black/50 text-white/90 text-sm font-medium tracking-wide backdrop-blur-md select-none"
-                    >
-                        {{ currentIndex + 1 }} / {{ images.length }}
-                    </div>
-                </div>
+                    <img
+                        :key="currentIndex"
+                        :src="currentImageSrc"
+                        class="max-w-full max-h-full object-contain select-none will-change-transform rounded-xl"
+                        :style="imageStyle"
+                        draggable="false"
+                    />
+                </Transition>
             </div>
-        </Transition>
-    </Teleport>
+
+            <!-- Counter -->
+            <div
+                v-if="images.length > 1"
+                class="absolute bottom-4 sm:bottom-8 px-4 py-2 rounded-xl bg-surface/80 backdrop-blur-md text-on-background/80 text-sm font-medium tracking-wide select-none"
+            >
+                {{ currentIndex + 1 }} / {{ images.length }}
+            </div>
+        </div>
+    </AnriOverlay>
 </template>
 
 <script setup lang="ts">
@@ -91,9 +78,17 @@ import {
     ChevronRightIcon,
 } from "@heroicons/vue/24/outline";
 import { useImageViewer } from "~/composables/useImageViewer";
+import AnriOverlay from "~/components/AnriOverlay.vue";
 
 const { isOpen, images, currentIndex, closeViewer, nextImage, prevImage } =
     useImageViewer();
+
+const modelValue = computed({
+    get: () => isOpen.value,
+    set: (val) => {
+        isOpen.value = val;
+    },
+});
 
 const hasPrev = computed(() => currentIndex.value > 0);
 const hasNext = computed(() => currentIndex.value < images.value.length - 1);
