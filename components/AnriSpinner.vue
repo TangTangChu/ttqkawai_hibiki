@@ -17,17 +17,16 @@ import { computed } from "vue";
 
 const { t } = useI18n();
 
-const props = defineProps({
-    size: {
-        type: String,
-        default: "md",
-        validator: (value: string) => ["sm", "md", "lg", "xl"].includes(value),
+const props = withDefaults(
+    defineProps<{
+        size?: "sm" | "md" | "lg" | "xl";
+        color?: string;
+    }>(),
+    {
+        size: "md",
+        color: "primary",
     },
-    color: {
-        type: String,
-        default: "primary",
-    },
-});
+);
 
 const sizeClass = computed(() => {
     switch (props.size) {

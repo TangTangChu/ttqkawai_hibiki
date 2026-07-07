@@ -1,7 +1,6 @@
 <template>
     <AnriOverlay
-        :model-value="modelValue"
-        @update:model-value="close"
+        v-model="modelValue"
         :close-on-backdrop="closeOnBackdrop"
     >
         <div class="flex items-center justify-center p-4 sm:p-6 w-full h-full">
@@ -43,28 +42,24 @@ import { computed } from "vue";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import AnriOverlay from "~/components/AnriOverlay.vue";
 
-const props = defineProps({
-    modelValue: {
-        type: Boolean,
-        default: false,
-    },
-    showCloseButton: {
-        type: Boolean,
-        default: true,
-    },
-    closeOnBackdrop: {
-        type: Boolean,
-        default: true,
-    },
-    maxWidth: {
-        type: String,
-        default: "md",
-        validator: (val: string) =>
-            ["sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl"].includes(val),
-    },
-});
+const modelValue = defineModel<boolean>({ default: false });
 
-const emit = defineEmits(["update:modelValue", "close"]);
+const props = withDefaults(
+    defineProps<{
+        showCloseButton?: boolean;
+        closeOnBackdrop?: boolean;
+        maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl";
+    }>(),
+    {
+        showCloseButton: true,
+        closeOnBackdrop: true,
+        maxWidth: "md",
+    },
+);
+
+const emit = defineEmits<{
+    (e: "close"): void;
+}>();
 
 const maxWidthClass = computed(() => {
     const map: Record<string, string> = {
@@ -81,7 +76,7 @@ const maxWidthClass = computed(() => {
 });
 
 const close = () => {
-    emit("update:modelValue", false);
+    modelValue.value = false;
     emit("close");
 };
 </script>

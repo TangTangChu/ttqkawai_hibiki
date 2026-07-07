@@ -32,9 +32,9 @@
 
 <script setup lang="ts">
 const { t } = useI18n();
-const props = defineProps({
-    error: Object,
-});
+const props = defineProps<{
+    error?: Record<string, unknown> | null;
+}>();
 
 const handleGoHome = () => {
     clearError({ redirect: "/" });

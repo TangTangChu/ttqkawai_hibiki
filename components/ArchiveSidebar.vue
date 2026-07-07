@@ -156,7 +156,9 @@ const props = defineProps<{
     isMobile?: boolean;
 }>();
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{
+    (e: "close"): void;
+}>();
 
 const { t } = useI18n();
 const isCollapsed = ref(false);
