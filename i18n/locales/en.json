@@ -2,7 +2,8 @@
     "site": {
         "title": "Tantanchu's Site",
         "slogan": "Any Word Shows Love",
-        "name": "Tantanchu"
+        "name": "Tantanchu",
+        "description": "Tantanchu's personal site~ A cozy corner for tech, life, and cute little things!"
     },
     "common": {
         "action": {
@@ -50,6 +51,15 @@
         "projects": "Projects"
     },
     "pages": {
+        "meta": {
+            "index": "Tantanchu's cozy corner~ Welcome! Tech articles, life logs, and lots of fun stuff await~",
+            "archive": "All past articles and records live here. Maybe you'll stumble upon something interesting~",
+            "links": "A bunch of lovely friends! Come check out their sites, you might discover a hidden gem~",
+            "about": "A little bit about Tantanchu~ Click in if you'd like to know more!",
+            "favorites": "My favorite characters, music, anime, and more~ See if any match your taste!",
+            "projects": "Some personal projects I've worked on. They might not be perfect but they're made with love~",
+            "timeline": "A long timeline recording important moments and unforgettable memories~"
+        },
         "about": {
             "timeline": "Timeline",
             "aboutMe": "About me",

@@ -130,6 +130,7 @@ import { useApi } from "~/composables/useApi";
 import { useNavTitle } from "~/composables/useNavTitle";
 import type { Archive } from "~/types/archive";
 import { resolveCmsLocale } from "~/utils/formatDate";
+import { useSeoMeta } from "#imports";
 
 const { t, locale } = useI18n();
 const route = useRoute();
@@ -141,6 +142,23 @@ resetNavTitle();
 useHead(() => ({
     title: t("menu.archive"),
 }));
+
+const config = useRuntimeConfig();
+
+useSeoMeta({
+    title: t("menu.archive"),
+    description: t("pages.meta.archive"),
+    ogTitle: t("menu.archive"),
+    ogDescription: t("pages.meta.archive"),
+    ogImage: "https://img.tantanchugasuki.cn/i/r/avatar",
+    ogType: "website",
+    ogUrl: `${config.public.siteUrl}${route.path}`,
+    ogSiteName: "糖糖毬的个人站",
+    twitterCard: "summary",
+    twitterTitle: t("menu.archive"),
+    twitterDescription: t("pages.meta.archive"),
+    twitterImage: "https://img.tantanchugasuki.cn/i/r/avatar",
+});
 
 interface Taxonomy {
     id: string;

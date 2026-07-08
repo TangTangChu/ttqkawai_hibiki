@@ -2,7 +2,8 @@
     "site": {
         "title": "Tantanchuのサイト",
         "slogan": "Any Word Shows Love",
-        "name": "Tantanchu"
+        "name": "Tantanchu",
+        "description": "Tantanchuの個人サイト〜技術や生活のかわいい記録帳！"
     },
     "common": {
         "action": {
@@ -50,6 +51,15 @@
         "projects": "プロジェクト"
     },
     "pages": {
+        "meta": {
+            "index": "Tantanchuの小さなお家へようこそ！技術記事や暮らしの記録、楽しいものがいっぱい〜",
+            "archive": "過去の記事や記録が全部ここにあるよ。何か面白いものが見つかるかも〜",
+            "links": "可愛い友達たちがいっぱい！彼らのサイトものぞいてみてね、新しい発見があるかも〜",
+            "about": "Tantanchuについてのいろんなこと〜もっと知りたいならクリックしてみてね！",
+            "favorites": "好きなキャラクター、音楽、アニメなどなど〜君の好きなものもあるかな？",
+            "projects": "作った個人プロジェクトだよ。完璧じゃないかもだけど、全部心を込めて作ったんだ〜",
+            "timeline": "大事な瞬間や忘れられない思い出を記録した長いタイムラインだよ〜"
+        },
         "about": {
             "timeline": "タイムライン",
             "aboutMe": "自分について",

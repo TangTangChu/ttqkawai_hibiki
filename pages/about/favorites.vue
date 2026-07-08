@@ -225,6 +225,7 @@ import AnriPagination from "~/components/AnriPagination.vue";
 import AnriSpinner from "~/components/AnriSpinner.vue";
 import AnriTooltip from "~/components/AnriTooltip.vue";
 import AnriCharCard from "~/components/AnriCharCard.vue";
+import { useSeoMeta } from "#imports";
 import type { FavItem, FavCharItem } from "~/types/record";
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
@@ -255,6 +256,22 @@ const tabs = computed(() => [
 
 const route = useRoute();
 const router = useRouter();
+const config = useRuntimeConfig();
+
+useSeoMeta({
+    title: t("menu.favorites"),
+    description: t("pages.meta.favorites"),
+    ogTitle: t("menu.favorites"),
+    ogDescription: t("pages.meta.favorites"),
+    ogImage: "https://img.tantanchugasuki.cn/i/r/avatar",
+    ogType: "website",
+    ogUrl: `${config.public.siteUrl}${route.path}`,
+    ogSiteName: "糖糖毬的个人站",
+    twitterCard: "summary",
+    twitterTitle: t("menu.favorites"),
+    twitterDescription: t("pages.meta.favorites"),
+    twitterImage: "https://img.tantanchugasuki.cn/i/r/avatar",
+});
 
 const parseHashToTab = (hash: string) => {
     if (!hash) return "fav_music";
