@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { useHead, useServerSeoMeta } from "#imports";
+import { useHead } from "#imports";
 import { useI18n } from "vue-i18n";
+import { SITE_NAME } from "~/utils/seo";
 
 const { t } = useI18n();
+const config = useRuntimeConfig();
 
 useHead(() => ({
     titleTemplate: (titleChunk) => {
@@ -13,13 +15,6 @@ useHead(() => ({
     },
 }));
 
-useServerSeoMeta({
-    ogImage: "https://img.tantanchugasuki.cn/i/r/avatar",
-    twitterCard: "summary",
-    ogType: "website",
-    ogSiteName: "糖糖毬的个人站",
-});
-
 useHead({
     script: [
         {
@@ -27,8 +22,8 @@ useHead({
             innerHTML: JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "name": "糖糖毬的个人站",
-                "url": "https://tantanchugasuki.cn",
+                name: SITE_NAME,
+                url: config.public.siteUrl,
             }),
         },
     ],

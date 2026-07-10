@@ -136,7 +136,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
-import { useSeoMeta } from "#imports";
 import {
     HeartIcon,
     ClockIcon,
@@ -147,28 +146,11 @@ import {
 
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
-const config = useRuntimeConfig();
-const route = useRoute();
-
 resetNavTitle();
 
-useHead(() => ({
-    title: t("menu.about"),
-}));
-
-useSeoMeta({
-    title: t("menu.about"),
-    description: t("pages.meta.about"),
-    ogTitle: t("menu.about"),
-    ogDescription: t("pages.meta.about"),
-    ogImage: "https://img.tantanchugasuki.cn/i/r/avatar",
-    ogType: "website",
-    ogUrl: `${config.public.siteUrl}${route.path}`,
-    ogSiteName: "糖糖毬的个人站",
-    twitterCard: "summary",
-    twitterTitle: t("menu.about"),
-    twitterDescription: t("pages.meta.about"),
-    twitterImage: "https://img.tantanchugasuki.cn/i/r/avatar",
+usePageSeo({
+    title: () => t("menu.about"),
+    description: () => t("pages.meta.about"),
 });
 
 const enrollDate = new Date("2024-09-07");

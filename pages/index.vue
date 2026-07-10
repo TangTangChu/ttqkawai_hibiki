@@ -43,30 +43,13 @@
 </template>
 
 <script setup lang="ts">
-import { useHead, useSeoMeta } from "#imports";
 import { useI18n } from "vue-i18n";
 import { socialLinks } from "~/data/socialLinks";
 
 const { t } = useI18n();
-const config = useRuntimeConfig();
-const route = useRoute();
 
-useHead(() => ({
-    title: t("site.title"),
-}));
-
-useSeoMeta({
-    title: t("site.title"),
-    description: t("pages.meta.index"),
-    ogTitle: t("site.title"),
-    ogDescription: t("pages.meta.index"),
-    ogImage: "https://img.tantanchugasuki.cn/i/r/avatar",
-    ogType: "website",
-    ogUrl: `${config.public.siteUrl}${route.path}`,
-    ogSiteName: "糖糖毬的个人站",
-    twitterCard: "summary",
-    twitterTitle: t("site.title"),
-    twitterDescription: t("pages.meta.index"),
-    twitterImage: "https://img.tantanchugasuki.cn/i/r/avatar",
+usePageSeo({
+    title: () => t("site.title"),
+    description: () => t("pages.meta.index"),
 });
 </script>

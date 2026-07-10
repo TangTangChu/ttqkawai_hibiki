@@ -83,34 +83,16 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
-import { useSeoMeta } from "#imports";
 import { projects } from "~/data/projects";
 import { CodeBracketIcon, RocketLaunchIcon } from "@heroicons/vue/24/outline";
 import AnriTooltip from "~/components/AnriTooltip.vue";
 
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
-const config = useRuntimeConfig();
-const route = useRoute();
-
 resetNavTitle();
 
-useHead(() => ({
-    title: `${t("menu.projects")} - ${t("site.name")}`,
-}));
-
-useSeoMeta({
-    title: `${t("menu.projects")} - ${t("site.name")}`,
-    description: t("pages.meta.projects"),
-    ogTitle: `${t("menu.projects")} - ${t("site.name")}`,
-    ogDescription: t("pages.meta.projects"),
-    ogImage: "https://img.tantanchugasuki.cn/i/r/avatar",
-    ogType: "website",
-    ogUrl: `${config.public.siteUrl}${route.path}`,
-    ogSiteName: "糖糖毬的个人站",
-    twitterCard: "summary",
-    twitterTitle: `${t("menu.projects")} - ${t("site.name")}`,
-    twitterDescription: t("pages.meta.projects"),
-    twitterImage: "https://img.tantanchugasuki.cn/i/r/avatar",
+usePageSeo({
+    title: () => `${t("menu.projects")} - ${t("site.name")}`,
+    description: () => t("pages.meta.projects"),
 });
 </script>

@@ -1,6 +1,5 @@
 interface ArchiveEntry {
-    slug?: string;
-    path?: string;
+    slug: string;
     data?: {
         publish_time?: string;
         updated_at?: string;
@@ -11,9 +10,9 @@ interface ApiEnvelope<T> {
     code: number;
     message?: string;
     data: T;
-    meta?: {
-        current_page?: number;
-        total_pages?: number;
+    meta: {
+        current_page: number;
+        total_pages: number;
     };
 }
 
@@ -21,13 +20,13 @@ interface SitemapUrl {
     loc: string;
     lastmod?: string;
     changefreq?:
-    | "always"
-    | "hourly"
-    | "daily"
-    | "weekly"
-    | "monthly"
-    | "yearly"
-    | "never";
+        | "always"
+        | "hourly"
+        | "daily"
+        | "weekly"
+        | "monthly"
+        | "yearly"
+        | "never";
     priority?: number;
 }
 
@@ -35,6 +34,7 @@ const STATIC_ROUTES: SitemapUrl[] = [
     { loc: "/", changefreq: "weekly", priority: 1.0 },
     { loc: "/archives", changefreq: "weekly", priority: 0.8 },
     { loc: "/about", changefreq: "monthly", priority: 0.7 },
+    { loc: "/about/projects", changefreq: "monthly", priority: 0.6 },
     { loc: "/about/favorites", changefreq: "weekly", priority: 0.5 },
     { loc: "/about/timeline", changefreq: "monthly", priority: 0.5 },
     { loc: "/links", changefreq: "monthly", priority: 0.4 },
@@ -61,52 +61,47 @@ const toIsoDate = (input?: string): string | undefined => {
     return new Date(t).toISOString();
 };
 
-const fetchEnvelope = async <T>(
-    url: string,
-): Promise<ApiEnvelope<T> | null> => {
-    try {
-        const res = await $fetch<ApiEnvelope<T>>(url, {
-            headers: { Accept: "application/json" },
+const fetchEnvelope = async <T>(url: string): Promise<ApiEnvelope<T>> => {
+    const response = await $fetch<ApiEnvelope<T>>(url, {
+        headers: { Accept: "application/json" },
+    });
+
+    if (response.code !== 200) {
+        throw createError({
+            statusCode: 502,
+            statusMessage: response.message,
         });
-        if (!res || typeof res !== "object" || res.code !== 200) return null;
-        return res;
-    } catch {
-        return null;
     }
+
+    return response;
 };
 
 const collectArchives = async (apiBase: string): Promise<SitemapUrl[]> => {
     const result: SitemapUrl[] = [];
-    const seen = new Set<string>();
     const pageSize = 100;
-    let page = 1;
-    let totalPages = 1;
 
-    while (page <= totalPages) {
+    const collectPage = async (page: number): Promise<void> => {
         const envelope = await fetchEnvelope<ArchiveEntry[]>(
             `${apiBase}/v1/contents?type_slug=archive&fields=publish_time&sort_order=desc&page=${page}&page_size=${pageSize}`,
         );
-        if (!envelope) break;
-
-        const entries = Array.isArray(envelope.data) ? envelope.data : [];
+        const entries = envelope.data;
         for (const entry of entries) {
-            const slug = entry?.slug || entry?.path?.split("/").pop();
-            if (!slug || seen.has(slug)) continue;
-            seen.add(slug);
             result.push({
-                loc: `/archives/${slug}`,
+                loc: `/archives/${entry.slug}`,
                 lastmod:
-                    toIsoDate(entry?.data?.updated_at) ||
-                    toIsoDate(entry?.data?.publish_time),
+                    toIsoDate(entry.data?.updated_at) ||
+                    toIsoDate(entry.data?.publish_time),
                 changefreq: "monthly",
                 priority: 0.6,
             });
         }
 
-        totalPages = envelope.meta?.total_pages ?? 1;
-        page += 1;
-        if (page > 50) break;
-    }
+        if (page < envelope.meta.total_pages) {
+            await collectPage(page + 1);
+        }
+    };
+
+    await collectPage(1);
 
     return result;
 };
@@ -135,31 +130,14 @@ const renderSitemap = (siteUrl: string, urls: SitemapUrl[]): string => {
     return lines.join("\n");
 };
 
-export default defineCachedEventHandler(
-    async (event) => {
-        const config = useRuntimeConfig();
-        const apiBase =
-            (config.public.apiBase as string) ||
-            "https://cms.tantanchugasuki.cn/nozomi";
-        const siteUrl = (
-            (config.public.siteUrl as string) || "https://tantanchugasuki.cn"
-        ).replace(/\/+$/, "");
+export default defineEventHandler(async (event) => {
+    const config = useRuntimeConfig();
+    const apiBase = config.public.apiBase;
+    const siteUrl = config.public.siteUrl.replace(/\/+$/, "");
 
-        const archives = await collectArchives(apiBase);
+    const archives = await collectArchives(apiBase);
+    const xml = renderSitemap(siteUrl, [...STATIC_ROUTES, ...archives]);
 
-        const urls = [...STATIC_ROUTES, ...archives];
-        const xml = renderSitemap(siteUrl, urls);
-
-        setResponseHeader(
-            event,
-            "Content-Type",
-            "application/xml; charset=utf-8",
-        );
-        return xml;
-    },
-    {
-        maxAge: 60 * 30,
-        swr: true,
-        getKey: () => "sitemap-xml",
-    },
-);
+    setResponseHeader(event, "Content-Type", "application/xml; charset=utf-8");
+    return xml;
+});
