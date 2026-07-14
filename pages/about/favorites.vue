@@ -24,6 +24,14 @@
                 />
             </div>
 
+            <AnriAlert
+                v-if="showBangumiNotice"
+                type="warn"
+                :title="t('pages.about.bangumiNotice.title')"
+            >
+                {{ t("pages.about.bangumiNotice.content") }}
+            </AnriAlert>
+
             <div class="min-h-100">
                 <div
                     v-if="loading && displayData.length === 0"
@@ -225,6 +233,7 @@ import AnriPagination from "~/components/AnriPagination.vue";
 import AnriSpinner from "~/components/AnriSpinner.vue";
 import AnriTooltip from "~/components/AnriTooltip.vue";
 import AnriCharCard from "~/components/AnriCharCard.vue";
+import AnriAlert from "~/components/AnriAlert.vue";
 import type { FavItem, FavCharItem } from "~/types/record";
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
@@ -266,6 +275,12 @@ const parseHashToTab = (hash: string) => {
 
 const activeTab = ref("fav_music");
 const searchQuery = ref("");
+
+// 番剧 / 轻小说 / 漫画 三个分类封面走 Bangumi 图源，可能加载失败，需提示用户。
+const BANGUMI_SOURCE_TABS = new Set(["fav_anime", "fav_novel", "fav_comic"]);
+const showBangumiNotice = computed(() =>
+    BANGUMI_SOURCE_TABS.has(activeTab.value),
+);
 
 const { data, loading, error, meta, get } = useApi<any>();
 

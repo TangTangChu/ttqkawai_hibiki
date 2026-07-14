@@ -73,7 +73,11 @@
                 "novel": "轻小说",
                 "comic": "漫画"
             },
-            "searchPlaceholder": "在该分类下搜索..."
+            "searchPlaceholder": "在该分类下搜索...",
+            "bangumiNotice": {
+                "title": "图源提示",
+                "content": "该分类的封面图来自 Bangumi，可能因网络原因无法正常加载。"
+            }
         },
         "archive": {
             "fallback": "当前内容暂无对应语言，已自动为您展示 {lang} 版本。",
