@@ -90,7 +90,7 @@ plugins/
 
 | 插件 | 语法 | 产物 |
 |---|---|---|
-| alerts | `> [!NOTE] 标题` + 引用块 | `::markdown-alert{type title}` |
+| alerts | `> [!NOTE] 标题` + 引用块 | `::anri-alert{type title}` |
 | bilibili | `@[bilibili](BV... / av...)` | `::bilibili-embed{identifier}` |
 | github-card | 独立成行的 github.com 链接 | `::github-card{href}` |
 | image-size | `![alt\|宽x高](url)` 或 `![alt](url =宽x高)` | 给图片加 `{width= height=}` |

@@ -20,7 +20,7 @@ import {
     subSupPlugin,
     codeCopyPlugin,
 } from "~/utils/markdown/plugins";
-import MarkdownAlert from "~/components/mdc/MarkdownAlert.vue";
+import AnriAlert from "~/components/AnriAlert.vue";
 import BilibiliEmbed from "~/components/mdc/BilibiliEmbed.vue";
 import Katex from "~/components/mdc/Katex.vue";
 import MdFigure from "~/components/mdc/MdFigure.vue";
@@ -58,7 +58,7 @@ export const markdownComponents: Record<string, Component> = {
     h5: ProseH5,
     h6: ProseH6,
     img: ProseImg,
-    "markdown-alert": MarkdownAlert,
+    "anri-alert": AnriAlert,
     "bilibili-embed": BilibiliEmbed,
     "github-card": GithubCard,
     katex: Katex,

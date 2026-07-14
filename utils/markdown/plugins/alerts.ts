@@ -55,7 +55,7 @@ const transform = (segment: string): string => {
         }
 
         output.push(
-            `::markdown-alert{type="${config.type}" title="${escapeMdcAttr(title)}"}`,
+            `::anri-alert{type="${config.type}" title="${escapeMdcAttr(title)}"}`,
             ...blockLines,
             "::",
         );
@@ -67,5 +67,5 @@ const transform = (segment: string): string => {
 export const alertsPlugin: MarkdownPlugin = {
     name: "alerts",
     transform,
-    components: ["markdown-alert"],
+    components: ["anri-alert"],
 };
