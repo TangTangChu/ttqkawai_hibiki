@@ -1,5 +1,5 @@
 <template>
-    <div :class="['markdown-alert', colorClass]">
+    <div :class="['markdown-alert', colorClass, { 'markdown-alert-row': !title }]">
         <div v-if="title" class="markdown-alert-title">
             <component
                 :is="iconComponent"
@@ -8,6 +8,12 @@
             />
             <span>{{ title }}</span>
         </div>
+        <component
+            v-else
+            :is="iconComponent"
+            class="alert-icon"
+            aria-hidden="true"
+        />
         <div class="markdown-alert-content">
             <slot />
         </div>
@@ -87,11 +93,17 @@ const iconComponent = computed(() => {
     line-height: 1.35;
 }
 
-.markdown-alert-title .alert-icon {
+.markdown-alert .alert-icon {
     width: 20px;
     height: 20px;
     margin-right: 8px;
     flex-shrink: 0;
+}
+
+/* 无标题：图标与文本同一行（对齐 archive 语言回退提示的紧凑样式） */
+.markdown-alert-row {
+    display: flex;
+    align-items: center;
 }
 
 .markdown-alert .markdown-alert-content > :first-child {
@@ -129,16 +141,19 @@ const iconComponent = computed(() => {
 }
 
 .markdown-alert.alert-warn {
-    background-color: color-mix(in srgb, var(--tertiary) var(--alert-bg-opacity), transparent);
+    /* 橘色告警：对齐 archive 语言回退提示（Tailwind orange 500/600/400），比 tertiary 黄更易读且非琥珀 */
+    --alert-warn-text: oklch(64.6% 0.222 41.116); /* orange-600 */
+    background-color: color-mix(in srgb, oklch(70.5% 0.213 47.604) var(--alert-bg-opacity), transparent); /* orange-500 */
+}
+
+.dark .markdown-alert.alert-warn {
+    --alert-warn-text: oklch(75% 0.183 55.934); /* orange-400 */
 }
 
 .markdown-alert.alert-warn .alert-icon,
-.markdown-alert.alert-warn .markdown-alert-title {
-    color: var(--tertiary);
-}
-
+.markdown-alert.alert-warn .markdown-alert-title,
 .markdown-alert.alert-warn .markdown-alert-content {
-    color: color-mix(in srgb, var(--tertiary) 80%, var(--fgColor-default) 20%);
+    color: var(--alert-warn-text);
 }
 
 .markdown-alert.alert-error {
