@@ -87,20 +87,13 @@
         </div>
         <Teleport v-if="!isMobile" to="body">
             <div
-                class="fixed right-4 bottom-6 z-40 flex flex-col items-end gap-3 lg:hidden"
+                class="fixed right-4 bottom-[max(1.5rem,env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-3 lg:hidden"
             >
-                <Transition
-                    enter-active-class="transform transition duration-200 ease-out"
-                    enter-from-class="scale-95 opacity-0"
-                    enter-to-class="scale-100 opacity-100"
-                    leave-active-class="transform transition duration-150 ease-in"
-                    leave-from-class="scale-100 opacity-100"
-                    leave-to-class="scale-95 opacity-0"
-                >
+                <Transition name="fab-pop">
                     <button
                         v-if="showBackToTop && !isMobileDrawerOpen"
                         type="button"
-                        class="flex h-11 w-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--on-surface)_10%,transparent)] bg-background/80 text-[color-mix(in_srgb,var(--on-surface)_70%,transparent)] shadow-sm backdrop-blur-md transition-all active:scale-95"
+                        class="fab-button"
                         :title="t('common.label.top')"
                         @click="scrollToTop"
                     >
@@ -108,14 +101,20 @@
                     </button>
                 </Transition>
 
-                <button
-                    v-if="hasToc && !isMobileDrawerOpen"
-                    type="button"
-                    class="flex h-11 w-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--on-surface)_10%,transparent)] bg-background/80 text-[color-mix(in_srgb,var(--on-surface)_80%,transparent)] shadow-sm backdrop-blur-md transition-all active:scale-95"
-                    @click="isMobileDrawerOpen = true"
-                >
-                    <Bars3BottomLeftIcon class="h-6 w-6" aria-hidden="true" />
-                </button>
+                <Transition name="fab-pop">
+                    <button
+                        v-if="hasToc && !isMobileDrawerOpen"
+                        type="button"
+                        class="fab-button"
+                        :title="t('common.label.toc')"
+                        @click="isMobileDrawerOpen = true"
+                    >
+                        <Bars3BottomLeftIcon
+                            class="h-6 w-6"
+                            aria-hidden="true"
+                        />
+                    </button>
+                </Transition>
             </div>
 
             <AnriDrawer
@@ -472,6 +471,61 @@ watch(
 .tool-button:active {
     transform: scale(0.95);
     background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+/* Mobile floating buttons: same primary hover/active model as .tool-button,
+   plus a translucent surface + backdrop-blur + Nav-matched warm shadow so the
+   chip stays legible while floating over arbitrary article content. */
+.fab-button {
+    display: flex;
+    height: 2.75rem;
+    width: 2.75rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: color-mix(in srgb, var(--surface) 80%, transparent);
+    color: color-mix(in srgb, var(--on-surface) 70%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 2px 16px 0 rgba(113, 93, 84, 0.06);
+    cursor: pointer;
+    transition:
+        color 0.2s ease-out,
+        background-color 0.2s ease-out,
+        transform 0.2s ease-out;
+}
+
+.fab-button:hover {
+    color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 10%, var(--surface));
+}
+
+.fab-button:active {
+    transform: scale(0.95);
+    background-color: color-mix(in srgb, var(--primary) 16%, var(--surface));
+}
+
+/* Enter/leave for the floating buttons: rise up + scale + fade, asymmetric
+   ease-out / ease-in per the pop-in spec. Named (scoped) so it beats the base
+   .fab-button transition by source order instead of fighting utility classes. */
+.fab-pop-enter-active {
+    transition:
+        transform 0.3s ease-out,
+        opacity 0.3s ease-out;
+}
+
+.fab-pop-leave-active {
+    transition:
+        transform 0.2s ease-in,
+        opacity 0.2s ease-in;
+}
+
+.fab-pop-enter-from,
+.fab-pop-leave-to {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.9);
 }
 
 .sidebar-content {
