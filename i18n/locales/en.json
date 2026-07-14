@@ -74,10 +74,7 @@
                 "comic": "Comic"
             },
             "searchPlaceholder": "Search in this category...",
-            "bangumiNotice": {
-                "title": "Image source notice",
-                "content": "Cover images in this category come from Bangumi and may not load properly."
-            }
+            "bangumiNotice": "Cover images in this category come from Bangumi and may not load properly."
         },
         "archive": {
             "fallback": "This content is not available in your language. Displaying the {lang} version instead.",

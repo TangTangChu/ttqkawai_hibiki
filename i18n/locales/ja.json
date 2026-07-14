@@ -74,10 +74,7 @@
                 "comic": "マンガ"
             },
             "searchPlaceholder": "このカテゴリで検索...",
-            "bangumiNotice": {
-                "title": "画像ソースについて",
-                "content": "このカテゴリの表紙画像は Bangumi を利用しているため、正常に読み込めないことがあります。"
-            }
+            "bangumiNotice": "このカテゴリの表紙画像は Bangumi を利用しているため、正常に読み込めないことがあります。"
         },
         "archive": {
             "fallback": "現在の言語に対応するコンテンツがありません。代わりに {lang} バージョンを表示します。",

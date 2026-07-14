@@ -24,12 +24,8 @@
                 />
             </div>
 
-            <AnriAlert
-                v-if="showBangumiNotice"
-                type="warn"
-                :title="t('pages.about.bangumiNotice.title')"
-            >
-                {{ t("pages.about.bangumiNotice.content") }}
+            <AnriAlert v-if="showBangumiNotice" type="warn">
+                {{ t("pages.about.bangumiNotice") }}
             </AnriAlert>
 
             <div class="min-h-100">
