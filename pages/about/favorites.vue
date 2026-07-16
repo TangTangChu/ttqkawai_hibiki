@@ -30,7 +30,7 @@
 
             <div class="min-h-100">
                 <div
-                    v-if="loading && displayData.length === 0"
+                    v-if="(loading || isSearchLoading) && displayData.length === 0"
                     class="flex justify-center py-12"
                 >
                     <AnriSpinner class="w-8 h-8 text-primary" />
@@ -337,13 +337,17 @@ const charListCache = ref<{ label: string; value: number }[]>([]);
 const isCharListLoading = ref(false);
 
 let searchTimer: any = null;
+const isSearchLoading = ref(false);
 const onSearch = (val: string) => {
     if (searchTimer) clearTimeout(searchTimer);
 
     if (!val) {
         searchResults.value = [];
+        isSearchLoading.value = false;
         return;
     }
+
+    isSearchLoading.value = true;
 
     searchTimer = setTimeout(async () => {
         try {
@@ -359,6 +363,8 @@ const onSearch = (val: string) => {
             }
         } catch (e) {
             console.error("Search failed:", e);
+        } finally {
+            isSearchLoading.value = false;
         }
     }, 300);
 };
@@ -446,6 +452,7 @@ watch(activeTab, (newTab) => {
     }
     searchQuery.value = "";
     searchResults.value = [];
+    isSearchLoading.value = false;
 
     if (newTab === "fav_char") {
         fetchCharList();
