@@ -64,7 +64,7 @@
                 <img
                     src="https://img.tantanchugasuki.cn/i/r/avatar"
                     alt="Avatar"
-                    class="w-32 h-32 rounded object-cover"
+                    class="h-40 w-40 rounded object-cover sm:h-44 sm:w-44"
                 />
             </div>
             <div class="flex-1 text-center md:text-left min-w-0">
@@ -87,6 +87,27 @@
                         <TagIcon class="w-3.5 h-3.5 mr-1 opacity-50" />
                         {{ tag }}
                     </span>
+                </div>
+                <div
+                    class="mt-4 flex justify-center gap-3 md:justify-start"
+                >
+                    <a
+                        v-for="link in socialLinks"
+                        :key="link.name"
+                        :href="link.href"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-high text-on-surface transition-colors duration-300 hover:bg-primary hover:text-on-primary"
+                        :title="link.name"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            class="h-4 w-4 fill-current"
+                        >
+                            <path :d="link.path" />
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
@@ -143,6 +164,7 @@ import {
     BookOpenIcon,
     CodeBracketIcon,
 } from "@heroicons/vue/24/outline";
+import { socialLinks } from "~/data/socialLinks";
 
 const { t } = useI18n();
 const { reset: resetNavTitle } = useNavTitle();
