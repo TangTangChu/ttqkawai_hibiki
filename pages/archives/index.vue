@@ -162,11 +162,14 @@ const onSearch = (val: string) => {
 
     if (!val) {
         searchResults.value = [];
+        searchLoading.value = false;
         return;
     }
 
+    // 输入时立即进入 loading，避免防抖/请求期间闪现空态
+    searchLoading.value = true;
+
     searchTimer = setTimeout(async () => {
-        searchLoading.value = true;
         try {
             const config = useRuntimeConfig();
             const apiBase =
@@ -282,6 +285,7 @@ watch(selectedCategory, async (newVal) => {
     // Clear search state when category changes
     searchQuery.value = "";
     searchResults.value = [];
+    searchLoading.value = false;
     // Reload data when category changes
     currentPage.value = 1;
     await Promise.all([loadTopArchives(), loadArchives(1)]);
