@@ -53,5 +53,11 @@ export const friends: FriendLink[] = [
         description: "睡觉大王",
         url: "https://www.miuma.top/",
         avatar: "https://www.miuma.top/images/jt.svg",
+    },
+    {
+        name: "江西财经大学计算机协会",
+        description: "计算机协会",
+        url: "https://www.jxufe-cs.top/",
+        avatar: "https://csec.jxufe.edu.cn/avatar/jsjxh.webp",
     }
 ];
