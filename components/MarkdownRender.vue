@@ -32,7 +32,15 @@
 
 <script setup lang="ts">
 import type { MDCParserResult } from "@nuxtjs/mdc";
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import {
+    computed,
+    nextTick,
+    onMounted,
+    onUnmounted,
+    ref,
+    watch,
+    type DefineComponent,
+} from "vue";
 import {
     useMarkdown,
     markdownPlugins,
@@ -66,7 +74,11 @@ const tocItems = ref<TocItem[]>([]);
 const errorMessage = ref("");
 const parsing = ref(false);
 
-const rendererComponents = markdownComponents;
+// mdc 的 MDCRenderer 组件类型与本地 markdown 组件配置声明不一致，断言为渲染器期望的类型
+const rendererComponents = markdownComponents as unknown as Record<
+    string,
+    string | DefineComponent
+>;
 const decoratorFactories = collectDecorators(markdownPlugins);
 const decorators = new Map<string, MarkdownDecorator>();
 

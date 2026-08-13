@@ -1,6 +1,9 @@
 <template>
     <main class="mx-auto w-full px-4 py-8 sm:px-6">
-        <div v-if="loading" class="flex items-center justify-center py-20">
+        <div
+            v-if="loading || (!archive && !error)"
+            class="flex items-center justify-center py-20"
+        >
             <AnriSpinner size="xl" />
         </div>
         <div v-else-if="error" class="py-12">
@@ -91,9 +94,10 @@ import ErrorDisplay from "~/components/ErrorDisplay.vue";
 import MarkdownRender from "~/components/MarkdownRender.vue";
 import ArchiveSidebar from "~/components/ArchiveSidebar.vue";
 import TagList from "~/components/TagList.vue";
-import { useApi } from "~/composables/useApi";
+import { useApi, type ApiMeta } from "~/composables/useApi";
 import { useArchivePrevNext } from "~/composables/useArchivePrevNext";
 import { useNavTitle } from "~/composables/useNavTitle";
+import { isBotUserAgent, useBotSeo } from "~/composables/useBotSeo";
 import type { ArchiveData } from "~/types/archive";
 import type { ExtendedApiMeta } from "~/types/api";
 import type { TocItem } from "~/types/tocItems";
@@ -110,13 +114,56 @@ const { setTitle, setScrollReveal, reset: resetNavTitle } = useNavTitle();
 const slug = computed(() => String(route.params.slug || ""));
 const cmsLocale = computed(() => resolveCmsLocale(locale.value));
 
-await useBotSeo({
-    endpoint: `/v1/contents/by-path/archive/${slug.value}?i18n=${cmsLocale.value}`,
-    locale: cmsLocale.value,
-});
-
-const { data: archive, loading, error, get, meta } = useApi<ArchiveData>();
+// 服务端（爬虫场景）已取到的数据经 payload 传递给客户端，保证首帧渲染与 hydration 一致
+const serverState = useState<{ data: ArchiveData | null; meta?: ApiMeta }>(
+    `archive-state:${slug.value}`,
+    () => ({ data: null }),
+);
+const { data: archive, loading, error, get, meta } = useApi<ArchiveData>(
+    serverState.value,
+);
 const { prev: prevNav, next: nextNav } = useArchivePrevNext(slug);
+
+const loadArchive = (loc = cmsLocale.value): Promise<void> =>
+    get(`/v1/contents/by-path/archive/${slug.value}?i18n=${loc}`);
+
+if (import.meta.server) {
+    // 爬虫请求：服务端等待数据，SSR 正文并注入完整 SEO head
+    if (isBotUserAgent(useRequestHeader("user-agent") ?? "")) {
+        try {
+            await Promise.race([
+                loadArchive(),
+                new Promise<never>((_, reject) =>
+                    setTimeout(
+                        () => reject(new Error("archive fetch timeout")),
+                        10_000,
+                    ),
+                ),
+            ]);
+        } catch {
+            // 超时或 CMS 故障：降级渲染普通页面，不给爬虫 5xx
+        }
+
+        const data = archive.value;
+        if (data) {
+            serverState.value = { data, meta: meta.value };
+            useBotSeo(data, { locale: cmsLocale.value });
+        } else if (
+            error.value &&
+            error.value.status >= 400 &&
+            error.value.status < 500
+        ) {
+            // 内容不存在等 4xx：给爬虫正确的状态码
+            throw createError({
+                statusCode: error.value.status,
+                statusMessage: error.value.message,
+            });
+        }
+    }
+} else if (!serverState.value.data) {
+    // 客户端：初始无数据（普通用户场景）时自行加载
+    void loadArchive();
+}
 
 const i18nFallback = computed(() => {
     const m = meta.value as unknown as ExtendedApiMeta | undefined;
@@ -147,8 +194,8 @@ const pageTitle = computed(() => {
             ? archiveValue.data.title || archiveValue.title
             : "";
 
-    if (!title) return t("common.label.loading");
-    return title;
+    // 无数据时返回 undefined：SSR 回退使用站点名
+    return title || undefined;
 });
 
 useHead(() => ({
@@ -160,13 +207,13 @@ const handleTocUpdate = (items: TocItem[]): void => {
 };
 
 watch(
-    cmsLocale,
-    (newLocale) => {
-        if (slug.value) {
-            get(`/v1/contents/by-path/archive/${slug.value}?i18n=${newLocale}`);
-        }
+    [slug, cmsLocale],
+    ([newSlug, newLocale]) => {
+        if (import.meta.server || !newSlug) return;
+        // 导航到新文章或切换语言：清空旧数据并重新加载
+        serverState.value = { data: null };
+        void get(`/v1/contents/by-path/archive/${newSlug}?i18n=${newLocale}`);
     },
-    { immediate: true },
 );
 
 watch(archive, (newVal) => {

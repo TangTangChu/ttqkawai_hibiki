@@ -17,6 +17,7 @@
         "@nuxtjs/i18n": "10.2.4",
         "@nuxtjs/mdc": "0.21.1",
         "@tailwindcss/vite": "^4.2.4",
+        "isbot": "^5.2.1",
         "katex": "^0.17.0",
         "nuxt": "^4.4.2",
         "slugify": "^1.6.9",

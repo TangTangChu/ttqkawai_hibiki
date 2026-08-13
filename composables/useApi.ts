@@ -62,7 +62,10 @@ const normalizeError = (err: unknown): ApiError => {
     };
 };
 
-export function useApi<T>(): {
+export function useApi<T>(initial?: {
+    data: T | null;
+    meta?: ApiMeta;
+} | null): {
     data: Ref<T | null>;
     error: Ref<ApiError | null>;
     loading: Ref<boolean>;
@@ -72,11 +75,14 @@ export function useApi<T>(): {
     put: (endpoint: string, body: unknown) => Promise<void>;
     del: (endpoint: string) => Promise<void>;
 } {
-    const response: Ref<ApiResponse<T>> = ref({
-        data: null,
+    // Vue 3.5 的 ref<T>() 返回 Ref<UnwrapRef<T>, ...>，泛型 T 在 UnwrapRef 中无法化简，
+    // 故用断言保持 ApiResponse<T> 可写类型（运行时无影响）
+    const response = ref({
+        data: initial?.data ?? null,
         error: null,
         loading: false,
-    });
+        meta: initial?.meta,
+    }) as unknown as Ref<ApiResponse<T>>;
 
     const config = useRuntimeConfig();
     const baseURL =

@@ -1,100 +1,106 @@
-import type { ArchiveData } from "~/types/archive";
+import { isbot } from "isbot";
+import type { Archive } from "~/types/archive";
 import { SITE_IMAGE, SITE_NAME, buildCanonicalUrl } from "~/utils/seo";
 
-const BOT_UA_PATTERNS: RegExp[] = [
-    /Googlebot/i,
-    /Bingbot/i,
-    /Baiduspider/i,
-    /YandexBot/i,
-    /DuckDuckBot/i,
-    /Sogou/i,
-    /YisouSpider/i,
-    /360Spider/i,
-    /HaosouSpider/i,
-    /Bytespider/i,
-    /PetalBot/i,
-    /Applebot/i,
-    /Twitterbot/i,
-    /facebookexternalhit/i,
-    /facebot/i,
-    /LinkedInBot/i,
-    /WhatsApp/i,
-    /TelegramBot/i,
-    /Slackbot/i,
-    /Discordbot/i,
-    /WeChat/i,
+// 社交平台内置浏览器：抓取分享卡片，需要完整的 og 标签
+const SOCIAL_SHARE_UA_PATTERNS: RegExp[] = [
     /MicroMessenger/i,
+    /WeChat/i,
     /Weibo/i,
-    /AhrefsBot/i,
-    /SemrushBot/i,
-    /MJ12bot/i,
-    /SeznamBot/i,
-    /ia_archiver/i,
+    /QBWebViewType/i,
 ];
 
-const isBotUserAgent = (userAgent: string): boolean =>
-    BOT_UA_PATTERNS.some((pattern) => pattern.test(userAgent));
+export const isBotUserAgent = (userAgent: string): boolean =>
+    isbot(userAgent) ||
+    SOCIAL_SHARE_UA_PATTERNS.some((pattern) => pattern.test(userAgent));
 
-const buildDescription = (markdown: string): string => {
-    const content = markdown
+const truncate = (text: string, max = 160): string => {
+    const trimmed = text.trim();
+    if (trimmed.length <= max) return trimmed;
+    const cut = trimmed.slice(0, max);
+    const lastSpace = cut.lastIndexOf(" ");
+    const head = lastSpace > max * 0.5 ? cut.slice(0, lastSpace) : cut;
+    return `${head.trimEnd()}…`;
+};
+
+const buildDescription = (archive: Archive): string => {
+    const summary = archive.data?.summary?.trim();
+    if (summary) return truncate(summary);
+
+    const content = (archive.data?.body ?? "")
         .replace(/```[\s\S]*?```/g, " ")
         .replace(/`[^`\n]+`/g, " ")
         .replace(/!\[[^\]]*]\([^)]+\)/g, " ")
         .replace(/\[([^\]]+)]\([^)]+\)/g, "$1")
         .replace(/<[^>]+>/g, " ")
-        .replace(/[#>*_~-]+/g, " ")
+        .replace(/^#{1,6}\s+/gm, " ")
+        .replace(/^\s*[-*+]\s+/gm, " ")
+        .replace(/^\s*>\s?/gm, " ")
+        .replace(/^\s*[-*_]{3,}\s*$/gm, " ")
+        .replace(/[*_~]+/g, " ")
         .replace(/\s+/g, " ")
         .trim();
 
-    return content.length > 160
-        ? `${content.slice(0, 160).trimEnd()}…`
-        : content;
+    return truncate(content);
 };
 
-interface CmsEnvelope<T> {
-    code: number;
-    message: string;
-    data: T;
-}
-
-interface ArchiveSeoData extends Omit<ArchiveData, "data"> {
-    data: ArchiveData["data"] & {
-        title: string;
-        body: string;
-    };
-}
+const getFirstImage = (
+    archive: Archive,
+): { src: string; alt: string } | null => {
+    const match = (archive.data?.body ?? "").match(/!\[([^\]]*)]\(([^)]+)\)/);
+    if (!match) return null;
+    const [, alt = "", src] = match;
+    if (!src) return null;
+    return { src, alt };
+};
 
 interface BotSeoOptions {
-    endpoint: string;
+    /** CMS locale，如 "zh-CN" */
     locale: string;
 }
 
-export const useBotSeo = async (options: BotSeoOptions): Promise<void> => {
-    if (import.meta.client) return;
-
-    const userAgent = useRequestHeader("user-agent") ?? "";
-    if (!isBotUserAgent(userAgent)) return;
-
-    const nuxtApp = useNuxtApp();
-    const config = useRuntimeConfig();
+/**
+ * 为已加载的归档注入完整 SEO head（title / canonical / OG / Twitter / JSON-LD）。
+ * 仅在服务端对爬虫请求调用，数据由调用方提供。
+ */
+export const useBotSeo = (archive: Archive, options: BotSeoOptions): void => {
     const route = useRoute();
-    const response = await $fetch<CmsEnvelope<ArchiveSeoData>>(
-        `${config.public.apiBase}${options.endpoint}`,
-        { headers: { Accept: "application/json" } },
-    );
-    if (response.code !== 200) {
-        throw createError({
-            statusCode: 502,
-            statusMessage: response.message,
-        });
-    }
+    const config = useRuntimeConfig();
+    const nuxtApp = useNuxtApp();
 
-    const archive = response.data;
-    const title = archive.data.title;
-    const description = buildDescription(archive.data.body);
+    const title = archive.data?.title || archive.title || SITE_NAME;
+    const description = buildDescription(archive);
     const url = buildCanonicalUrl(config.public.siteUrl, route.path);
-    const tags = archive.tags.map((tag) => tag.name);
-    const publishedAt = archive.data.publish_time;
+    const tags = (archive.tags ?? []).map((tag) => tag.name);
+    const publishedAt = archive.data?.publish_time;
+    const publisher =
+        typeof archive.data?.publisher === "string"
+            ? archive.data.publisher.trim()
+            : "";
+    const image = getFirstImage(archive);
+    const imageUrl = image?.src || SITE_IMAGE;
+    const imageAlt = image?.alt || title;
+
+    const jsonLd: Record<string, unknown> = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: title,
+        description: description,
+        url: url,
+        inLanguage: options.locale,
+        keywords: tags.join(", "),
+        image: imageUrl,
+        mainEntityOfPage: url,
+        isPartOf: {
+            "@type": "WebSite",
+            name: SITE_NAME,
+            url: config.public.siteUrl,
+        },
+    };
+    if (publishedAt) jsonLd.datePublished = publishedAt;
+    if (publisher) {
+        jsonLd.author = { "@type": "Person", name: publisher };
+    }
 
     nuxtApp.runWithContext(() => {
         useHead(
@@ -105,7 +111,8 @@ export const useBotSeo = async (options: BotSeoOptions): Promise<void> => {
                     { name: "description", content: description },
                     { property: "og:title", content: title },
                     { property: "og:description", content: description },
-                    { property: "og:image", content: SITE_IMAGE },
+                    { property: "og:image", content: imageUrl },
+                    { property: "og:image:alt", content: imageAlt },
                     { property: "og:type", content: "article" },
                     { property: "og:url", content: url },
                     { property: "og:site_name", content: SITE_NAME },
@@ -113,38 +120,28 @@ export const useBotSeo = async (options: BotSeoOptions): Promise<void> => {
                         property: "og:locale",
                         content: options.locale.replace("-", "_"),
                     },
-                    {
-                        property: "article:published_time",
-                        content: publishedAt,
-                    },
                     ...tags.map((tag) => ({
                         property: "article:tag",
                         content: tag,
                     })),
+                    ...(publishedAt
+                        ? [
+                              {
+                                  property: "article:published_time",
+                                  content: publishedAt,
+                              },
+                          ]
+                        : []),
                     { name: "twitter:card", content: "summary" },
                     { name: "twitter:title", content: title },
                     { name: "twitter:description", content: description },
-                    { name: "twitter:image", content: SITE_IMAGE },
+                    { name: "twitter:image", content: imageUrl },
+                    { name: "twitter:image:alt", content: imageAlt },
                 ],
                 script: [
                     {
                         type: "application/ld+json",
-                        innerHTML: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "Article",
-                            headline: title,
-                            description: description,
-                            url: url,
-                            inLanguage: options.locale,
-                            datePublished: publishedAt,
-                            keywords: tags.join(", "),
-                            image: SITE_IMAGE,
-                            isPartOf: {
-                                "@type": "WebSite",
-                                name: SITE_NAME,
-                                url: config.public.siteUrl,
-                            },
-                        }),
+                        innerHTML: JSON.stringify(jsonLd),
                     },
                 ],
             },
