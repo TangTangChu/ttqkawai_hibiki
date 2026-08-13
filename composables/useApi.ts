@@ -62,10 +62,12 @@ const normalizeError = (err: unknown): ApiError => {
     };
 };
 
-export function useApi<T>(initial?: {
-    data: T | null;
-    meta?: ApiMeta;
-} | null): {
+export function useApi<T>(
+    initial?: {
+        data: T | null;
+        meta?: ApiMeta;
+    } | null,
+): {
     data: Ref<T | null>;
     error: Ref<ApiError | null>;
     loading: Ref<boolean>;
@@ -91,6 +93,10 @@ export function useApi<T>(initial?: {
         config.public.apiBase !== ""
             ? config.public.apiBase
             : DEFAULT_BASE_URL;
+    // SSR 透传访客真实 UA，CSR 下浏览器请求自带
+    const requestUserAgent = import.meta.server
+        ? useRequestHeader("user-agent")
+        : undefined;
     let activeController: AbortController | null = null;
     let requestId = 0;
 
@@ -115,6 +121,9 @@ export function useApi<T>(initial?: {
                 headers: Object.assign(
                     {
                         "Content-Type": "application/json",
+                        ...(requestUserAgent
+                            ? { "User-Agent": requestUserAgent }
+                            : {}),
                     },
                     options.headers,
                 ),

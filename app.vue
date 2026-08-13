@@ -3,8 +3,15 @@ import { useHead } from "#imports";
 import { useI18n } from "vue-i18n";
 import { SITE_NAME } from "~/utils/seo";
 
-const { t } = useI18n();
+const { t, locale, locales } = useI18n();
 const config = useRuntimeConfig();
+
+const htmlLang = computed(() => {
+    const current = (locales.value as { code: string; iso: string }[]).find(
+        (l) => l.code === locale.value,
+    );
+    return current?.iso ?? "zh-CN";
+});
 
 useHead(() => ({
     titleTemplate: (titleChunk) => {
@@ -13,6 +20,7 @@ useHead(() => ({
             ? `${titleChunk} | ${siteTitle}`
             : siteTitle;
     },
+    htmlAttrs: { lang: htmlLang.value },
 }));
 
 useHead({

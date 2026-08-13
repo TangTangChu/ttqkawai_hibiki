@@ -8,6 +8,14 @@ interface PageSeoOptions {
 export const usePageSeo = (options: PageSeoOptions): void => {
     const config = useRuntimeConfig();
     const route = useRoute();
+    const { locale, locales } = useI18n();
+
+    const ogLocale = computed(() => {
+        const current = (locales.value as { code: string; iso: string }[]).find(
+            (l) => l.code === locale.value,
+        );
+        return (current?.iso ?? "zh-CN").replace("-", "_");
+    });
 
     useHead(() => {
         const title = options.title();
@@ -25,7 +33,8 @@ export const usePageSeo = (options: PageSeoOptions): void => {
                 { property: "og:type", content: "website" },
                 { property: "og:url", content: url },
                 { property: "og:site_name", content: SITE_NAME },
-                { name: "twitter:card", content: "summary" },
+                { property: "og:locale", content: ogLocale.value },
+                { name: "twitter:card", content: "summary_large_image" },
                 { name: "twitter:title", content: title },
                 { name: "twitter:description", content: description },
                 { name: "twitter:image", content: SITE_IMAGE },
