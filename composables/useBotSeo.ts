@@ -47,7 +47,10 @@ const buildDescription = (archive: Archive): string => {
 const getFirstImage = (
     archive: Archive,
 ): { src: string; alt: string } | null => {
-    const match = (archive.data?.body ?? "").match(/!\[([^\]]*)]\(([^)]+)\)/);
+    // markdown 图片语法：![alt](src "title") 或 ![alt](src)
+    const match = (archive.data?.body ?? "").match(
+        /!\[([^\]]*)]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/,
+    );
     if (!match) return null;
     const [, alt = "", src] = match;
     if (!src) return null;
