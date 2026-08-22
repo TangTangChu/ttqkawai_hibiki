@@ -6,13 +6,8 @@ services:
             args:
                 GIT_HASH: ${GIT_HASH:-dev}
         restart: unless-stopped
+        init: true
         ports:
             - "3000:3000"
         environment:
             - NODE_ENV=production
-        healthcheck:
-            test: ["CMD", "curl", "-f", "http://localhost:3000/"]
-            interval: 30s
-            timeout: 10s
-            retries: 3
-            start_period: 40s
