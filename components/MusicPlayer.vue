@@ -238,33 +238,59 @@ const {
 } = usePlayer();
 const audioRef = ref<HTMLAudioElement | null>(null);
 
+interface DatasetListResponse {
+    data: {
+        record: {
+            title: string;
+            cover?: string;
+            link?: string;
+        };
+    }[];
+    meta: {
+        total_pages: number;
+    };
+}
+
+const PAGE_SIZE = 100; // API 对 page_size 有 max=100 校验
+
 const fetchFullMusicList = async () => {
     try {
         const config = useRuntimeConfig();
         const apiBase =
             config.public.apiBase || "https://cms.tantanchugasuki.cn/nozomi";
 
-        // 由于 PageSize 有最大值限制（通常为 100），我们改为请求最大允许范围
-        // 如果数据量超过 100，后续可考虑 Promise.all 请求多页，目前先调整为 100 以符合 API 校验
-        const res = await $fetch<{ data: any[] }>(
-            `${apiBase}/v1/datasets/fav_music?page=1&page_size=100`,
+        // 先拉第 1 页拿 total_pages，再并行拉剩余页，按页序拼接出完整列表
+        const first = await $fetch<DatasetListResponse>(
+            `${apiBase}/v1/datasets/fav_music?page=1&page_size=${PAGE_SIZE}`,
         );
-        if (res && res.data) {
-            const extractId = (link?: string) =>
-                link?.split("id=")[1]?.split("&")[0];
-            const fullList = res.data
-                .filter((item) => item.record.link)
-                .map((item) => ({
-                    id: extractId(item.record.link)!,
-                    title: item.record.title,
-                    cover: item.record.cover,
-                    source: `https://music.163.com/song/media/outer/url?id=${extractId(item.record.link)}.mp3`,
-                }));
-            updatePlaylistOnly(fullList);
-            // 默认载入第一首，但不自动播放
-            if (fullList.length > 0 && !currentTrack.value) {
-                currentTrack.value = fullList[0] || null;
-            }
+        const restPages =
+            first.meta.total_pages > 1
+                ? await Promise.all(
+                      Array.from(
+                          { length: first.meta.total_pages - 1 },
+                          (_, i) =>
+                              $fetch<DatasetListResponse>(
+                                  `${apiBase}/v1/datasets/fav_music?page=${i + 2}&page_size=${PAGE_SIZE}`,
+                              ),
+                      ),
+                  )
+                : [];
+        const items = [first, ...restPages].flatMap((res) => res.data);
+
+        const extractId = (link?: string) =>
+            link?.split("id=")[1]?.split("&")[0];
+        const fullList = items
+            .filter((item) => item.record.link)
+            .map((item) => ({
+                id: extractId(item.record.link)!,
+                title: item.record.title,
+                cover: item.record.cover,
+                source: `https://music.163.com/song/media/outer/url?id=${extractId(item.record.link)}.mp3`,
+            }));
+        updatePlaylistOnly(fullList);
+        // 默认载入第一首，但不自动播放
+        if (fullList.length > 0 && !currentTrack.value) {
+            currentTrack.value = fullList[0] || null;
         }
     } catch (e) {
         console.error("Failed to fetch full music list for player", e);
