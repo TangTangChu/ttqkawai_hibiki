@@ -3,7 +3,7 @@
         class="my-4 rounded-2xl border border-primary/20 bg-surface/50 p-6 text-center backdrop-blur-sm"
     >
         <div
-            class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-500 hover:scale-110"
+            class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary"
         >
             <ExclamationTriangleIcon class="h-6 w-6" />
         </div>

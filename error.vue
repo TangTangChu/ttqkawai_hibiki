@@ -7,7 +7,7 @@
                 class="flex w-full max-w-xl flex-col items-center justify-center p-8 text-center sm:p-12"
             >
                 <div
-                    class="mb-8 flex h-24 w-24 select-none items-center justify-center rounded-2xl bg-primary/10 text-4xl font-black tracking-tighter text-primary transition-transform duration-500 hover:scale-105"
+                    class="mb-8 flex h-24 w-24 select-none items-center justify-center rounded-2xl bg-primary/10 text-4xl font-black tracking-tighter text-primary"
                 >
                     {{ error?.statusCode || "ERR" }}
                 </div>

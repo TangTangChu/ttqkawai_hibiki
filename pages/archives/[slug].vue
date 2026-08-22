@@ -43,17 +43,13 @@
                     />
                 </div>
 
-                <div
-                    v-if="i18nFallback?.fallback"
-                    class="mt-6 flex items-center rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-600 dark:text-orange-400"
-                >
-                    <LanguageIcon class="mr-2 h-5 w-5" aria-hidden="true" />
+                <AnriAlert v-if="i18nFallback?.fallback" type="warn">
                     {{
                         t("pages.archive.fallback", {
                             lang: getLangName(i18nFallback.fallback_to),
                         })
                     }}
-                </div>
+                </AnriAlert>
             </header>
 
             <div class="flex flex-col lg:flex-row">
@@ -85,9 +81,9 @@
 
 <script setup lang="ts">
 import { CalendarIcon, UserIcon } from "@heroicons/vue/20/solid";
-import { LanguageIcon } from "@heroicons/vue/20/solid";
 import { computed, ref, watch, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
+import AnriAlert from "~/components/AnriAlert.vue";
 import AnriPrevNextNav from "~/components/AnriPrevNextNav.vue";
 import AnriSpinner from "~/components/AnriSpinner.vue";
 import ErrorDisplay from "~/components/ErrorDisplay.vue";

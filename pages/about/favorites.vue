@@ -96,7 +96,7 @@
                                     />
                                     <div
                                         v-if="activeTab === 'fav_music'"
-                                        class="absolute top-2 right-2 w-7 h-7 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 cursor-pointer text-white drop-shadow-md hover:text-primary"
+                                        class="absolute top-2 right-2 w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer text-white drop-shadow-md hover:text-primary"
                                         @click.stop="playMusic(item as FavItem)"
                                     >
                                         <PlayCircleIcon class="w-full h-full" />

@@ -10,11 +10,15 @@
                 @click="isMinimized = false"
             >
                 <div class="relative w-12 h-12 rounded-xl overflow-hidden">
-                    <img
+                    <AnriImage
                         v-if="currentTrack"
                         :src="currentTrack.cover"
-                        class="w-full h-full object-cover"
-                        :class="{ 'animate-spin-slow': isPlaying }"
+                        :img-class="
+                            isPlaying
+                                ? 'object-cover animate-spin-slow'
+                                : 'object-cover'
+                        "
+                        spinner-size="sm"
                         alt="cover"
                     />
                     <div
@@ -58,10 +62,11 @@
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden shrink-0 relative"
                     >
-                        <img
+                        <AnriImage
                             v-if="currentTrack"
                             :src="currentTrack.cover"
-                            class="w-full h-full object-cover"
+                            img-class="object-cover"
+                            spinner-size="sm"
                             alt="cover"
                         />
                     </div>

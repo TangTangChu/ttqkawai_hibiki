@@ -145,7 +145,7 @@
                     class="w-full bg-on-background/5 rounded-xl h-2 overflow-hidden shadow-inner font-mono"
                 >
                     <div
-                        class="bg-primary h-full transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(var(--primary-rgb),0.3)]"
+                        class="bg-primary h-full transition-all duration-1000 ease-out"
                         :style="{ width: `${universityProgress}%` }"
                     ></div>
                 </div>
