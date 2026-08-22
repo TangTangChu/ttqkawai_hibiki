@@ -22,13 +22,14 @@
         </div>
         <img
             v-bind="$attrs"
+            ref="imgRef"
             :src="safeSrc"
-            class="transition-opacity duration-300 rounded-[inherit]"
+            class="transition-opacity duration-200 ease-out rounded-[inherit]"
             :class="[
                 imgClass,
                 {
-                    'opacity-0': isLoading || isError,
-                    'opacity-100': !isLoading && !isError,
+                    'opacity-0': !revealed,
+                    'opacity-100': revealed,
                     'w-full h-full': wFull && hFull,
                 },
             ]"
@@ -74,8 +75,11 @@ const safeSrc = computed(() => ensureHttps(props.src));
 
 const { getStatus, setStatus } = useImageCache();
 
+const imgRef = ref<HTMLImageElement | null>(null);
 const isLoading = ref(true);
 const isError = ref(false);
+// 渐入只认当前 img 元素自身的 load 事件，缓存命中也统一渐入
+const revealed = ref(false);
 
 const initStatus = () => {
     const url = safeSrc.value;
@@ -120,6 +124,7 @@ const onLoad = () => {
     }
     isLoading.value = false;
     isError.value = false;
+    revealed.value = true;
 };
 
 const onError = () => {
@@ -128,11 +133,21 @@ const onError = () => {
     }
     isLoading.value = false;
     isError.value = true;
+    revealed.value = false;
 };
+
+// SSR 水合时 load 事件可能早于监听器挂载已经触发，complete 补偿
+onMounted(() => {
+    const img = imgRef.value;
+    if (img && img.complete && img.naturalWidth > 0) {
+        onLoad();
+    }
+});
 
 watch(
     () => safeSrc.value,
     (newSrc) => {
+        revealed.value = false;
         if (!newSrc) {
             isLoading.value = false;
             isError.value = false;

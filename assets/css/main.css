@@ -94,3 +94,24 @@
     font-style: normal;
     font-display: swap;
 }
+
+/* 页面切换过渡：入场 200ms ease-out / 退场 150ms ease-in */
+.page-enter-active {
+    transition: opacity 0.2s ease-out;
+}
+
+.page-leave-active {
+    transition: opacity 0.15s ease-in;
+}
+
+.page-enter-from,
+.page-leave-to {
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-enter-active,
+    .page-leave-active {
+        transition: none;
+    }
+}

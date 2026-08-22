@@ -27,6 +27,10 @@ export default defineNuxtConfig({
         defaultLocale: "zh",
     },
     app: {
+        pageTransition: {
+            name: "page",
+            mode: "out-in",
+        },
         head: {
             title: "糖糖毬的个人站",
             link: [
