@@ -15,7 +15,8 @@
             "nextContent": "下一篇",
             "copy": "复制代码",
             "expand": "展开",
-            "collapse": "折叠"
+            "collapse": "折叠",
+            "close": "关闭"
         },
         "label": {
             "error": "出错了",

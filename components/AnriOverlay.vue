@@ -23,6 +23,9 @@
 <script setup lang="ts">
 import { computed, watch, onUnmounted } from "vue";
 
+// 模块级计数：多个 Overlay 叠开时，仅当最后一个关闭才恢复 body 滚动
+let openOverlayCount = 0;
+
 const props = withDefaults(
     defineProps<{
         modelValue: boolean;
@@ -54,22 +57,41 @@ const handleBackdropClick = () => {
     }
 };
 
+let holdsScrollLock = false;
+
+const lockBodyScroll = () => {
+    openOverlayCount += 1;
+    if (openOverlayCount === 1) {
+        document.body.style.overflow = "hidden";
+    }
+};
+
+const unlockBodyScroll = () => {
+    openOverlayCount = Math.max(0, openOverlayCount - 1);
+    if (openOverlayCount === 0) {
+        document.body.style.overflow = "";
+    }
+};
+
 watch(
     () => props.modelValue,
     (isOpen) => {
-        if (typeof window !== "undefined") {
-            if (isOpen) {
-                document.body.style.overflow = "hidden";
-            } else {
-                document.body.style.overflow = "";
-            }
+        if (typeof window === "undefined") return;
+        if (isOpen && !holdsScrollLock) {
+            holdsScrollLock = true;
+            lockBodyScroll();
+        } else if (!isOpen && holdsScrollLock) {
+            holdsScrollLock = false;
+            unlockBodyScroll();
         }
     },
 );
 
 onUnmounted(() => {
-    if (typeof window !== "undefined") {
-        document.body.style.overflow = "";
+    if (typeof window === "undefined") return;
+    if (holdsScrollLock) {
+        holdsScrollLock = false;
+        unlockBodyScroll();
     }
 });
 </script>

@@ -15,7 +15,8 @@
             "nextContent": "次の記事",
             "copy": "コードをコピー",
             "expand": "展開",
-            "collapse": "折りたたむ"
+            "collapse": "折りたたむ",
+            "close": "閉じる"
         },
         "label": {
             "error": "エラーが発生しました",

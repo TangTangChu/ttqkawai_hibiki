@@ -139,10 +139,14 @@
             </div>
         </section>
 
-        <AnriDialog v-model="isDialogOpen" max-width="3xl">
+        <AnriDialog
+            v-model="isDialogOpen"
+            max-width="3xl"
+            labelled-by="fav-detail-title"
+        >
             <div
                 v-if="selectedItem"
-                class="flex flex-col md:flex-row overflow-y-auto md:overflow-hidden max-h-[85vh] md:max-h-150"
+                class="flex flex-col md:flex-row md:overflow-hidden md:max-h-150"
             >
                 <div
                     class="w-full md:w-1/2 shrink-0 bg-surface-variant/50 relative"
@@ -164,6 +168,7 @@
                     class="px-6 py-8 md:p-8 flex flex-col flex-1 shrink-0 md:shrink md:overflow-y-auto"
                 >
                     <h2
+                        id="fav-detail-title"
                         class="text-2xl font-bold text-on-background mb-2 pr-10"
                     >
                         {{ selectedItem.record.title }}

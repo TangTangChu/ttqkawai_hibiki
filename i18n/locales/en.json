@@ -15,7 +15,8 @@
             "nextContent": "Next Article",
             "copy": "Copy code",
             "expand": "Expand",
-            "collapse": "Collapse"
+            "collapse": "Collapse",
+            "close": "Close"
         },
         "label": {
             "error": "Error",
