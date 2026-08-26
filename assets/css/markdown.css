@@ -381,32 +381,19 @@
     content: "";
 }
 
-/* 表格容器，支持横向滚动 */
+/* 表格容器：宽度随内容自适应（不拉伸不压缩），窄屏时保持整表布局横向滚动 */
 .markdown-wrapper table {
     border-spacing: 0;
     border-collapse: separate;
     border-radius: var(--border-radius-base);
     box-shadow: 0 0 0 1px var(--borderColor-default);
-    width: 100%;
     display: block;
+    width: max-content;
+    max-width: 100%;
+    /* 宽屏下内容不满容器宽度时保持居中 */
+    margin-inline: auto;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-}
-
-.markdown-wrapper table thead,
-.markdown-wrapper table tbody {
-    display: table;
-    width: 100%;
-}
-
-.markdown-wrapper table tr {
-    display: table-row;
-}
-
-.markdown-wrapper td,
-.markdown-wrapper th {
-    padding: 0;
-    display: table-cell;
 }
 
 .markdown-wrapper details {
@@ -855,6 +842,11 @@
 .markdown-wrapper table th {
     padding: 12px 16px;
     border: none;
+    /* 最小可读列宽：窄屏下先触发容器横向滚动，而不是把单元格压成竖排单字 */
+    min-width: 4.5em;
+    vertical-align: top;
+    /* 长 URL / 长单词优先在格内换行，避免撑爆列宽 */
+    overflow-wrap: anywhere;
 }
 
 .markdown-wrapper table td> :last-child {
