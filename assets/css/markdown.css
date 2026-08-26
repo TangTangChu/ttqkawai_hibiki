@@ -410,12 +410,43 @@
 }
 
 .markdown-wrapper details summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
     cursor: pointer;
     font-weight: 600;
     padding: 4px 0;
     user-select: none;
     outline: none;
     transition: color 200ms ease-out;
+}
+
+.markdown-wrapper details summary::-webkit-details-marker {
+    display: none;
+}
+
+/* 折叠指示箭头（Heroicons chevron-down）：收起时指向右侧，展开时平滑旋转为向下 */
+.markdown-wrapper details summary::before {
+    content: "";
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M19.5 8.25l-7.5 7.5-7.5-7.5'/></svg>");
+    mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M19.5 8.25l-7.5 7.5-7.5-7.5'/></svg>");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    transform: rotate(-90deg);
+    transition: transform 200ms ease-out;
+}
+
+.markdown-wrapper details[open]>summary::before {
+    transform: rotate(0deg);
 }
 
 .markdown-wrapper details summary:hover {

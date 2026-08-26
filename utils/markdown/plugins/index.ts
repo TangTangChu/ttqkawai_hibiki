@@ -7,3 +7,4 @@ export { highlightPlugin } from "./highlight";
 export { subSupPlugin } from "./sub-sup";
 export { mathPlugin } from "./math";
 export { codeCopyPlugin } from "./code-copy";
+export { detailsTogglePlugin } from "./details";

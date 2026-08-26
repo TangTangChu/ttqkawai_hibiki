@@ -19,6 +19,7 @@ import {
     mathPlugin,
     subSupPlugin,
     codeCopyPlugin,
+    detailsTogglePlugin,
 } from "~/utils/markdown/plugins";
 import AnriAlert from "~/components/AnriAlert.vue";
 import BilibiliEmbed from "~/components/mdc/BilibiliEmbed.vue";
@@ -46,6 +47,7 @@ export const markdownPlugins: MarkdownPlugin[] = [
     mathPlugin,
     subSupPlugin,
     codeCopyPlugin,
+    detailsTogglePlugin,
 ];
 
 export const markdownComponents: Record<string, Component> = {
