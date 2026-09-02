@@ -381,19 +381,20 @@
     content: "";
 }
 
-/* 表格容器：宽度随内容自适应（不拉伸不压缩），窄屏时保持整表布局横向滚动 */
+/* 表格容器（ProseTable）：撑满内容区全宽；窄屏超宽时容器横向滚动 */
+.markdown-wrapper .table-wrapper {
+    width: 100%;
+    border-radius: var(--border-radius-base);
+    box-shadow: 0 0 0 1px var(--borderColor-default);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 真实表格布局：整表统一计算列宽，表头与内容列对齐，宽度撑满容器 */
 .markdown-wrapper table {
     border-spacing: 0;
     border-collapse: separate;
-    border-radius: var(--border-radius-base);
-    box-shadow: 0 0 0 1px var(--borderColor-default);
-    display: block;
-    width: max-content;
-    max-width: 100%;
-    /* 宽屏下内容不满容器宽度时保持居中 */
-    margin-inline: auto;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    width: 100%;
 }
 
 .markdown-wrapper details {
@@ -710,7 +711,7 @@
 .markdown-wrapper ul,
 .markdown-wrapper ol,
 .markdown-wrapper dl,
-.markdown-wrapper table,
+.markdown-wrapper .table-wrapper,
 .markdown-wrapper pre,
 .markdown-wrapper details {
     margin-top: 0;
@@ -867,6 +868,8 @@
 
 .markdown-wrapper table th {
     font-weight: var(--base-text-weight-semibold, 600);
+    /* UA 默认表头居中，正文左对齐，全宽拉伸后错位明显，统一为左对齐 */
+    text-align: left;
 }
 
 .markdown-wrapper table td,

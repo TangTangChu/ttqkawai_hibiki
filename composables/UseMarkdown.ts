@@ -35,6 +35,7 @@ import ProseH5 from "~/components/prose/ProseH5.vue";
 import ProseH6 from "~/components/prose/ProseH6.vue";
 import ProseImg from "~/components/prose/ProseImg.vue";
 import ProsePre from "~/components/prose/ProsePre.vue";
+import ProseTable from "~/components/prose/ProseTable.vue";
 
 // transform 顺序：块级/属性在前，行内（哨兵）其后，纯装饰器最后。
 export const markdownPlugins: MarkdownPlugin[] = [
@@ -53,6 +54,7 @@ export const markdownPlugins: MarkdownPlugin[] = [
 export const markdownComponents: Record<string, Component> = {
     a: ProseA,
     pre: ProsePre,
+    table: ProseTable,
     h1: ProseH1,
     h2: ProseH2,
     h3: ProseH3,
