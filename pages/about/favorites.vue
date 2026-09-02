@@ -25,7 +25,55 @@
             </div>
 
             <AnriAlert v-if="showBangumiNotice" type="warn">
-                {{ t("pages.about.bangumiNotice") }}
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                    <span>{{ t("pages.about.bangumiNotice") }}</span>
+                    <span>{{ t("pages.about.sourceLabel") }}</span>
+                    <AnriDropdown
+                        width-class="w-56"
+                        align="left"
+                        offset-class="mt-1"
+                    >
+                        <template #trigger="{ toggle, isOpen }">
+                            <button
+                                type="button"
+                                class="inline-flex items-center gap-1 rounded-lg bg-on-background/10 px-2 py-0.5 font-medium transition-colors duration-200 ease-out hover:bg-on-background/20"
+                                @click="toggle"
+                            >
+                                {{
+                                    t(
+                                        `pages.about.bangumiSource.${coverSource}`,
+                                    )
+                                }}
+                                <ChevronDownIcon
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    :class="isOpen ? 'rotate-180' : ''"
+                                />
+                            </button>
+                        </template>
+                        <template #menu="{ close }">
+                            <button
+                                v-for="id in SOURCE_IDS"
+                                :key="id"
+                                class="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-left transition-colors"
+                                :class="
+                                    coverSource === id
+                                        ? 'bg-primary/10 text-primary font-medium'
+                                        : 'text-on-background hover:bg-surface-container hover:text-primary'
+                                "
+                                @click="setCoverSource(id); close()"
+                            >
+                                <span class="whitespace-nowrap">
+                                    {{ t(`pages.about.bangumiSource.${id}`) }}
+                                </span>
+                                <span
+                                    class="whitespace-nowrap text-xs text-on-background/50"
+                                >
+                                    {{ BANGUMI_SOURCES[id] }}
+                                </span>
+                            </button>
+                        </template>
+                    </AnriDropdown>
+                </div>
             </AnriAlert>
 
             <div class="min-h-100">
@@ -87,7 +135,7 @@
                                     "
                                 >
                                     <AnriImage
-                                        :src="item.record.cover"
+                                        :src="resolveCover(item.record.cover)"
                                         :alt="item.record.title"
                                         :w-full="true"
                                         :h-full="true"
@@ -157,7 +205,7 @@
                     "
                 >
                     <AnriImage
-                        :src="selectedItem.record.cover"
+                        :src="resolveCover(selectedItem.record.cover)"
                         :alt="selectedItem.record.title"
                         :w-full="true"
                         :h-full="true"
@@ -227,6 +275,8 @@ import {
     PlayCircleIcon,
     ArrowTopRightOnSquareIcon,
 } from "@heroicons/vue/24/solid";
+import { ChevronDownIcon } from "@heroicons/vue/24/outline";
+import AnriDropdown from "~/components/AnriDropdown.vue";
 import AnriDialog from "~/components/AnriDialog.vue";
 import AnriSelector from "~/components/AnriSelector.vue";
 import AnriInput from "~/components/AnriInput.vue";
@@ -300,6 +350,54 @@ const searchResults = ref<(FavItem | FavCharItem)[]>([]);
 const displayData = computed(() => {
     return searchQuery.value ? searchResults.value : currentData.value;
 });
+
+// Bangumi 主站与镜像站仅域名不同，替换域名即完成换源，图源加载失败时回退主站。
+const BANGUMI_MAIN_HOST = "lain.bgm.tv";
+// 封面图源清单：镜像站优先，未来新增镜像在此追加即可
+const BANGUMI_SOURCES: Record<string, string> = {
+    mirror: "lain.bangumi.pro",
+    main: "lain.bgm.tv",
+};
+const SOURCE_IDS = Object.keys(BANGUMI_SOURCES);
+const SOURCE_STORAGE_KEY = "bangumi-cover-source";
+
+const coverSource = ref("mirror");
+if (import.meta.client) {
+    const saved = localStorage.getItem(SOURCE_STORAGE_KEY);
+    if (saved && SOURCE_IDS.includes(saved)) {
+        coverSource.value = saved;
+    }
+}
+
+const setCoverSource = (id: string): void => {
+    coverSource.value = id;
+    localStorage.setItem(SOURCE_STORAGE_KEY, id);
+};
+
+const { getStatus } = useImageCache();
+
+// 本次会话内已确认加载失败的图源地址，命中的封面自动回退主站
+const failedSourceCovers = computed(() => {
+    const failed = new Set<string>();
+    const host = BANGUMI_SOURCES[coverSource.value];
+    if (host === BANGUMI_MAIN_HOST) return failed;
+    for (const item of displayData.value) {
+        const cover = (item as FavItem).record.cover;
+        if (!cover.includes(BANGUMI_MAIN_HOST)) continue;
+        const sourceUrl = cover.replace(BANGUMI_MAIN_HOST, host);
+        if (getStatus(sourceUrl) === "error") failed.add(sourceUrl);
+    }
+    return failed;
+});
+
+const resolveCover = (url: string): string => {
+    const host = BANGUMI_SOURCES[coverSource.value];
+    if (host === BANGUMI_MAIN_HOST || !url.includes(BANGUMI_MAIN_HOST)) {
+        return url;
+    }
+    const sourceUrl = url.replace(BANGUMI_MAIN_HOST, host);
+    return failedSourceCovers.value.has(sourceUrl) ? url : sourceUrl;
+};
 
 const currentMeta = ref<any>(undefined);
 const tabDataCache = ref<
