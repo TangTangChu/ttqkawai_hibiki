@@ -6,6 +6,7 @@ export interface BaseRecord {
     is_container: boolean;
     raw_name?: string;
     desc?: string;
+    progress?: string[]; // 已推角色
 }
 
 export interface CharRecord extends Omit<BaseRecord, 'link'> {

@@ -75,6 +75,7 @@
                 "comic": "Comic"
             },
             "searchPlaceholder": "Search in this category...",
+ "clearedRoutes": "Cleared",
             "bangumiNotice": "Cover images in this category come from Bangumi and may not load properly.",
             "sourceLabel": "Cover source",
             "bangumiSource": {

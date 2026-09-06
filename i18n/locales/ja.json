@@ -75,6 +75,7 @@
                 "comic": "マンガ"
             },
             "searchPlaceholder": "このカテゴリで検索...",
+ "clearedRoutes": "攻略済み",
             "bangumiNotice": "このカテゴリの表紙画像は Bangumi を利用しているため、正常に読み込めないことがあります。",
             "sourceLabel": "画像ソース",
             "bangumiSource": {

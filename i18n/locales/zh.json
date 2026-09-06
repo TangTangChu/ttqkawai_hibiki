@@ -75,6 +75,7 @@
                 "comic": "漫画"
             },
             "searchPlaceholder": "在该分类下搜索...",
+ "clearedRoutes": "已推角色",
             "bangumiNotice": "该分类的封面图来自 Bangumi，可能因网络原因无法正常加载。",
             "sourceLabel": "封面图源",
             "bangumiSource": {
