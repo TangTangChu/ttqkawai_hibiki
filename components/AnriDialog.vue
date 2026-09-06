@@ -16,7 +16,7 @@
                 <div
                     v-if="modelValue"
                     ref="dialogRef"
-                    class="relative w-full max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] bg-surface/90 backdrop-blur-md rounded-2xl overflow-hidden shadow-xl text-on-background flex flex-col"
+                    class="relative w-full max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] bg-surface/90 backdrop-blur-md rounded-2xl overflow-hidden shadow-xl text-on-background flex flex-col outline-none"
                     :class="[maxWidthClass]"
                     role="dialog"
                     aria-modal="true"
