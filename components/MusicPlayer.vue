@@ -6,7 +6,7 @@
         <transition name="player-anim" mode="out-in">
             <div
                 v-if="isMinimized"
-                class="relative bg-surface p-1 rounded-2xl cursor-pointer transition-colors duration-200 hover:bg-on-background/5 group pointer-events-auto"
+                class="relative bg-surface p-1 rounded-2xl cursor-pointer transition-colors duration-200 hover:bg-on-background/5 group pointer-events-auto shadow-[0px_2px_16px_0px_rgba(113,93,84,0.06)] backdrop-blur-md"
                 @click="isMinimized = false"
             >
                 <div class="relative w-12 h-12 rounded-xl overflow-hidden">
@@ -30,7 +30,7 @@
             </div>
             <div
                 v-else
-                class="flex flex-col gap-2 w-full sm:w-96 bg-surface p-3 pb-5 sm:pb-3 rounded-2xl pointer-events-auto transition-all duration-300"
+                class="flex flex-col gap-2 w-full sm:w-96 bg-surface p-3 pb-5 sm:pb-3 rounded-2xl pointer-events-auto transition-all duration-300 shadow-[0px_2px_16px_0px_rgba(113,93,84,0.06)] backdrop-blur-md"
             >
                 <div
                     class="w-full flex items-center gap-2 px-1 text-[11px] text-on-background/60 select-none pb-1"
@@ -154,7 +154,7 @@
                                 >
                                     <div
                                         v-if="showPlaylist"
-                                        class="absolute bottom-full right-0 mb-3 w-[70vw] sm:w-72 max-h-72 overflow-y-auto bg-surface rounded-2xl p-2 flex flex-col gap-1 z-50 origin-bottom-right"
+                                        class="absolute bottom-full right-0 mb-3 w-[70vw] sm:w-72 max-h-72 overflow-y-auto bg-surface rounded-2xl p-2 flex flex-col gap-1 z-50 origin-bottom-right shadow-[0px_2px_16px_0px_rgba(113,93,84,0.06)] backdrop-blur-md"
                                     >
                                         <div
                                             v-for="item in playlist"
