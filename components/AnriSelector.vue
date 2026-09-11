@@ -5,7 +5,7 @@
         class="flex flex-wrap"
         :class="
             variant === 'text'
-                ? 'justify-center items-center gap-x-2 gap-y-1.5 text-sm md:text-base px-4 max-w-2xl mx-auto'
+                ? 'justify-center items-center gap-x-1.5 sm:gap-x-2 gap-y-1 sm:gap-y-1.5 text-sm md:text-base px-2 sm:px-4 max-w-2xl mx-auto'
                 : 'gap-2 md:gap-4'
         "
     >

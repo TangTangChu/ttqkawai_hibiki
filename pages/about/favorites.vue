@@ -96,15 +96,48 @@
                                 v-if="isCharListLoading"
                                 class="w-5 h-5 text-primary my-auto"
                             />
-                            <AnriSelector
+                            <div
                                 v-else-if="charListCache.length > 0"
-                                variant="text"
-                                :model-value="tabPages[activeTab] || 1"
-                                :options="charListCache"
-                                @update:model-value="
-                                    onPageChange(Number($event))
-                                "
-                            />
+                                class="w-full flex items-stretch justify-center gap-1.5 sm:gap-2"
+                            >
+                                <AnriButton
+                                    v-if="charSelectTotalPages > 1"
+                                    variant="ghost"
+                                    size="sm"
+                                    class="h-auto! w-8! shrink-0"
+                                    :disabled="charSelectPage <= 1"
+                                    :aria-label="t('common.label.prevPage')"
+                                    @click="prevSelectPage"
+                                >
+                                    <template #icon>
+                                        <ChevronLeftIcon class="h-4 w-4" />
+                                    </template>
+                                </AnriButton>
+                                <AnriSelector
+                                    variant="text"
+                                    :model-value="tabPages[activeTab] || 1"
+                                    :options="visibleCharOptions"
+                                    @update:model-value="
+                                        onSelectPageChange(Number($event))
+                                    "
+                                />
+                                <AnriButton
+                                    v-if="charSelectTotalPages > 1"
+                                    variant="ghost"
+                                    size="sm"
+                                    class="h-auto! w-8! shrink-0"
+                                    :disabled="
+                                        charSelectPage >=
+                                        charSelectTotalPages
+                                    "
+                                    :aria-label="t('common.label.nextPage')"
+                                    @click="nextSelectPage"
+                                >
+                                    <template #icon>
+                                        <ChevronRightIcon class="h-4 w-4" />
+                                    </template>
+                                </AnriButton>
+                            </div>
                         </div>
                         <AnriCharCard
                             v-for="item in displayData"
@@ -285,7 +318,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, nextTick } from "vue";
+import { ref, watch, onMounted, onUnmounted, computed, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useNavTitle } from "~/composables/useNavTitle";
 import { useApi } from "~/composables/useApi";
@@ -294,7 +327,12 @@ import {
     PlayCircleIcon,
     ArrowTopRightOnSquareIcon,
 } from "@heroicons/vue/24/solid";
-import { ChevronDownIcon } from "@heroicons/vue/24/outline";
+import {
+    ChevronDownIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+} from "@heroicons/vue/24/outline";
+import AnriButton from "~/components/AnriButton.vue";
 import AnriDropdown from "~/components/AnriDropdown.vue";
 import AnriDialog from "~/components/AnriDialog.vue";
 import AnriSelector from "~/components/AnriSelector.vue";
@@ -458,6 +496,61 @@ const playMusic = (item: FavItem) => {
 const charListCache = ref<{ label: string; value: number }[]>([]);
 const isCharListLoading = ref(false);
 
+// 顶部角色 select 内部分页：固定每页展示的角色名数量，避免角色一多撑爆顶部
+// 窄屏（竖屏手机）下每页少放几个名字，减少换行行数
+const CHAR_SELECT_PAGE_SIZE = 10;
+const CHAR_SELECT_PAGE_SIZE_NARROW = 6;
+const charSelectPageSize = ref(CHAR_SELECT_PAGE_SIZE);
+const charSelectPage = ref(1);
+
+let charSizeQuery: MediaQueryList | null = null;
+const syncCharSelectPageSize = () => {
+    charSelectPageSize.value = charSizeQuery?.matches
+        ? CHAR_SELECT_PAGE_SIZE_NARROW
+        : CHAR_SELECT_PAGE_SIZE;
+};
+
+const charSelectTotalPages = computed(() =>
+    Math.max(
+        1,
+        Math.ceil(charListCache.value.length / charSelectPageSize.value),
+    ),
+);
+
+const visibleCharOptions = computed(() => {
+    const start = (charSelectPage.value - 1) * charSelectPageSize.value;
+    return charListCache.value.slice(
+        start,
+        start + charSelectPageSize.value,
+    );
+});
+
+// 让当前选中的角色所在分页窗口保持可见
+const syncCharSelectPage = (charPage: number) => {
+    const target = Math.ceil(charPage / charSelectPageSize.value);
+    charSelectPage.value = Math.min(
+        Math.max(1, target),
+        charSelectTotalPages.value,
+    );
+};
+
+// 屏宽变化（如旋转）时重新对齐当前选中角色的窗口
+watch(charSelectPageSize, () => {
+    if (activeTab.value === "fav_char") {
+        syncCharSelectPage(tabPages.value.fav_char || 1);
+    }
+});
+
+const prevSelectPage = () => {
+    if (charSelectPage.value > 1) charSelectPage.value--;
+};
+
+const nextSelectPage = () => {
+    if (charSelectPage.value < charSelectTotalPages.value) {
+        charSelectPage.value++;
+    }
+};
+
 let searchTimer: any = null;
 const isSearchLoading = ref(false);
 const onSearch = (val: string) => {
@@ -506,7 +599,7 @@ const fetchCharList = async () => {
                 label: item.record.title,
                 value: index + 1,
             }));
-            console.log("Char list fetched:", charListCache.value.length);
+            syncCharSelectPage(tabPages.value.fav_char || 1);
         }
     } catch (e) {
         console.error("Failed to fetch full char list", e);
@@ -537,8 +630,16 @@ const fetchData = async (page: number) => {
     );
 };
 
+// 顶部 select 切换角色：只换数据不回顶（select 本就在视口顶部）
+const onSelectPageChange = async (page: number) => {
+    await fetchData(page);
+};
+
 const onPageChange = async (page: number) => {
     await fetchData(page);
+    if (activeTab.value === "fav_char") {
+        syncCharSelectPage(page);
+    }
     await nextTick();
     requestAnimationFrame(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -576,11 +677,11 @@ watch(activeTab, (newTab) => {
     searchResults.value = [];
     isSearchLoading.value = false;
 
+    const savedPage = tabPages.value[newTab] || 1;
     if (newTab === "fav_char") {
         fetchCharList();
+        syncCharSelectPage(savedPage);
     }
-
-    const savedPage = tabPages.value[newTab] || 1;
     const cachedData = tabDataCache.value[newTab]?.[savedPage];
     if (cachedData) {
         currentData.value = cachedData;
@@ -607,5 +708,13 @@ onMounted(() => {
     if (activeTab.value === "fav_char") {
         fetchCharList();
     }
+
+    charSizeQuery = window.matchMedia("(max-width: 639px)");
+    charSizeQuery.addEventListener("change", syncCharSelectPageSize);
+    syncCharSelectPageSize();
+});
+
+onUnmounted(() => {
+    charSizeQuery?.removeEventListener("change", syncCharSelectPageSize);
 });
 </script>
