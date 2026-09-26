@@ -412,7 +412,7 @@ const displayData = computed(() => {
 const BANGUMI_MAIN_HOST = "lain.bgm.tv";
 // 封面图源清单：镜像站优先，未来新增镜像在此追加即可
 const BANGUMI_SOURCES: Record<string, string> = {
-    mirror: "lain.bangumi.pro",
+    mirror: "lain.bangumi.vip",
     main: "lain.bgm.tv",
 };
 const SOURCE_IDS = Object.keys(BANGUMI_SOURCES);
@@ -436,7 +436,7 @@ const { getStatus } = useImageCache();
 // 本次会话内已确认加载失败的图源地址，命中的封面自动回退主站
 const failedSourceCovers = computed(() => {
     const failed = new Set<string>();
-    const host = BANGUMI_SOURCES[coverSource.value];
+    const host = BANGUMI_SOURCES[coverSource.value] ?? BANGUMI_MAIN_HOST;
     if (host === BANGUMI_MAIN_HOST) return failed;
     for (const item of displayData.value) {
         const cover = (item as FavItem).record.cover;
@@ -448,7 +448,7 @@ const failedSourceCovers = computed(() => {
 });
 
 const resolveCover = (url: string): string => {
-    const host = BANGUMI_SOURCES[coverSource.value];
+    const host = BANGUMI_SOURCES[coverSource.value] ?? BANGUMI_MAIN_HOST;
     if (host === BANGUMI_MAIN_HOST || !url.includes(BANGUMI_MAIN_HOST)) {
         return url;
     }
