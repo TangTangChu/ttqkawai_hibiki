@@ -1,5 +1,11 @@
 <template>
-    <AnriDropdown widthClass="w-32" align="right">
+    <AnriSelect
+        :model-value="locale"
+        :options="localeOptions"
+        width-class="w-32"
+        align="right"
+        @update:model-value="switchLocale"
+    >
         <template #trigger="{ toggle, isOpen }">
             <button
                 @click="toggle"
@@ -13,32 +19,16 @@
                 }}</span>
             </button>
         </template>
-
-        <template #menu="{ close }">
-            <button
-                v-for="loc in availableLocales"
-                :key="loc.code"
-                @click="switchLocale(loc.code, close)"
-                class="flex items-center px-3 py-2 rounded-lg text-sm transition-colors text-left"
-                :class="[
-                    locale === loc.code
-                        ? 'bg-primary/10 text-primary font-medium'
-                        : 'text-on-background hover:bg-surface-container hover:text-primary',
-                ]"
-            >
-                {{ loc.name }}
-            </button>
-        </template>
-    </AnriDropdown>
+    </AnriSelect>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { LanguageIcon } from "@heroicons/vue/24/outline";
-import AnriDropdown from "~/components/AnriDropdown.vue";
+import AnriSelect from "~/components/AnriSelect.vue";
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         showText?: boolean;
     }>(),
@@ -47,23 +37,27 @@ const props = withDefaults(
     },
 );
 
+type LocaleCode = "zh" | "en" | "ja";
+
 const { locale, setLocale } = useI18n();
 
-const availableLocales: { code: "zh" | "en" | "ja"; name: string }[] = [
+const availableLocales: { code: LocaleCode; name: string }[] = [
     { code: "zh", name: "简体中文" },
     { code: "en", name: "English" },
     { code: "ja", name: "日本語" },
 ];
 
-const currentLocaleName = computed(() => {
-    return (
-        availableLocales.find((l) => l.code === locale.value)?.name ||
-        "Language"
-    );
-});
+const localeOptions = availableLocales.map(({ code, name }) => ({
+    value: code,
+    label: name,
+}));
 
-const switchLocale = (code: "zh" | "en" | "ja", close: () => void) => {
-    setLocale(code);
-    close();
+const currentLocaleName = computed(
+    () =>
+        availableLocales.find((item) => item.code === locale.value)?.name ?? "",
+);
+
+const switchLocale = (code: string | number): void => {
+    setLocale(code as LocaleCode);
 };
 </script>

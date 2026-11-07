@@ -28,10 +28,12 @@
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                     <span>{{ t("pages.about.bangumiNotice") }}</span>
                     <span>{{ t("pages.about.sourceLabel") }}</span>
-                    <AnriDropdown
+                    <AnriSelect
+                        :model-value="coverSource.id"
+                        :options="sourceOptions"
                         width-class="w-56"
                         align="left"
-                        offset-class="mt-1"
+                        @update:model-value="setCoverSource"
                     >
                         <template #trigger="{ toggle, isOpen }">
                             <button
@@ -46,32 +48,7 @@
                                 />
                             </button>
                         </template>
-                        <template #menu="{ close }">
-                            <button
-                                v-for="source in COVER_SOURCES"
-                                :key="source.id"
-                                class="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-left transition-colors"
-                                :class="
-                                    coverSource.id === source.id
-                                        ? 'bg-primary/10 text-primary font-medium'
-                                        : 'text-on-background hover:bg-surface-container hover:text-primary'
-                                "
-                                @click="
-                                    setCoverSource(source);
-                                    close();
-                                "
-                            >
-                                <span class="whitespace-nowrap">
-                                    {{ t(source.labelKey) }}
-                                </span>
-                                <span
-                                    class="whitespace-nowrap text-xs text-on-background/50"
-                                >
-                                    {{ source.host }}
-                                </span>
-                            </button>
-                        </template>
-                    </AnriDropdown>
+                    </AnriSelect>
                 </div>
             </AnriAlert>
 
@@ -331,7 +308,7 @@ import {
     ChevronRightIcon,
 } from "@heroicons/vue/24/outline";
 import AnriButton from "~/components/AnriButton.vue";
-import AnriDropdown from "~/components/AnriDropdown.vue";
+import AnriSelect from "~/components/AnriSelect.vue";
 import AnriDialog from "~/components/AnriDialog.vue";
 import AnriSelector from "~/components/AnriSelector.vue";
 import AnriInput from "~/components/AnriInput.vue";
@@ -437,13 +414,22 @@ const SOURCE_STORAGE_KEY = "bangumi-cover-source";
 const findSource = (id: string | null): CoverSource =>
     COVER_SOURCES.find((source) => source.id === id) ?? DEFAULT_SOURCE;
 
+const sourceOptions = computed(() =>
+    COVER_SOURCES.map((source) => ({
+        value: source.id,
+        label: t(source.labelKey),
+        hint: source.host,
+    })),
+);
+
 const coverSource = ref<CoverSource>(
     findSource(
         import.meta.client ? localStorage.getItem(SOURCE_STORAGE_KEY) : null,
     ),
 );
 
-const setCoverSource = (source: CoverSource): void => {
+const setCoverSource = (value: string | number): void => {
+    const source = findSource(String(value));
     coverSource.value = source;
     localStorage.setItem(SOURCE_STORAGE_KEY, source.id);
 };

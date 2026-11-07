@@ -129,73 +129,31 @@
                                 <ChevronRightIconOutline class="w-5 h-5" />
                             </button>
 
-                            <!-- 播放列表触发器 -->
-                            <div class="relative ml-0.5" ref="playlistWrapRef">
-                                <button
-                                    @click="showPlaylist = !showPlaylist"
-                                    class="w-8 h-8 flex items-center justify-center rounded-xl transition-colors duration-150"
-                                    :class="
-                                        showPlaylist
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'hover:bg-on-background/10 text-on-background/80 hover:text-primary'
-                                    "
-                                >
-                                    <Bars4IconOutline class="w-5 h-5" />
-                                </button>
-
-                                <!-- 播放列表弹出面板 -->
-                                <transition
-                                    enter-active-class="transition-all duration-150 ease-out"
-                                    enter-from-class="opacity-0 translate-y-2 scale-95"
-                                    enter-to-class="opacity-100 translate-y-0 scale-100"
-                                    leave-active-class="transition-all duration-100 ease-in"
-                                    leave-from-class="opacity-100 translate-y-0 scale-100"
-                                    leave-to-class="opacity-0 translate-y-2 scale-95"
-                                >
-                                    <div
-                                        v-if="showPlaylist"
-                                        class="absolute bottom-full right-0 mb-3 w-[70vw] sm:w-72 max-h-72 overflow-y-auto bg-surface rounded-2xl p-2 flex flex-col gap-1 z-50 origin-bottom-right shadow-[0px_2px_16px_0px_rgba(113,93,84,0.06)] backdrop-blur-md"
+                            <!-- 播放列表选择器 -->
+                            <AnriSelect
+                                :model-value="currentTrackId"
+                                :options="playlistOptions"
+                                placement="top"
+                                align="right"
+                                width-class="w-[70vw] sm:w-72"
+                                panel-class="max-h-72 overflow-y-auto"
+                                class="ml-0.5"
+                                @update:model-value="selectTrack"
+                            >
+                                <template #trigger="{ toggle, isOpen }">
+                                    <button
+                                        @click="toggle"
+                                        class="w-8 h-8 flex items-center justify-center rounded-xl transition-colors duration-150"
+                                        :class="
+                                            isOpen
+                                                ? 'bg-primary/10 text-primary'
+                                                : 'hover:bg-on-background/10 text-on-background/80 hover:text-primary'
+                                        "
                                     >
-                                        <div
-                                            v-for="item in playlist"
-                                            :key="item.id"
-                                            @click="setTrack(item, playlist)"
-                                            class="flex items-center gap-3 px-1 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 group"
-                                            :class="
-                                                currentTrack &&
-                                                item.id === currentTrack.id
-                                                    ? 'bg-primary/10'
-                                                    : 'hover:bg-on-background/5'
-                                            "
-                                        >
-                                            <div class="w-8 h-8 shrink-0">
-                                                <AnriImage
-                                                    v-if="item.cover"
-                                                    :src="item.cover"
-                                                    img-class="object-cover rounded-lg"
-                                                    spinner-size="sm"
-                                                    :w-full="true"
-                                                    :h-full="true"
-                                                    loading="lazy"
-                                                />
-                                            </div>
-                                            <div class="flex flex-col min-w-0">
-                                                <span
-                                                    class="text-sm font-bold line-clamp-1 group-hover:text-primary transition-colors"
-                                                    :class="
-                                                        currentTrack &&
-                                                        item.id ===
-                                                            currentTrack.id
-                                                            ? 'text-primary'
-                                                            : 'text-on-background'
-                                                    "
-                                                    >{{ item.title }}</span
-                                                >
-                                            </div>
-                                        </div>
-                                    </div>
-                                </transition>
-                            </div>
+                                        <Bars4IconOutline class="w-5 h-5" />
+                                    </button>
+                                </template>
+                            </AnriSelect>
                         </div>
                     </div>
                 </div>
@@ -216,9 +174,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick } from "vue";
+import { ref, watch, onMounted, nextTick, computed } from "vue";
 import { usePlayer } from "~/composables/usePlayer";
-import { useClickAway } from "~/composables/useClickAway";
 import {
     PlayIcon as PlayIconOutline,
     PauseIcon as PauseIconOutline,
@@ -373,19 +330,27 @@ onMounted(() => {
     }
 });
 
-const playlistWrapRef = ref<HTMLElement | null>(null);
-
 const currentTime = ref(0);
 const duration = ref(0);
 const progress = ref(0);
-const showPlaylist = ref(false);
 const isMinimized = ref(true);
 
-useClickAway(playlistWrapRef, () => {
-    if (showPlaylist.value) {
-        showPlaylist.value = false;
-    }
-});
+const playlistOptions = computed(() =>
+    playlist.value.map((item) => ({
+        value: item.id,
+        label: item.title,
+        image: item.cover,
+    })),
+);
+
+const currentTrackId = computed(() => currentTrack.value?.id ?? "");
+
+const selectTrack = (value: string | number): void => {
+    setTrack(
+        playlist.value.find((item) => item.id === String(value))!,
+        playlist.value,
+    );
+};
 
 const formatTime = (time: number) => {
     if (!time || isNaN(time)) return "00:00";

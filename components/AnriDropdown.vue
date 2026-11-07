@@ -3,13 +3,16 @@ import { ref } from "vue";
 import { useClickAway } from "~/composables/useClickAway";
 
 type Align = "left" | "right";
+type Placement = "bottom" | "top";
 
 const props = withDefaults(
     defineProps<{
         align?: Align;
+        placement?: Placement;
         widthClass?: string;
         offsetClass?: string;
         panelClass?: string;
+        panelRole?: string;
         transition?: boolean;
         openOnHover?: boolean;
         hoverCloseDelay?: number;
@@ -17,9 +20,11 @@ const props = withDefaults(
     }>(),
     {
         align: "right",
+        placement: "bottom",
         widthClass: "w-56",
-        offsetClass: "mt-2",
+        offsetClass: "",
         panelClass: "",
+        panelRole: "dialog",
         transition: true,
         openOnHover: false,
         hoverCloseDelay: 160,
@@ -79,32 +84,29 @@ useClickAway(
     },
 );
 
-const panelBaseClass = computed(() => {
-    const alignClass =
-        props.align === "left" ? "left-0" : "right-0 origin-top-right";
+const ANCHOR_CLASS: Record<Placement, Record<Align, string>> = {
+    bottom: {
+        left: "top-full left-0 origin-top-left",
+        right: "top-full right-0 origin-top-right",
+    },
+    top: {
+        left: "bottom-full left-0 origin-bottom-left",
+        right: "bottom-full right-0 origin-bottom-right",
+    },
+};
 
-    return [
-        "absolute",
-        "top-full",
-        alignClass,
-        "z-50",
-        props.offsetClass,
+const panelBaseClass = computed(() =>
+    [
+        "absolute z-50 flex flex-col gap-1 rounded-xl bg-surface p-2 shadow-[0px_2px_16px_0px_rgba(113,93,84,0.06)] backdrop-blur-md",
+        ANCHOR_CLASS[props.placement][props.align],
+        props.offsetClass ||
+            (props.placement === "top" ? "mb-3" : "mt-3"),
         props.widthClass,
-        "bg-surface",
-        "rounded-xl",
-        "shadow-sm",
-        "ring-1",
-        "ring-black/5",
-        "dark:ring-white/5",
-        "p-1.5",
-        "flex",
-        "flex-col",
-        "gap-1",
         props.panelClass,
     ]
         .filter(Boolean)
-        .join(" ");
-});
+        .join(" "),
+);
 </script>
 
 <template>
@@ -131,19 +133,28 @@ const panelBaseClass = computed(() => {
 
         <transition
             v-if="transition"
-            enter-active-class="transition duration-200 ease-out"
-            enter-from-class="transform scale-95 opacity-0"
-            enter-to-class="transform scale-100 opacity-100"
-            leave-active-class="transition duration-150 ease-in"
-            leave-from-class="transform scale-100 opacity-100"
-            leave-to-class="transform scale-95 opacity-0"
+            enter-active-class="transition-all duration-150 ease-out"
+            enter-from-class="opacity-0 translate-y-2 scale-95"
+            enter-to-class="opacity-100 translate-y-0 scale-100"
+            leave-active-class="transition-all duration-100 ease-in"
+            leave-from-class="opacity-100 translate-y-0 scale-100"
+            leave-to-class="opacity-0 translate-y-2 scale-95"
         >
-            <div v-if="isOpen" :class="panelBaseClass" role="dialog">
+            <div
+                v-if="isOpen"
+                :class="panelBaseClass"
+                :role="panelRole"
+            >
                 <slot name="menu" :close="close" />
             </div>
         </transition>
 
-        <div v-else v-if="isOpen" :class="panelBaseClass" role="dialog">
+        <div
+            v-else
+            v-if="isOpen"
+            :class="panelBaseClass"
+            :role="panelRole"
+        >
             <slot name="menu" :close="close" />
         </div>
     </div>
