@@ -39,11 +39,7 @@
                                 class="inline-flex items-center gap-1 rounded-lg bg-on-background/10 px-2 py-0.5 font-medium transition-colors duration-200 ease-out hover:bg-on-background/20"
                                 @click="toggle"
                             >
-                                {{
-                                    t(
-                                        `pages.about.bangumiSource.${coverSource}`,
-                                    )
-                                }}
+                                {{ t(coverSource.labelKey) }}
                                 <ChevronDownIcon
                                     class="w-4 h-4 transition-transform duration-200"
                                     :class="isOpen ? 'rotate-180' : ''"
@@ -52,23 +48,26 @@
                         </template>
                         <template #menu="{ close }">
                             <button
-                                v-for="id in SOURCE_IDS"
-                                :key="id"
+                                v-for="source in COVER_SOURCES"
+                                :key="source.id"
                                 class="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-left transition-colors"
                                 :class="
-                                    coverSource === id
+                                    coverSource.id === source.id
                                         ? 'bg-primary/10 text-primary font-medium'
                                         : 'text-on-background hover:bg-surface-container hover:text-primary'
                                 "
-                                @click="setCoverSource(id); close()"
+                                @click="
+                                    setCoverSource(source);
+                                    close();
+                                "
                             >
                                 <span class="whitespace-nowrap">
-                                    {{ t(`pages.about.bangumiSource.${id}`) }}
+                                    {{ t(source.labelKey) }}
                                 </span>
                                 <span
                                     class="whitespace-nowrap text-xs text-on-background/50"
                                 >
-                                    {{ BANGUMI_SOURCES[id] }}
+                                    {{ source.host }}
                                 </span>
                             </button>
                         </template>
@@ -78,7 +77,9 @@
 
             <div class="min-h-100">
                 <div
-                    v-if="(loading || isSearchLoading) && displayData.length === 0"
+                    v-if="
+                        (loading || isSearchLoading) && displayData.length === 0
+                    "
                     class="flex justify-center py-12"
                 >
                     <AnriSpinner class="w-8 h-8 text-primary" />
@@ -127,8 +128,7 @@
                                     size="sm"
                                     class="h-auto! w-8! shrink-0"
                                     :disabled="
-                                        charSelectPage >=
-                                        charSelectTotalPages
+                                        charSelectPage >= charSelectTotalPages
                                     "
                                     :aria-label="t('common.label.nextPage')"
                                     @click="nextSelectPage"
@@ -295,9 +295,7 @@
                             v-if="selectedItem.record.progress?.length"
                             class="pt-4 border-t border-on-background/10"
                         >
-                            <p
-                                class="text-xs text-on-background/50 mb-2"
-                            >
+                            <p class="text-xs text-on-background/50 mb-2">
                                 {{ t("pages.about.clearedRoutes") }}
                             </p>
                             <div class="flex flex-wrap gap-2">
@@ -408,52 +406,72 @@ const displayData = computed(() => {
     return searchQuery.value ? searchResults.value : currentData.value;
 });
 
-// Bangumi 主站与镜像站仅域名不同，替换域名即完成换源，图源加载失败时回退主站。
-const BANGUMI_MAIN_HOST = "lain.bgm.tv";
-// 封面图源清单：镜像站优先，未来新增镜像在此追加即可
-const BANGUMI_SOURCES: Record<string, string> = {
-    mirror: "lain.bangumi.vip",
-    main: "lain.bgm.tv",
+type CoverSource = {
+    id: string;
+    host: string;
+    labelKey: string;
 };
-const SOURCE_IDS = Object.keys(BANGUMI_SOURCES);
+
+const BANGUMI_MAIN_HOST = "lain.bgm.tv";
+
+const COVER_SOURCES = [
+    {
+        id: "fxbgm",
+        host: "lain.fxbgm.tv",
+        labelKey: "pages.about.bangumiSource.mirror",
+    },
+    {
+        id: "bangumi-lat",
+        host: "lain.bangumi.lat",
+        labelKey: "pages.about.bangumiSource.mirror",
+    },
+    {
+        id: "main",
+        host: BANGUMI_MAIN_HOST,
+        labelKey: "pages.about.bangumiSource.main",
+    },
+] as const satisfies readonly CoverSource[];
+const DEFAULT_SOURCE = COVER_SOURCES[0];
 const SOURCE_STORAGE_KEY = "bangumi-cover-source";
 
-const coverSource = ref("mirror");
-if (import.meta.client) {
-    const saved = localStorage.getItem(SOURCE_STORAGE_KEY);
-    if (saved && SOURCE_IDS.includes(saved)) {
-        coverSource.value = saved;
-    }
-}
+const findSource = (id: string | null): CoverSource =>
+    COVER_SOURCES.find((source) => source.id === id) ?? DEFAULT_SOURCE;
 
-const setCoverSource = (id: string): void => {
-    coverSource.value = id;
-    localStorage.setItem(SOURCE_STORAGE_KEY, id);
+const coverSource = ref<CoverSource>(
+    findSource(
+        import.meta.client ? localStorage.getItem(SOURCE_STORAGE_KEY) : null,
+    ),
+);
+
+const setCoverSource = (source: CoverSource): void => {
+    coverSource.value = source;
+    localStorage.setItem(SOURCE_STORAGE_KEY, source.id);
 };
 
 const { getStatus } = useImageCache();
 
-// 本次会话内已确认加载失败的图源地址，命中的封面自动回退主站
+const toSourceUrl = (url: string): string | null => {
+    if (coverSource.value.host === BANGUMI_MAIN_HOST) return null;
+    if (!url.includes(BANGUMI_MAIN_HOST)) return null;
+    return url.replace(BANGUMI_MAIN_HOST, coverSource.value.host);
+};
+
 const failedSourceCovers = computed(() => {
     const failed = new Set<string>();
-    const host = BANGUMI_SOURCES[coverSource.value] ?? BANGUMI_MAIN_HOST;
-    if (host === BANGUMI_MAIN_HOST) return failed;
     for (const item of displayData.value) {
-        const cover = (item as FavItem).record.cover;
-        if (!cover.includes(BANGUMI_MAIN_HOST)) continue;
-        const sourceUrl = cover.replace(BANGUMI_MAIN_HOST, host);
-        if (getStatus(sourceUrl) === "error") failed.add(sourceUrl);
+        const sourceUrl = toSourceUrl((item as FavItem).record.cover);
+        if (sourceUrl && getStatus(sourceUrl) === "error") {
+            failed.add(sourceUrl);
+        }
     }
     return failed;
 });
 
 const resolveCover = (url: string): string => {
-    const host = BANGUMI_SOURCES[coverSource.value] ?? BANGUMI_MAIN_HOST;
-    if (host === BANGUMI_MAIN_HOST || !url.includes(BANGUMI_MAIN_HOST)) {
-        return url;
-    }
-    const sourceUrl = url.replace(BANGUMI_MAIN_HOST, host);
-    return failedSourceCovers.value.has(sourceUrl) ? url : sourceUrl;
+    const sourceUrl = toSourceUrl(url);
+    return sourceUrl && !failedSourceCovers.value.has(sourceUrl)
+        ? sourceUrl
+        : url;
 };
 
 const currentMeta = ref<any>(undefined);
@@ -519,10 +537,7 @@ const charSelectTotalPages = computed(() =>
 
 const visibleCharOptions = computed(() => {
     const start = (charSelectPage.value - 1) * charSelectPageSize.value;
-    return charListCache.value.slice(
-        start,
-        start + charSelectPageSize.value,
-    );
+    return charListCache.value.slice(start, start + charSelectPageSize.value);
 });
 
 // 让当前选中的角色所在分页窗口保持可见
