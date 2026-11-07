@@ -302,7 +302,7 @@
                                 <span
                                     v-for="name in selectedItem.record.progress"
                                     :key="name"
-                                    class="inline-flex items-center rounded-full bg-on-background/10 px-3 py-1 text-xs text-on-background/70"
+                                    class="inline-flex items-center rounded-xl bg-on-background/10 px-3 py-1 text-xs text-on-background/70"
                                 >
                                     {{ name }}
                                 </span>
